@@ -143,16 +143,22 @@ func getProductHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // 2. call service level to get product info
-    product, err := service.SearchProductByID(productID);
+    product, err := service.SearchProductByID(productID)
     if err != nil {
-        http.Error(w, "Failed to search app from backend", http.StatusInternalServerError)
+        // Check if the error is due to the product not being found
+        if err.Error() == fmt.Sprintf("no product found with ID %d", productID) {
+            http.Error(w, err.Error(), http.StatusNotFound)
+        } else {
+            // For all other errors, return internal server error
+            http.Error(w, "Failed to search product by ID from backend", http.StatusInternalServerError)
+        }
         return
     }
 
     // 3. format json response
     js, err := json.Marshal(product)
 	if err != nil {
-		http.Error(w, "Failed to parse Apps into JSON format", http.StatusInternalServerError)
+		http.Error(w, "Failed to parse products into JSON format", http.StatusInternalServerError)
 		return
 	}
 	w.Write(js)

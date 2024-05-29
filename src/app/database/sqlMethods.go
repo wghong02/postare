@@ -302,18 +302,8 @@ func SearchProductByID(productID int64) (model.Product, error) {
 
     // search if product id exists
     var product model.Product
-	row, err := conn.Query(context.Background(), `SELECT * FROM Products WHERE ProductID=$1`, productID)
-	
-    if err != nil {
-        if err == pgx.ErrNoRows {
-            return product, fmt.Errorf("no product found with ID %d", productID)
-        }
-        return product, err
-    }
-    defer row.Close()
-
-    // add to product
-    err = row.Scan(&product.ProductID, 
+	err := conn.QueryRow(context.Background(), `SELECT ProductID, Title, Description, Price, CategoryID, SellerID, Condition, PutOutDate, ProductLocation, ProductDetails, Status, ImageUrl, Views FROM Products WHERE ProductID=$1`, productID).Scan(
+        &product.ProductID, 
         &product.Title, 
         &product.Description, 
         &product.Price,
@@ -327,8 +317,13 @@ func SearchProductByID(productID int64) (model.Product, error) {
         &product.ImageUrl,
         &product.Views,
     )
+
+    // Check if the query returned an error
     if err != nil {
-        return product, err
+        if err == pgx.ErrNoRows {
+            return model.Product{}, fmt.Errorf("no product found with ID %d", productID)
+        }
+        return model.Product{}, err // Return other errors that might have occurred
     }
 
     return product, nil
