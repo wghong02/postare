@@ -103,7 +103,7 @@ func searchProductHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	totalSize, err := strconv.Atoi(totalSizeStr)
 	if err != nil || totalSize < 1 {
-		totalSize = 50 // default total size to load from server
+		totalSize = 60 // default total size to load from server
 	}
 
 	var products []model.Product
