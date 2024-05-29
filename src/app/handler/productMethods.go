@@ -131,19 +131,10 @@ func searchProductHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getProductHandler(w http.ResponseWriter, r *http.Request) {
-    // TODO!!!
 	fmt.Println("Received one get product request")
 
-    token := r.Context().Value("user")
-    claims := token.(*jwt.Token).Claims
-    userIDFloat, ok := claims.(jwt.MapClaims)["userID"].(float64)
 	productIDStr := mux.Vars(r)["productID"]
 	
-    if !ok {
-        http.Error(w, "Invalid user ID", http.StatusInternalServerError)
-        return
-    }
-    userID := int64(userIDFloat)
     // 1. process data
 	productID, err := strconv.ParseInt(productIDStr, 10, 64)
     if err != nil {
@@ -152,11 +143,17 @@ func getProductHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // 2. call service level to get product info
-    if err := service.DeleteProduct(productID, userID); err != nil {
-        http.Error(w, "Failed to delete app from backend", http.StatusInternalServerError)
+    product, err := service.SearchProductByID(productID);
+    if err != nil {
+        http.Error(w, "Failed to search app from backend", http.StatusInternalServerError)
         return
     }
 
     // 3. format json response
-    fmt.Fprintf(w, "Product deleted successfully\n")
+    js, err := json.Marshal(product)
+	if err != nil {
+		http.Error(w, "Failed to parse Apps into JSON format", http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
 }

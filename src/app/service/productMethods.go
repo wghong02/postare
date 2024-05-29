@@ -35,7 +35,6 @@ func DeleteProduct(productID int64, userID int64) error {
 
 func SearchProductByID(productID int64) (model.Product, error) {
 	// call backend to get the product information, return the product info and if there is error
-	// TODO!!!
 	product, err := sqlMethods.SearchProductByID(productID)
 	if  err != nil {
 		fmt.Printf("Failed to delete app from SQL %v\n", err)
