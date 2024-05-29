@@ -14,6 +14,11 @@ import (
 
 
 func connectDB() *pgx.Conn {    
+    // use pgx to connect to db
+    dbUser:= os.Getenv("DB_USER")
+    if dbUser == "" {
+        log.Fatal("DB_USER is not set in the environment variables")
+    }
     dbPassword := os.Getenv("DB_PASSWORD")
     if dbPassword == "" {
         log.Fatal("DB_PASSWORD is not set in the environment variables")
@@ -22,7 +27,7 @@ func connectDB() *pgx.Conn {
     if dbURL == "" {
         log.Fatal("DB_URL is not set in the environment variables")
     }
-    connString := fmt.Sprintf("postgres://postgres:%s@%s", dbPassword, dbURL)
+    connString := fmt.Sprintf("postgres://%s:%s@%s", dbUser, dbPassword, dbURL)
     conn, err := pgx.Connect(context.Background(), connString)
     if err != nil {
         log.Fatalf("Unable to connect to database: %v\n", err)
@@ -37,6 +42,7 @@ func InitSQLDatabase() {
     }
     fmt.Println("initializing sql")
 
+    // defer close to continue useing
     conn := connectDB()
     defer conn.Close(context.Background())
 
@@ -45,6 +51,7 @@ func InitSQLDatabase() {
 }
 
 func createTables(conn *pgx.Conn) {
+    // create sql tables
     commands := []string{
         `CREATE TABLE IF NOT EXISTS Users (
             UserID SERIAL PRIMARY KEY,
@@ -176,9 +183,11 @@ func insertSampleData(conn *pgx.Conn) {
 }
 
 func SaveProductToSQL(product *model.Product) error {
+    // connect to db
     conn := connectDB()
     defer conn.Close(context.Background())
 
+    // check if user exists
     var exists bool
     err := conn.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM Users WHERE UserID = $1)", product.SellerID).Scan(&exists)
     if err != nil {
@@ -188,6 +197,7 @@ func SaveProductToSQL(product *model.Product) error {
         return fmt.Errorf("seller with ID %d does not exist", product.SellerID)
     }
 
+    // save product
     query := `INSERT INTO Products (Title, 
         Description, 
         Price, 
@@ -229,25 +239,33 @@ func SaveProductToSQL(product *model.Product) error {
     return err
 }
 
-func SearchProducts(keyword string, query string) ([]model.Product, error) {
+func SearchProductsByDescription(keyword string, limit int, offset int) ([]model.Product, error) {
+    // connect to db
     conn := connectDB()
     defer conn.Close(context.Background())
 
     var products []model.Product
-    var rows pgx.Rows
-    var err error
-    if keyword=="" {
-		rows, err = conn.Query(context.Background(), query)
-	} else {
-		rows, err = conn.Query(context.Background(), query, "%" + keyword + "%")
-	}
+    var query string
+    var args []interface{}
+    
+    // use args to avoid sql injection
+	if keyword == "" {
+        query = `SELECT * FROM Products LIMIT $1 OFFSET $2`
+        args = append(args, limit, offset)
+    } else {
+        query = `SELECT * FROM Products WHERE title LIKE $1 OR description LIKE $1 LIMIT $2 OFFSET $3`
+        args = append(args, "%"+keyword+"%", limit, offset)
+    }
 
+    // search with sql statement
+    rows, err := conn.Query(context.Background(), query, args...)
     if err != nil {
         fmt.Println(err)
         return nil, err
     }
     defer rows.Close()
 
+    // add to result
     for rows.Next() {
         var product model.Product
         err := rows.Scan(&product.ProductID, 
@@ -277,10 +295,50 @@ func SearchProducts(keyword string, query string) ([]model.Product, error) {
     return products, nil
 }
 
-func SearchUser(username string) (bool, error) {
+func SearchProductByID(productID int64) (model.Product, error) {
+    // connect to db
     conn := connectDB()
     defer conn.Close(context.Background())
 
+    // search if product id exists
+    var product model.Product
+	row, err := conn.Query(context.Background(), `SELECT * FROM Products WHERE ProductID=$1`, productID)
+	
+    if err != nil {
+        if err == pgx.ErrNoRows {
+            return product, fmt.Errorf("no product found with ID %d", productID)
+        }
+        return product, err
+    }
+    defer row.Close()
+
+    // add to product
+    err = row.Scan(&product.ProductID, 
+        &product.Title, 
+        &product.Description, 
+        &product.Price,
+        &product.CategoryID,
+        &product.SellerID,
+        &product.Condition,
+        &product.PutOutDate,
+        &product.ProductLocation,
+        &product.ProductDetails,
+        &product.Status,
+        &product.ImageUrl,
+        &product.Views,
+    )
+    if err != nil {
+        return product, err
+    }
+
+    return product, nil
+}
+
+func SearchUserByName(username string) (bool, error) {
+    conn := connectDB()
+    defer conn.Close(context.Background())
+
+    // check if user exists
     var exists bool
     err := conn.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM Users WHERE Username = $1)", username).Scan(&exists)
     if err != nil {
@@ -294,6 +352,7 @@ func SaveUserToSQL(user *model.User) (bool, error) {
     conn := connectDB()
     defer conn.Close(context.Background())
 
+    // save user
     query := `INSERT INTO Users (Username, UserEmail, UserPhone, Password, Address, ProfilePicture, RegisterDate, UserRating, TotalItemsSold) VALUES ($1, 
             $2, $3, $4, $5, $6, $7,  $8, $9)`
 
@@ -311,6 +370,7 @@ func CheckUser(username string, password string) (bool, error) {
     conn := connectDB()
     defer conn.Close(context.Background())
 
+    // get the true password
     var truePassword string
     err := conn.QueryRow(context.Background(), "SELECT Password FROM Users WHERE Username=$1", username).Scan(&truePassword)
     if err != nil {
@@ -324,6 +384,7 @@ func GetUserID(username string) (int64){
     conn := connectDB()
     defer conn.Close(context.Background())
 
+    // get user id from db
     var userID int64
     conn.QueryRow(context.Background(), "SELECT UserID FROM Users WHERE Username=$1", username).Scan(&userID)
 
@@ -334,18 +395,8 @@ func DeleteProductFromSQL(productID int64, userID int64) error {
     conn := connectDB()
     defer conn.Close(context.Background())
 
-    var sellerID int64
-    err := conn.QueryRow(context.Background(), "SELECT SellerID FROM Products WHERE ProductID=$1", productID).Scan(&sellerID)
-    if err != nil {
-        if err == pgx.ErrNoRows {
-            return fmt.Errorf("no product found with ID %d", productID)
-        }
-        return err
-    }
-    if sellerID != userID {
-        return fmt.Errorf("product not owned by user")
-    }
-    _, err = conn.Exec(context.Background(), "DELETE FROM Products WHERE ProductID=$1", productID)
+    // delete from db
+    _, err := conn.Exec(context.Background(), "DELETE FROM Products WHERE ProductID=$1", productID)
     if err != nil{
         return err
     }

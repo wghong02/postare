@@ -2,6 +2,8 @@ package model
 
 import "time"
 
+// the model of each row in each of the table, and some sample data
+
 type User struct {
 	UserID         int64  `json:"user_id"`
 	Username       string `json:"username"`

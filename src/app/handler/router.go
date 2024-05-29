@@ -10,6 +10,7 @@ import (
 )
 
 func InitRouter() http.Handler {
+    // use jwt middleware for token auth
     jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
         ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
             return []byte(mySigningKey), nil
@@ -17,6 +18,8 @@ func InitRouter() http.Handler {
         SigningMethod: jwt.SigningMethodHS256,
     })
 
+    // user related activities (upload product, delete product, etc.) requires to verify auth
+    // other activities do not
     router := mux.NewRouter()
     router.Handle("/user/products/upload", jwtMiddleware.Handler(http.HandlerFunc(uploadProductHandler))).Methods("POST")
     router.Handle("/user/products/delete/{productID}", jwtMiddleware.Handler(http.HandlerFunc(deleteProductHandler))).Methods("Delete")
@@ -25,6 +28,7 @@ func InitRouter() http.Handler {
     router.Handle("/auth/register", http.HandlerFunc(registerHandler)).Methods("POST")
     router.Handle("/auth/login", http.HandlerFunc(logInHandler)).Methods("POST")
 
+    // default for middleware setup
     corsMiddleware := handlers.CORS(
         handlers.AllowedOrigins([]string{"*"}), 
         handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}), 

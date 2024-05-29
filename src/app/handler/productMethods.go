@@ -21,6 +21,7 @@ func uploadProductHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Content-Type is not application/json", http.StatusUnsupportedMediaType)
         return
     }
+    // check auth
     token := r.Context().Value("user")
     claims := token.(*jwt.Token).Claims
     userIDFloat, ok := claims.(jwt.MapClaims)["userID"].(float64)
@@ -29,16 +30,16 @@ func uploadProductHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     userID := int64(userIDFloat)
-    // fmt.Printf("floatID %f\n", userIDFloat)
-    // fmt.Printf("ID %d\n", userID)
-      
+    
+    // 1. process data
     // Parse from body of request to get a json object.
     decoder := json.NewDecoder(r.Body)
     product := model.Product{
         SellerID: userID,
         PutOutDate: time.Now(),
-
     }
+
+    // 2. call service to save product
     if err := decoder.Decode(&product); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         fmt.Fprintf(w, "Error decoding upload request: %v", err)
@@ -50,14 +51,15 @@ func uploadProductHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    fmt.Fprintf(w, "Product saved successfully\n")
+    // 3. response
 
+    fmt.Fprintf(w, "Product saved successfully\n")
     fmt.Fprintf(w, "Uploaded %s by %d \n", product.Title, userID)
 }
 
 func deleteProductHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one delete request")
-
+    // check auth
     token := r.Context().Value("user")
     claims := token.(*jwt.Token).Claims
     userIDFloat, ok := claims.(jwt.MapClaims)["userID"].(float64)
@@ -67,26 +69,30 @@ func deleteProductHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Invalid user ID", http.StatusInternalServerError)
         return
     }
+
+    // 1. process data
     userID := int64(userIDFloat)
 	productID, err := strconv.ParseInt(productIDStr, 10, 64)
     if err != nil {
         http.Error(w, "Invalid product ID provided", http.StatusBadRequest)
         return
     }
-   
+
+    // 2. call service level to delete product
     if err := service.DeleteProduct(productID, userID); err != nil {
         http.Error(w, "Failed to delete app from backend", http.StatusInternalServerError)
         return
     }
 
+    // 3. response
     fmt.Fprintf(w, "Product deleted successfully\n")
 }
 
 func searchProductHandler(w http.ResponseWriter, r *http.Request) {
-	// only use description for now, will add title with description
+    // 1. process data
+    // description here contains both product description and product title
 	fmt.Println("Received one search request")
 	w.Header().Set("Content-Type", "application/json")
-	// title := r.URL.Query().Get("title")
 	description := r.URL.Query().Get("description")
 	batchStr := r.URL.Query().Get("batch")
 	totalSizeStr := r.URL.Query().Get("totalSize")
@@ -107,13 +113,15 @@ func searchProductHandler(w http.ResponseWriter, r *http.Request) {
 	// 	http.Error(w, "Failed to read Apps from backend", http.StatusInternalServerError)
 	// 	return
 	// }
-
+    
+    // 2. call service to handle search
 	products, err = service.SearchProductsByDescription(description, batch, totalSize)
 	if err != nil {
 		http.Error(w, "Failed to read Apps from backend", http.StatusInternalServerError)
 		return
 	}
- 
+    
+    // 3. format json response
 	js, err := json.Marshal(products)
 	if err != nil {
 		http.Error(w, "Failed to parse Apps into JSON format", http.StatusInternalServerError)
@@ -123,6 +131,7 @@ func searchProductHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getProductHandler(w http.ResponseWriter, r *http.Request) {
+    // TODO!!!
 	fmt.Println("Received one get product request")
 
     token := r.Context().Value("user")
@@ -135,16 +144,19 @@ func getProductHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     userID := int64(userIDFloat)
+    // 1. process data
 	productID, err := strconv.ParseInt(productIDStr, 10, 64)
     if err != nil {
         http.Error(w, "Invalid product ID provided", http.StatusBadRequest)
         return
     }
-   
+
+    // 2. call service level to get product info
     if err := service.DeleteProduct(productID, userID); err != nil {
         http.Error(w, "Failed to delete app from backend", http.StatusInternalServerError)
         return
     }
 
+    // 3. format json response
     fmt.Fprintf(w, "Product deleted successfully\n")
 }
