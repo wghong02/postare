@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"strconv"
 	"time"
 
 	//"log"
@@ -12,6 +13,7 @@ import (
 	"net/http"
 
 	jwt "github.com/form3tech-oss/jwt-go"
+	"github.com/gorilla/mux"
 )
 
 // For token based auth
@@ -118,4 +120,38 @@ func logInHandler(w http.ResponseWriter, r *http.Request) {
     // put token to client
     w.Write([]byte(tokenString))
     fmt.Fprintf(w, "\n User log in successfully: %s\n", user.Username)
+}
+
+func getUserInfoHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get product request")
+
+	userIDStr := mux.Vars(r)["username"]
+	
+    // 1. process data
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+    if err != nil {
+        http.Error(w, "Invalid username provided", http.StatusBadRequest)
+        return
+    }
+
+    // 2. call service level to get product info
+    user, err := service.SearchUserByID(userID)
+    if err != nil {
+        // Check if the error is due to the product not being found
+        if err.Error() == fmt.Sprintf("no user found with ID %d", userID) {
+            http.Error(w, err.Error(), http.StatusNotFound)
+        } else {
+            // For all other errors, return internal server error
+            http.Error(w, "Failed to search user by ID from backend", http.StatusInternalServerError)
+        }
+        return
+    }
+
+    // 3. format json response
+    js, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, "Failed to parse user into JSON format", http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
 }

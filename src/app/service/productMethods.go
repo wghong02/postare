@@ -9,7 +9,7 @@ import (
 func UploadProduct(product *model.Product) error {
 	// call backend to save the product, return if there is error
 	if err := sqlMethods.SaveProductToSQL(product); err != nil {
-		fmt.Printf("Failed to save app to SQL %v\n", err)
+		fmt.Printf("Failed to save product to SQL %v\n", err)
 		return err
 	}
 	return nil
@@ -27,7 +27,7 @@ func DeleteProduct(productID int64, userID int64) error {
 	}
 	// call backend to delete the product, return if there is error
 	if err = sqlMethods.DeleteProductFromSQL(productID, userID); err != nil {
-		fmt.Printf("Failed to delete app from SQL %v\n", err)
+		fmt.Printf("Failed to delete product from SQL %v\n", err)
 		return err
 	}
 	return nil
@@ -38,8 +38,8 @@ func SearchProductByID(productID int64) (model.Product, error) {
 	// call backend to get the product information, return the product info and if there is error
 	product, err := sqlMethods.SearchProductByID(productID)
 	if  err != nil {
-		fmt.Printf("Failed to search app from SQL, %v\n", err)
-		return product, err
+		fmt.Printf("Failed to search product from SQL, %v\n", err)
+		return model.Product{}, err
 	}
 	return product, err
 }
