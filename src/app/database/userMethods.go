@@ -27,11 +27,11 @@ func SaveUserToSQL(user *model.User) (bool, error) {
     defer conn.Close(context.Background())
 
     // save user
-    query := `INSERT INTO Users (Username, UserEmail, UserPhone, Password, Address, ProfilePicture, RegisterDate, UserRating, TotalItemsSold) VALUES ($1, 
-            $2, $3, $4, $5, $6, $7,  $8, $9)`
+    query := `INSERT INTO Users (Username, UserEmail, UserPhone, Password, Address, ProfilePicture, RegisterDate, UserRating, TotalItemsSold, TotalReviews) VALUES ($1, 
+            $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
     _, err := conn.Exec(context.Background(), 
-    query, user.Username, user.UserEmail, user.UserPhone, user.Password, user.Address, user.ProfilePicture, user.RegisterDate, user.UserRating, user.TotalItemsSold)
+    query, user.Username, user.UserEmail, user.UserPhone, user.Password, user.Address, user.ProfilePicture, user.RegisterDate, user.UserRating, user.TotalItemsSold, user.TotalReviews)
     if err != nil {
         return false, err
     }
@@ -72,7 +72,7 @@ func SearchUserByID(userID int64) (model.User, error) {
 
     // search if product id exists
     var user model.User
-	err := conn.QueryRow(context.Background(), `SELECT UserID, Username, UserEmail, UserPhone, Password, Address, ProfilePicture, RegisterDate, UserRating, TotalItemsSold FROM Users WHERE UserID = $1`, userID).Scan(
+	err := conn.QueryRow(context.Background(), `SELECT UserID, Username, UserEmail, UserPhone, Password, Address, ProfilePicture, RegisterDate, UserRating, TotalItemsSold, TotalReviews FROM Users WHERE UserID = $1`, userID).Scan(
         &user.UserID, 
         &user.Username, 
         &user.UserEmail, 
@@ -83,6 +83,7 @@ func SearchUserByID(userID int64) (model.User, error) {
         &user.RegisterDate,
         &user.UserRating,
         &user.TotalItemsSold,
+        &user.TotalReviews,
     )
 
     // Check if the query returned an error

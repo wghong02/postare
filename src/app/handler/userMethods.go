@@ -53,6 +53,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
     user.RegisterDate = time.Now()
     user.UserRating = 0
     user.TotalItemsSold = 0
+    user.TotalReviews = 0
 
     // 2. call service to process data
     // if error, database isuue; if not success, then user already exists

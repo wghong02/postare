@@ -15,6 +15,7 @@ type User struct {
 	RegisterDate   time.Time `json:"register_date"`
 	UserRating     float64  `json:"user_rating"`
 	TotalItemsSold int    `json:"total_items_sold"`
+	TotalReviews int64    `json:"total_reviews"`
 }
 
 type Product struct {
@@ -65,13 +66,13 @@ var Users = []User{
         UserID: 101, Username: "antique_seller", UserEmail: "antique@example.com",
         UserPhone: "+1234567890", Password: "encrypted_password", Address: "123 Vintage St, Oldtown",
         ProfilePicture: "profile_pic_url.jpg", RegisterDate: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
-        UserRating: 4.5, TotalItemsSold: 1,
+        UserRating: 4.5, TotalItemsSold: 1, TotalReviews: 5,
     },
     {
         UserID: 102, Username: "qwerty", UserEmail: "antique2@example.com",
         UserPhone: "+134562897", Password: "encrypted_password2", Address: "1234 Vintage St, Oldtown",
         ProfilePicture: "profile_pic_url2.jpg", RegisterDate: time.Date(2023, 1, 2, 0, 0, 0, 0, time.UTC),
-        UserRating: 4.5, TotalItemsSold: 0,
+        UserRating: 4.5, TotalItemsSold: 1, TotalReviews: 3,
     },
 }
 

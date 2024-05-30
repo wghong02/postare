@@ -63,7 +63,8 @@ func createTables(conn *pgx.Conn) {
             ProfilePicture TEXT,
             RegisterDate DATE,
 			UserRating FLOAT,
-			TotalItemsSold INTEGER
+			TotalItemsSold INTEGER,
+            TotalReviews INTEGER
         )`,
 		`CREATE TABLE IF NOT EXISTS Comments (
             CommentID SERIAL PRIMARY KEY,
@@ -129,7 +130,7 @@ func createTables(conn *pgx.Conn) {
 func insertSampleData(conn *pgx.Conn) {
     // Insert users
     for _, user := range model.Users {
-        _, err := conn.Exec(context.Background(), `INSERT INTO Users (UserID, Username, UserEmail, UserPhone, Password, Address, ProfilePicture, RegisterDate, UserRating, TotalItemsSold) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (UserID) DO NOTHING`, user.UserID, user.Username, user.UserEmail, user.UserPhone, user.Password, user.Address, user.ProfilePicture, user.RegisterDate, user.UserRating, user.TotalItemsSold)
+        _, err := conn.Exec(context.Background(), `INSERT INTO Users (UserID, Username, UserEmail, UserPhone, Password, Address, ProfilePicture, RegisterDate, UserRating, TotalItemsSold, TotalReviews) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (UserID) DO NOTHING`, user.UserID, user.Username, user.UserEmail, user.UserPhone, user.Password, user.Address, user.ProfilePicture, user.RegisterDate, user.UserRating, user.TotalItemsSold, user.TotalReviews)
         if err != nil {
             log.Fatalf("Failed to insert user data: %v", err)
         }
