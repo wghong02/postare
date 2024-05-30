@@ -30,7 +30,7 @@ type Product struct {
 	ProductDetails  string     `json:"product_details"`
 	Status          string     `json:"status"`
 	ImageUrl        string     `json:"image_url"`
-	Views			int64		`json:"views`
+	Views			int64		`json:"views"`
 }
 
 type Comment struct {
