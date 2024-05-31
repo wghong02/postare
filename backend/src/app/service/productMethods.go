@@ -62,9 +62,16 @@ func SearchProductsByDescription(keyword string, batch int, totalSize int) ([]mo
 	// batch k determines the kth number of batch to load in to the client
 	// if no keywords given, return the first totalSize products
     offset := (batch - 1) * totalSize
-
-	// use OFFSET to achieve the kth batch
-	// fmt.Println("The input query is", query)
     
 	return sqlMethods.SearchProductsByDescription(keyword, totalSize, offset)
+}
+
+func GetMostViewedProducts(batch int, totalSize int) ([]model.Product, error) {	
+	// call backend to search the most viewed products return if there is error
+	// totalSize is the total number of products to load from the server
+	// batch k determines the kth number of batch to load in to the client
+
+    offset := (batch - 1) * totalSize
+    
+	return sqlMethods.GetMostViewedProducts(totalSize, offset)
 }

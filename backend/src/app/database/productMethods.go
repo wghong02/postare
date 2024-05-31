@@ -166,3 +166,54 @@ func DeleteProductFromSQL(productID int64, userID int64) error {
     }
     return nil
 }
+
+func GetMostViewedProducts(limit int, offset int) ([]model.Product, error) {
+    // connect to db
+    conn := connectDB()
+    defer conn.Close(context.Background())
+
+    var products []model.Product
+    var query string
+    var args []interface{}
+    
+    // use args to avoid sql injection
+    query = `SELECT * FROM products ORDER BY views DESC, putoutdate DESC  LIMIT $1 OFFSET $2`
+    args = append(args, limit, offset)
+
+    // search top results with sql statement
+    rows, err := conn.Query(context.Background(), query, args...)
+    if err != nil {
+        fmt.Println(err)
+        return nil, err
+    }
+    defer rows.Close()
+
+    // add to result
+    for rows.Next() {
+        var product model.Product
+        err := rows.Scan(&product.ProductID, 
+            &product.Title, 
+            &product.Description, 
+            &product.Price,
+            &product.CategoryID,
+            &product.SellerID,
+            &product.Condition,
+            &product.PutOutDate,
+            &product.ProductLocation,
+            &product.ProductDetails,
+            &product.Status,
+            &product.ImageUrl,
+            &product.Views,
+        )
+        if err != nil {
+            return nil, err
+        }
+        products = append(products, product)
+    }
+
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return products, nil
+}

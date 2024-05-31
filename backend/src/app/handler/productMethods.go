@@ -80,7 +80,7 @@ func deleteProductHandler(w http.ResponseWriter, r *http.Request) {
 
     // 2. call service level to delete product
     if err := service.DeleteProduct(productID, userID); err != nil {
-        http.Error(w, "Failed to delete app from backend", http.StatusInternalServerError)
+        http.Error(w, "Failed to delete products from backend", http.StatusInternalServerError)
         return
     }
 
@@ -117,14 +117,14 @@ func searchProductHandler(w http.ResponseWriter, r *http.Request) {
     // 2. call service to handle search
 	products, err = service.SearchProductsByDescription(description, batch, totalSize)
 	if err != nil {
-		http.Error(w, "Failed to read Apps from backend", http.StatusInternalServerError)
+		http.Error(w, "Failed to read products from backend", http.StatusInternalServerError)
 		return
 	}
     
     // 3. format json response
 	js, err := json.Marshal(products)
 	if err != nil {
-		http.Error(w, "Failed to parse Apps into JSON format", http.StatusInternalServerError)
+		http.Error(w, "Failed to parse products into JSON format", http.StatusInternalServerError)
 		return
 	}
 	w.Write(js)
@@ -157,6 +157,40 @@ func getProductHandler(w http.ResponseWriter, r *http.Request) {
 
     // 3. format json response
     js, err := json.Marshal(product)
+	if err != nil {
+		http.Error(w, "Failed to parse products into JSON format", http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
+}
+
+func getMostViewedProductsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get most viewed products request")
+
+	w.Header().Set("Content-Type", "application/json")
+	batchStr := r.URL.Query().Get("batch")
+	totalSizeStr := r.URL.Query().Get("totalSize")
+
+	batch, err := strconv.Atoi(batchStr)
+	if err != nil || batch < 1 {
+		batch = 1 // default to first page
+	}
+	totalSize, err := strconv.Atoi(totalSizeStr)
+	if err != nil || totalSize < 1 {
+		totalSize = 60 // default total size to load from server
+	}
+
+	var products []model.Product
+
+    // 2. call service to handle search
+	products, err = service.GetMostViewedProducts(batch, totalSize)
+	if err != nil {
+		http.Error(w, "Failed to read products from backend", http.StatusInternalServerError)
+		return
+	}
+    
+    // 3. format json response
+	js, err := json.Marshal(products)
 	if err != nil {
 		http.Error(w, "Failed to parse products into JSON format", http.StatusInternalServerError)
 		return
