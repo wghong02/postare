@@ -101,3 +101,23 @@ export const rateProduct = (data, productID) => {
     })
     .then((data) => camelizeKeys(data));
 };
+
+export const getMostViewedProducts = (query) => {
+  // get a single product by product ID. response is
+
+  const url = `${domain}/products/get/mostViewed`;
+  if (query?.batch) {
+    url.searchParams.append("batch", query.batch);
+  }
+
+  if (query?.totalSize) {
+    url.searchParams.append("totalSize", query.totalSize);
+  }
+
+  return fetch(url)
+    .then((response) => {
+      handleResponseStatus(response, "Fail to get product");
+      return response.json();
+    })
+    .then((data) => camelizeKeys(data));
+};

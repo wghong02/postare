@@ -1,61 +1,86 @@
 import React from "react";
 import { Box, Image, Badge } from "@chakra-ui/react";
 import { StarIcon } from "@chakra-ui/icons";
-import { searchProduct } from "@/utils/productUtils";
+import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
+import NextLink from "next/link";
+import { Link } from "@chakra-ui/react";
 
-function ProductCard({product}) {
+function ProductCard({ product }) {
   // card of each individual product
   // shows basic info of the product
-  const property = {
-    imageUrl: "https://bit.ly/2Z4KKcF",
-    imageAlt: "Rear view of modern home with pool",
-    beds: 3,
-    baths: 2,
-    title: "Modern home in city center in the heart of historic Los Angeles",
-    formattedPrice: "$1,900.00",
-    reviewCount: 34,
-    rating: 4,
-  };
+  const registerTime = timeAgo(product.putOutDate);
+  const postedRecent = isPostedWithin(product.putOutDate, "month");
+  const isAvailable = product.status === "available";
+  const isHot = product.views >= 500;
 
   return (
-    <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-      <Image src={property.imageUrl} alt={property.imageAlt} />
+    <Link as={NextLink} href={`/products/${product.productId}`} passHref>
+      <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+        <Image src={product.imageUrl} />
 
-      <Box p="6">
-        <Box display="flex" alignItems="baseline">
-          <Badge borderRadius="full" px="2" colorScheme="teal">
-            New
-          </Badge>
+        <Box p="6">
+          <Box display="flex" alignItems="baseline">
+            {postedRecent && isAvailable && (
+              <Badge borderRadius="full" px="2" colorScheme="blue">
+                New
+              </Badge>
+            )}
+            {!isAvailable && (
+              <Badge borderRadius="full" px="2" colorScheme="gray">
+                Sold
+              </Badge>
+            )}
+            {isHot && (
+              <Badge borderRadius="full" px="2" colorScheme="red">
+                Hot
+              </Badge>
+            )}
+            {(isHot || postedRecent) && <Box mr="4" />}
+            <Box as="span" color="gray.600" fontSize="sm">
+              {registerTime}
+            </Box>
+            <Box
+              color="gray.500"
+              fontWeight="semibold"
+              letterSpacing="wide"
+              fontSize="xs"
+              textTransform="uppercase"
+              ml="4"
+            >
+              {product.address}
+            </Box>
+            <Box
+              color="gray.500"
+              fontWeight="semibold"
+              letterSpacing="wide"
+              fontSize="xs"
+              textTransform="uppercase"
+              ml="4"
+            >
+              {product.views} views
+            </Box>
+          </Box>
+
           <Box
-            color="gray.500"
+            mt="1"
             fontWeight="semibold"
-            letterSpacing="wide"
-            fontSize="xs"
-            textTransform="uppercase"
-            ml="2"
+            as="h4"
+            lineHeight="tight"
+            noOfLines={1}
           >
-            {property.beds} beds &bull; {property.baths} baths
+            {product.title}
           </Box>
-        </Box>
 
-        <Box
-          mt="1"
-          fontWeight="semibold"
-          as="h4"
-          lineHeight="tight"
-          noOfLines={1}
-        >
-          {property.title}
-        </Box>
-
-        <Box>
-          {property.formattedPrice}
-          <Box as="span" color="gray.600" fontSize="sm">
-            / wk
+          <Box>
+            {Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 2, // Ensures two decimal places in the output
+              maximumFractionDigits: 2, // Ensures two decimal places even if the number is whole
+            }).format(product.price / 100)}
           </Box>
-        </Box>
 
-        <Box display="flex" mt="2" alignItems="center">
+          {/* <Box display="flex" mt="2" alignItems="center">
           {Array(5)
             .fill("")
             .map((_, i) => (
@@ -67,9 +92,10 @@ function ProductCard({product}) {
           <Box as="span" ml="2" color="gray.600" fontSize="sm">
             {property.reviewCount} reviews
           </Box>
+        </Box> */}
         </Box>
       </Box>
-    </Box>
+    </Link>
   );
 }
 
