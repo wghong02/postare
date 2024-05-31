@@ -103,8 +103,8 @@ const ProductPage = ({ params }: { params: { id: string } }) => {
             <Flex width="70%" h="200px">
               <ProductPageCard product={product}></ProductPageCard>
             </Flex>
-            <Flex width="30%" h="200px" bg="tomato">
-              4
+            <Flex width="30%" h="200px">
+              Map/online payment
             </Flex>
           </HStack>
 

@@ -4,58 +4,69 @@ import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 
 function ProductPageCard({ product }) {
   // card of product info
+  // registerTime to record time, posted recently to check if product is new
   const registerTime = timeAgo(product.putOutDate);
-  const postedRecent = isPostedWithin(product.putOutDate, "month")
-  const isAvailable = (product.status === "available")
+  const postedRecent = isPostedWithin(product.putOutDate, "month");
+  const isAvailable = product.status === "available";
+  const isHot = product.views >= 500;
 
   return (
-    <Box maxW="sm" borderRadius="lg" overflow="hidden">
-      <Box align="stretch">
-        <Box display="flex" alignItems="baseline">
-          {postedRecent && isAvailable && <Badge borderRadius="full" px="2" colorScheme="blue">
+    <Box borderRadius="lg" overflow="auto">
+      <Box display="flex" alignItems="baseline">
+        {postedRecent && isAvailable && (
+          <Badge borderRadius="full" px="2" colorScheme="blue" mr="4">
             New
-          </Badge>}
-          {!isAvailable && <Badge borderRadius="full" px="2" colorScheme="gray">
+          </Badge>
+        )}
+        {!isAvailable && (
+          <Badge borderRadius="full" px="2" colorScheme="gray">
             Sold
-          </Badge>}
-          <Box fontWeight="bold" letterSpacing="wide" fontSize="lg" ml="2">
-            {product.title}
-          </Box>
+          </Badge>
+        )}
+        <Box fontWeight="bold" letterSpacing="wide" fontSize="lg" ml="2">
+          {product.title}
         </Box>
+        <Box as="span" ml="8" color="gray.600" fontSize="sm">
+          {registerTime}
+        </Box>
+        <Text fontSize={"md"} ml={"8"}>
+          {" "}
+          {product.productLocation}{" "}
+        </Text>
+      </Box>
 
+      {isHot && (
         <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          Selling By{" "}
-          <Text as="span" fontWeight="semibold">
-            {product.username}
-          </Text>
+          <Badge borderRadius="full" px="2" colorScheme="red" mr="8">
+            Hot
+          </Badge>
+          {product.views} {"views"}
         </Box>
+      )}
 
-        <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          Email{" "}
-          <Text as="span" fontWeight="semibold">
-            {product.userEmail}
-          </Text>
-        </Box>
+      <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
+        {Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: 2, // Ensures two decimal places in the output
+          maximumFractionDigits: 2, // Ensures two decimal places even if the number is whole
+        }).format(product.price / 100)}
+      </Box>
 
-        <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          Seller was registered{" "}
-          <Text as="span" fontWeight="semibold">
-            {registerTime}
-          </Text>
-        </Box>
+      <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
+        The product is in{" "}
+        <Text as="span" fontWeight="semibold">
+          {product.condition}
+        </Text>
+        {" condition."}
+      </Box>
 
-        <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          {product.totalItemsSold >= 100 && (
-            <Badge borderRadius="full" px="2" colorScheme="yellow">
-              Star Seller
-            </Badge>
-          )}{" "}
-          Seller has sold{" "}
-          <Text as="span" fontWeight="semibold">
-            {product.totalItemsSold}
-          </Text>{" "}
-          items
-        </Box>
+      <Box mt="1" as="h4" lineHeight="tight" fontSize="lg">
+        Description: <Text as="span">{product.description}</Text>
+      </Box>
+
+      <Box mt="1" as="h4" lineHeight="tight" fontSize="lg">
+        Details: <Text as="span">{product.productDetails}</Text>{" "}
       </Box>
     </Box>
   );

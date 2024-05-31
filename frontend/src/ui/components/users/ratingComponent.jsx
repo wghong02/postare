@@ -7,6 +7,7 @@ const RatingDisplay = ({ rating, reviews, outOf = 5 }) => {
   const filledStars = Math.floor(rating);
   const hasPartialStar = rating % 1 !== 0;
   const emptyStars = Math.floor(outOf - rating);
+  const partialStar = rating - filledStars;
 
   const size = "24px";
 
@@ -34,7 +35,13 @@ const RatingDisplay = ({ rating, reviews, outOf = 5 }) => {
               top="0"
               left="0"
               overflow="hidden"
-              width={`${(rating - filledStars) * 100}%`}
+              width={`${
+                // to fill the stars more gradually
+                (2 * partialStar ** 3 -
+                  3 * partialStar ** 2 +
+                  2 * partialStar) *
+                100
+              }%`}
             >
               <Icon as={StarIcon} color="teal.400" boxSize={size} />
             </Box>
