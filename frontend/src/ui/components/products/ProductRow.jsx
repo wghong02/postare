@@ -9,6 +9,8 @@ const ProductRow = ({ title, products, page, onPageChange }) => {
   const [currentProducts, setCurrentProducts] = useState([]);
   const [productsPerRow, setProductsPerRow] = useState(4); // default to 10 products per row
 
+  // set how many cards to show based on website size
+  // load page when either window size changes or pagination is called
   useEffect(() => {
     const updateProductsPerRow = () => {
       const width = window.innerWidth;
@@ -45,6 +47,7 @@ const ProductRow = ({ title, products, page, onPageChange }) => {
     };
   }, [currentPage, products, productsPerRow]);
 
+  // handle pagination
   const handlePageChange = (direction) => {
     setCurrentPage((prevPage) => prevPage + direction);
     onPageChange && onPageChange(direction);

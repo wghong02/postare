@@ -17,7 +17,7 @@ function ProductCard({ product }) {
     <Link as={NextLink} href={`/products/${product.productId}`} passHref>
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
         <Image src={product.imageUrl} />
-
+        {/* //show badges of new if new and not sold, sold if sold, hot if have many views */}
         <Box p="6">
           <Box display="flex" alignItems="baseline">
             {postedRecent && isAvailable && (
@@ -70,7 +70,7 @@ function ProductCard({ product }) {
           >
             {product.title}
           </Box>
-
+              
           <Box>
             {Intl.NumberFormat("en-US", {
               style: "currency",

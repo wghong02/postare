@@ -10,6 +10,7 @@ function ProductPageCard({ product }) {
   const isAvailable = product.status === "available";
   const isHot = product.views >= 500;
 
+  // put all information of the product out
   return (
     <Box borderRadius="lg" overflow="auto">
       <Box display="flex" alignItems="baseline">

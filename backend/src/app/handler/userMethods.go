@@ -45,7 +45,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
     emailRegex := regexp.MustCompile(`^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$`)
     if user.UserEmail == "" || !emailRegex.MatchString(user.UserEmail) {
         http.Error(w, "Invalid email", http.StatusBadRequest)
-        fmt.Printf("Invalid email\n")
+        fmt.Printf("Invalid email, %s\n", user.UserEmail)
         return
     }
 

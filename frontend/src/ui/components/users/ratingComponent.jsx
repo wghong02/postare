@@ -10,7 +10,7 @@ const RatingDisplay = ({ rating, reviews, outOf = 5 }) => {
   const partialStar = rating - filledStars;
 
   const size = "24px";
-
+  // handle half stars by overlapping a gray one with a part of a filled one
   return (
     <Flex align="center">
       <Text mr={2}>

@@ -60,16 +60,25 @@ const Header = () => {
       <Box flex={1} maxW="300px">
         <Link as={NextLink} href="/user/home" passHref>
           <Button
-            colorScheme="blackAlpha"
             variant="ghost"
             shadow="md"
             fontFamily="'Roboto', sans-serif"
+            bg="white"
           >
             User Page
           </Button>
         </Link>
         <Button type="submit" colorScheme="black" ml={2}>
-          Login
+          <Link as={NextLink} href="/auth" passHref>
+            <Button
+              variant="ghost"
+              shadow="md"
+              fontFamily="'Roboto', sans-serif"
+              bg="yellow"
+            >
+              Login
+            </Button>
+          </Link>
         </Button>
       </Box>
     </Flex>

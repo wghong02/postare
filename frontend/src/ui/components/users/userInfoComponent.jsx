@@ -6,6 +6,7 @@ function UserCard({ user }) {
   // card of user info
   const registerTime = timeAgo(user.registerDate);
 
+  // info of the seller to put on the product page
   return (
     <Box maxW="sm" borderRadius="lg" overflow="hidden">
       <VStack spacing={4} align="center">

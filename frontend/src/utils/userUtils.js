@@ -1,6 +1,5 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
-import { Credentials, User, ProductPost, RatingData } from "@/lib/model";
 
 const domain = "http://localhost:8080";
 
@@ -16,12 +15,11 @@ export const login = (credential) => {
   })
     .then((response) => {
       handleResponseStatus(response, "Fail to Log in");
-      return response.json();
+      return response.text();
     })
     .then((data) => {
-      localStorage.setItem("authToken", data.token);
-    })
-    .then((data) => camelizeKeys(data));
+      localStorage.setItem("authToken", data);
+    });
 };
 
 export const logout = () => {

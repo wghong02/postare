@@ -22,6 +22,7 @@ const ProductPage = ({ params }: { params: { id: string } }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // when we go to a new product, load the page again
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
