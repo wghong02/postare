@@ -13,7 +13,7 @@ import { getProduct } from "@/utils/productUtils";
 import { getUserInfo } from "@/utils/userUtils";
 import { Product, User } from "@/lib/model";
 import RatingDisplay from "@/ui/components/users/ratingComponent";
-import UserCard from "@/ui/components/users/userInfoComponent";
+import { SellerCard } from "@/ui/components/users/userInfoComponent";
 import ProductPageCard from "@/ui/components/products/productInfoComponent";
 
 const ProductPage = ({ params }: { params: { id: string } }) => {
@@ -88,7 +88,7 @@ const ProductPage = ({ params }: { params: { id: string } }) => {
                 divider={<StackDivider borderColor="gray.200" />}
               >
                 <Flex h="300px">
-                  <UserCard user={user}></UserCard>
+                  <SellerCard user={user}></SellerCard>
                 </Flex>
                 <Flex h="100px">
                   <RatingDisplay

@@ -63,7 +63,6 @@ export const register = (credential) => {
 export const getUserInfo = (userID) => {
   // get a single user's info by user ID. response is json
   const url = `${domain}/users/${userID}`;
-  console.log(url);
 
   return fetch(url)
     .then((response) => {

@@ -124,7 +124,7 @@ func logInHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUserInfoHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one get product request")
+	fmt.Println("Received one get user info request")
 
 	userIDStr := mux.Vars(r)["username"]
 	
