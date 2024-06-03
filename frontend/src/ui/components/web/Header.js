@@ -1,11 +1,24 @@
 import { Box, Flex, Text, Button, Input, FormControl } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
 
 const Header = () => {
   // header of the website for the entire website
   // includes a search bar in the middle, app icon and link to home on topleft
   // user login/logout organization on top right
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    setAuthed(authToken !== null);
+  }, []);
+
+  const handleLogOut = () => {
+    localStorage.removeItem("authToken");
+    setAuthed(false);
+  };
+
   const handleSearchSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -57,18 +70,33 @@ const Header = () => {
         </form>
       </Box>
 
-      <Box flex={1} maxW="300px">
-        <Link as={NextLink} href="/user/home" passHref>
+      <Box flex={1} maxW="350px">
+        {authed && (
+          <Link as={NextLink} href="/user/home" passHref>
+            <Button
+              variant="ghost"
+              shadow="md"
+              fontFamily="'Roboto', sans-serif"
+              bg="white"
+            >
+              User Page
+            </Button>
+          </Link>
+        )}
+        {authed && (
           <Button
             variant="ghost"
             shadow="md"
             fontFamily="'Roboto', sans-serif"
-            bg="white"
+            bg="yellow"
+            onClick={handleLogOut}
+            ml = "6"
           >
-            User Page
+            Logout
           </Button>
-        </Link>
-        <Button type="submit" colorScheme="black" ml={2}>
+        )}
+
+        {!authed && (
           <Link as={NextLink} href="/auth" passHref>
             <Button
               variant="ghost"
@@ -79,7 +107,7 @@ const Header = () => {
               Login
             </Button>
           </Link>
-        </Button>
+        )}
       </Box>
     </Flex>
   );

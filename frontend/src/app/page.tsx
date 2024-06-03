@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { Box, Flex, Button } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Flex } from "@chakra-ui/react";
 import Header from "@/ui/components/web/Header";
 import MostViewedRow from "@/ui/components/products/mostViewedRow";
 
@@ -8,9 +8,7 @@ const HomePage = () => {
   // home page should have the header, rows of products in the middle
 
   // Handler functions for pagination
-  const handlePageChange = (setPage: any, direction: any) => {
-    setPage((prev: any) => prev + direction);
-  };
+
 
   return (
     <>

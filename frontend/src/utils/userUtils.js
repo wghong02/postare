@@ -22,27 +22,27 @@ export const login = (credential) => {
     });
 };
 
-export const logout = () => {
-  // logout, use auth token
-  const authToken = localStorage.getItem("authToken");
-  const url = `${domain}/auth/logout`;
+// export const logout = () => {
+//   // logout, use auth token
+//   const authToken = localStorage.getItem("authToken");
+//   const url = `${domain}/auth/logout`;
 
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      handleResponseStatus(response, "Fail to Log out");
-      return response.json();
-    })
-    .then(() => {
-      localStorage.removeItem("authToken");
-    })
-    .then((data) => camelizeKeys(data));
-};
+//   return fetch(url, {
+//     method: "POST",
+//     headers: {
+//       Authorization: `Bearer ${authToken}`,
+//       "Content-Type": "application/json",
+//     },
+//   })
+//     .then((response) => {
+//       handleResponseStatus(response, "Fail to Log out");
+//       return response.json();
+//     })
+//     .then(() => {
+//       localStorage.removeItem("authToken");
+//     })
+//     .then((data) => camelizeKeys(data));
+// };
 
 export const register = (credential) => {
   // register, input json, output status
