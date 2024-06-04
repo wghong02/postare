@@ -25,8 +25,9 @@ func InitRouter() http.Handler {
     router.Handle("/user/products/delete/{productID}", jwtMiddleware.Handler(http.HandlerFunc(deleteProductHandler))).Methods("Delete")
     router.Handle("/products/{productID}", http.HandlerFunc(getProductHandler)).Methods("GET")
     router.Handle("/products/get/mostViewed", http.HandlerFunc(getMostViewedProductsHandler)).Methods("GET")
-    router.Handle("/users/{username}", http.HandlerFunc(getUserInfoHandler)).Methods("GET")
+    router.Handle("/users/{userID}", http.HandlerFunc(getUserInfoHandler)).Methods("GET")
     router.Handle("/search", http.HandlerFunc(searchProductHandler)).Methods("GET")
+    router.Handle("/productHistory/{userID}", http.HandlerFunc(getUserProductsHandler)).Methods("GET")
     router.Handle("/auth/register", http.HandlerFunc(registerHandler)).Methods("POST")
     router.Handle("/auth/login", http.HandlerFunc(logInHandler)).Methods("POST")
 

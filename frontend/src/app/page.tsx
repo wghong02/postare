@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Flex } from "@chakra-ui/react";
 import Header from "@/ui/components/web/Header";
 import MostViewedRow from "@/ui/components/products/mostViewedRow";

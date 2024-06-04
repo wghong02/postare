@@ -2,8 +2,10 @@ import { Box, Flex, Text, Button, Input, FormControl } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
+  const router = useRouter();
   // header of the website for the entire website
   // includes a search bar in the middle, app icon and link to home on topleft
   // user login/logout organization on top right
@@ -24,6 +26,11 @@ const Header = () => {
     const formData = new FormData(event.target);
     const searchQuery = formData.get("searchInput");
     console.log("Searching for:", searchQuery);
+    if (searchQuery === "") {
+      router.push(`/`);
+    } else {
+      window.location.href = `/search?query=${encodeURIComponent(searchQuery)}`;
+    }
   };
 
   return (
@@ -90,7 +97,7 @@ const Header = () => {
             fontFamily="'Roboto', sans-serif"
             bg="yellow"
             onClick={handleLogOut}
-            ml = "6"
+            ml="6"
           >
             Logout
           </Button>

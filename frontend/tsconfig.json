@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     "src/app/user/page.tsx",
     "src/ui/components/web/Header.js"
-, "src/utils/userUtils.js", "src/ui/components/users/userInfoComponent.jsx"  ],
+, "src/utils/userUtils.js", "src/ui/components/users/userInfoComponent.jsx", "src/ui/components/products/userProductCard.jsx"  ],
   "exclude": ["node_modules"]
 }

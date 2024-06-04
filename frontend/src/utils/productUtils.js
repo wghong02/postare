@@ -35,17 +35,31 @@ export const searchProduct = (query) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const uploadProduct = (data, file) => {
+export const uploadProduct = (data) => {
   // user post product with auth token
   const authToken = localStorage.getItem("authToken");
   const url = `${domain}/user/products/upload`;
 
-  const { title, description, price } = data;
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("description", description);
-  formData.append("price", price);
-  formData.append("media_file", file);
+  const {
+    title,
+    description,
+    price,
+    condition,
+    productLocation,
+    productDetails,
+    imageUrl,
+  } = data;
+
+  const body = JSON.stringify({
+    title,
+    description,
+    price: Number(price),
+    condition,
+    product_location: productLocation,
+    product_details: productDetails,
+    status: "available",
+    image_url: imageUrl,
+  });
 
   return fetch(url, {
     method: "POST",
@@ -53,12 +67,10 @@ export const uploadProduct = (data, file) => {
       Authorization: `Bearer ${authToken}`,
       "Content-Type": "application/json",
     },
-    body: formData,
-  })
-    .then((response) => {
-      handleResponseStatus(response, "Fail to upload product");
-    })
-    .then((data) => camelizeKeys(data));
+    body: body,
+  }).then((response) => {
+    handleResponseStatus(response, "Fail to upload product");
+  });
 };
 
 export const deleteProduct = (productID) => {
@@ -117,6 +129,25 @@ export const getMostViewedProducts = (query) => {
   return fetch(url)
     .then((response) => {
       handleResponseStatus(response, "Fail to get product");
+      return response.json();
+    })
+    .then((data) => camelizeKeys(data));
+};
+
+export const getUserProducts = (userID, query) => {
+  // get the upload history of a user with its id
+  const url = `${domain}/productHistory/${userID}`;
+  if (query?.batch) {
+    url.searchParams.append("batch", query.batch);
+  }
+
+  if (query?.totalSize) {
+    url.searchParams.append("totalSize", query.totalSize);
+  }
+
+  return fetch(url)
+    .then((response) => {
+      handleResponseStatus(response, "Fail to search for upload history");
       return response.json();
     })
     .then((data) => camelizeKeys(data));

@@ -75,3 +75,16 @@ func GetMostViewedProducts(batch int, totalSize int) ([]model.Product, error) {
     
 	return sqlMethods.GetMostViewedProducts(totalSize, offset)
 }
+
+
+func GetProductsByUserID(userID int64, batch int, totalSize int) ([]model.Product, error) {
+	
+	// call backend to get the products information, return the product info and if there is error
+	offset := (batch - 1) * totalSize
+	products, err := sqlMethods.SearchProductsByUserID(userID, totalSize, offset)
+	if  err != nil {
+		fmt.Printf("Failed to search user from SQL, %v\n", err)
+		return []model.Product{}, err
+	}
+	return products, err
+}

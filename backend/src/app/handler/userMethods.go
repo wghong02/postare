@@ -120,18 +120,17 @@ func logInHandler(w http.ResponseWriter, r *http.Request) {
 
     // put token to client
     w.Write([]byte(tokenString))
-    fmt.Fprintf(w, "\n User log in successfully: %s\n", user.Username)
 }
 
 func getUserInfoHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one get user info request")
 
-	userIDStr := mux.Vars(r)["username"]
+	userIDStr := mux.Vars(r)["userID"]
 	
     // 1. process data
 	userID, err := strconv.ParseInt(userIDStr, 10, 64)
     if err != nil {
-        http.Error(w, "Invalid username provided", http.StatusBadRequest)
+        http.Error(w, "Invalid userID provided", http.StatusBadRequest)
         return
     }
 
@@ -156,3 +155,5 @@ func getUserInfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(js)
 }
+
+

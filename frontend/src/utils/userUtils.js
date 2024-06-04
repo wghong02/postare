@@ -106,16 +106,3 @@ export const getShoppingCart = () => {
     .then((data) => camelizeKeys(data));
 };
 
-export const getUploadHistory = (query) => {
-  // get the upload history of a user with its id
-  const parameter = query?.userId ?? "";
-  const url = `${domain}/uploadHistory/${userID}`;
-  url.searchParams.append("parameter", parameter);
-
-  return fetch(url)
-    .then((response) => {
-      handleResponseStatus(response, "Fail to search for upload history");
-      return response.json();
-    })
-    .then((data) => camelizeKeys(data));
-};

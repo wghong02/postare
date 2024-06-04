@@ -96,3 +96,4 @@ func SearchUserByID(userID int64) (model.User, error) {
 
     return user, nil
 }
+

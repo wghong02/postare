@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Image, Badge } from "@chakra-ui/react";
-import { StarIcon } from "@chakra-ui/icons";
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
@@ -70,7 +69,7 @@ function ProductCard({ product }) {
           >
             {product.title}
           </Box>
-              
+
           <Box>
             {Intl.NumberFormat("en-US", {
               style: "currency",
