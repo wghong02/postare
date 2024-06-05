@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // the model of each row in each of the table, and some sample data
 
@@ -19,14 +23,14 @@ type User struct {
 }
 
 type Product struct {
-	ProductID       int64     `json:"product_id"`
+	ProductID       uuid.UUID     `json:"product_id"`
 	Title           string    `json:"title"`
 	Description     string    `json:"description"`
 	Price           int64    `json:"price"`
 	CategoryID      int64    `json:"category_id"`
 	SellerID        int64    `json:"seller_id"`
 	Condition       string    `json:"condition"`
-	PutOutDate      time.Time `json:"put_out_date"`
+	PutOutTime      time.Time `json:"put_out_time"`
 	ProductLocation string     `json:"product_location"`
 	ProductDetails  string     `json:"product_details"`
 	Status          string     `json:"status"`
@@ -44,16 +48,16 @@ type Comment struct {
 
 type Order struct {
 	OrderID       int64     `json:"order_id"`
-	SellerID           int64    `json:"seller_id"`
-	BuyerID     int64    `json:"buyer_id"`
-	Date      time.Time    `json:"date"`
+	SellerID      uuid.UUID    `json:"seller_id"`
+	BuyerID     uuid.UUID    `json:"buyer_id"`
+	DateTime      time.Time    `json:"date_time"`
 	PriceTotal        int64    `json:"price_total"`
 }
 
 type OrderProduct struct {
 	DetailID       int64     `json:"detail_id"`
 	OrderID           int64    `json:"order_id"`
-	ProductID     int64    `json:"product_id"`
+	ProductID     uuid.UUID    `json:"product_id"`
 }
 
 type Category struct {
@@ -83,24 +87,24 @@ var Comments = []Comment{
 
 var Products = []Product{
     {
-        ProductID: 201, Title: "Vintage Vase", Description: "A beautiful antique vase from the 19th century.",
-        Price: 15000, CategoryID: 10, SellerID: 101, Condition: "Good", PutOutDate: time.Date(2024, 4, 1, 0, 0, 0, 0, time.UTC),
+        ProductID: uuid.New(), Title: "Vintage Vase", Description: "A beautiful antique vase from the 19th century.",
+        Price: 15000, CategoryID: 10, SellerID: 101, Condition: "Good", PutOutTime: time.Date(2024, 4, 1, 3, 5, 7, 0, time.UTC),
         ProductLocation: "Oldtown Warehouse", ProductDetails: "Minor scratches are present.", Status: "sold",
-        ImageUrl: "https://bit.ly/2Z4KKcF",
+        ImageUrl: "https://bit.ly/2Z4KKcF", Views:2357,
     },
 	{
-		ProductID: 202, Title: "Classic Clock", Description: "An elegant wall clock from the early 20th century.",
-    	Price: 8000, CategoryID: 11, SellerID: 102, Condition: "Excellent", PutOutDate: time.Date(2024, 4, 1, 0, 0, 0, 0, time.UTC), ProductLocation: "City Center Depot",
-    	ProductDetails: "Perfectly functioning with authentic vintage design.", Status: "available", ImageUrl: "https://i.imgur.com/LA8sP90.jpg",
+		ProductID: uuid.New(), Title: "Classic Clock", Description: "An elegant wall clock from the early 20th century.",
+    	Price: 8000, CategoryID: 11, SellerID: 102, Condition: "Excellent", PutOutTime: time.Date(2024, 4, 1, 0, 12, 0, 0, time.UTC), ProductLocation: "City Center Depot",
+    	ProductDetails: "Perfectly functioning with authentic vintage design.", Status: "available", 
+		ImageUrl: "https://i.pinimg.com/originals/47/a9/a5/47a9a581ba4e599ceb453dbd2fb3694b.jpg", Views: 165,
 	},
 }
 
 var Orders = []Order{
-    {OrderID: 401, SellerID: 101, BuyerID: 102, Date: time.Date(2024, 5, 10, 0, 0, 0, 0, time.UTC), PriceTotal: 15000},
 }
 
 var OrderProducts = []OrderProduct{
-    {DetailID: 1, OrderID: 401, ProductID: 201},
+    
 }
 
 var Categories = []Category{

@@ -74,6 +74,7 @@ func checkIfDBEmpty(conn *pgx.Conn) bool {
 func createTables(conn *pgx.Conn) {
     // create sql tables
     commands := []string{
+        `CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`,
         `CREATE TABLE IF NOT EXISTS Users (
             UserID SERIAL PRIMARY KEY,
             Username VARCHAR(255),
@@ -95,14 +96,14 @@ func createTables(conn *pgx.Conn) {
 			SellerID INTEGER REFERENCES Users(UserID)
         )`,
         `CREATE TABLE IF NOT EXISTS Products (
-            ProductID SERIAL PRIMARY KEY,
+            ProductID UUID PRIMARY KEY,
             Title VARCHAR(255),
             Description TEXT,
             Price NUMERIC(10, 2),
             CategoryID INTEGER,
             SellerID INTEGER REFERENCES Users(UserID),
             Condition VARCHAR(50),
-            PutOutDate DATE,
+            PutOutTime TIMESTAMP WITH TIME ZONE,
             ProductLocation TEXT,
             ProductDetails TEXT,
 			Status status,
@@ -113,13 +114,13 @@ func createTables(conn *pgx.Conn) {
             OrderID SERIAL PRIMARY KEY,
             SellerID INTEGER REFERENCES Users(UserID),
 			BuyerID INTEGER REFERENCES Users(UserID),
-            Date DATE,
+            DateTime TIMESTAMP WITH TIME ZONE,
 			PriceTotal NUMERIC(10, 2)
         )`,
         `CREATE TABLE IF NOT EXISTS OrderProducts (
             DetailID SERIAL PRIMARY KEY,
             OrderID INTEGER REFERENCES Orders(OrderID),
-			ProductID INTEGER REFERENCES Products(ProductID)
+			ProductID UUID REFERENCES Products(ProductID)
         )`,
 		`CREATE TABLE IF NOT EXISTS Categories (
             CategoryID SERIAL PRIMARY KEY,
@@ -128,6 +129,7 @@ func createTables(conn *pgx.Conn) {
     }
 
     // Execute all SQL commands.
+    
     _, err := conn.Exec(context.Background(), "CREATE TYPE status AS ENUM ('available', 'sold')")
     if err != nil {
         if strings.Contains(err.Error(), "already exists") {
@@ -169,7 +171,7 @@ func insertSampleData(conn *pgx.Conn) {
 
     // Insert products
     for _, product := range model.Products {
-        _, err := conn.Exec(context.Background(), `INSERT INTO Products (ProductID, Title, Description, Price, CategoryID, SellerID, Condition, PutOutDate, ProductLocation, ProductDetails, Status, ImageUrl, Views) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) ON CONFLICT (ProductID) DO NOTHING`, product.ProductID, product.Title, product.Description, product.Price, product.CategoryID, product.SellerID, product.Condition, product.PutOutDate, product.ProductLocation, product.ProductDetails, product.Status, product.ImageUrl, product.Views)
+        _, err := conn.Exec(context.Background(), `INSERT INTO Products (ProductID, Title, Description, Price, CategoryID, SellerID, Condition, PutOutTime, ProductLocation, ProductDetails, Status, ImageUrl, Views) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) ON CONFLICT (ProductID) DO NOTHING`, product.ProductID, product.Title, product.Description, product.Price, product.CategoryID, product.SellerID, product.Condition, product.PutOutTime, product.ProductLocation, product.ProductDetails, product.Status, product.ImageUrl, product.Views)
         if err != nil {
             log.Fatalf("Failed to insert product data: %v", err)
         }
@@ -178,7 +180,7 @@ func insertSampleData(conn *pgx.Conn) {
 
     // Insert orders
     for _, order := range model.Orders {
-        _, err := conn.Exec(context.Background(), `INSERT INTO Orders (OrderID, SellerID, BuyerID, Date, PriceTotal) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (OrderID) DO NOTHING`, order.OrderID, order.SellerID, order.BuyerID, order.Date, order.PriceTotal)
+        _, err := conn.Exec(context.Background(), `INSERT INTO Orders (OrderID, SellerID, BuyerID, DateTime, PriceTotal) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (OrderID) DO NOTHING`, order.OrderID, order.SellerID, order.BuyerID, order.DateTime, order.PriceTotal)
         if err != nil {
             log.Fatalf("Failed to insert order data: %v", err)
         }

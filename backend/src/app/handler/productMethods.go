@@ -36,7 +36,8 @@ func uploadProductHandler(w http.ResponseWriter, r *http.Request) {
     decoder := json.NewDecoder(r.Body)
     product := model.Product{
         SellerID: userID,
-        PutOutDate: time.Now(),
+        PutOutTime: time.Now(),
+        Views:0,
     }
 
     // 2. call service to save product
