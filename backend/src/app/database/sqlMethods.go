@@ -40,14 +40,35 @@ func InitSQLDatabase() {
     if err := godotenv.Load(); err != nil {
         log.Print("No .env file found")
     }
-    fmt.Println("initializing sql")
 
     // defer close to continue useing
     conn := connectDB()
     defer conn.Close(context.Background())
 
-    createTables(conn)
-    insertSampleData(conn)
+    if checkIfDBEmpty(conn) {
+        fmt.Println("initializing sql")
+        createTables(conn)
+        insertSampleData(conn)
+    }
+    fmt.Println("sql initialization succeeded")
+}
+
+
+func checkIfDBEmpty(conn *pgx.Conn) bool {
+    var exists string
+    // if string is not empty, then db is not empty
+    err := conn.QueryRow(context.Background(), "SELECT to_regclass('public.users')").Scan(&exists)
+    if err != nil {
+        if err == pgx.ErrNoRows {
+            return true // Table does not exist
+        }
+        log.Printf("Error checking if table exists: %v\n", err)
+        return true // Assume DB is empty if there's an error
+    }
+    if exists == "" {
+        return true // to_regclass returns NULL, which is scanned as an empty string
+    }
+    return false
 }
 
 func createTables(conn *pgx.Conn) {
