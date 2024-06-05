@@ -95,7 +95,7 @@ func createTables(conn *pgx.Conn) {
             Date DATE,
 			PriceTotal NUMERIC(10, 2)
         )`,
-        `CREATE TABLE IF NOT EXISTS OrderDetails (
+        `CREATE TABLE IF NOT EXISTS OrderProducts (
             DetailID SERIAL PRIMARY KEY,
             OrderID INTEGER REFERENCES Orders(OrderID),
 			ProductID INTEGER REFERENCES Products(ProductID)
@@ -165,8 +165,8 @@ func insertSampleData(conn *pgx.Conn) {
     fmt.Println("Orders inserted successfully")
 
     // Insert order details
-    for _, detail := range model.OrderDetails {
-        _, err := conn.Exec(context.Background(), `INSERT INTO OrderDetails (DetailID, OrderID, ProductID) VALUES ($1, $2, $3) ON CONFLICT (DetailID) DO NOTHING`, detail.DetailID, detail.OrderID, detail.ProductID)
+    for _, detail := range model.OrderProducts {
+        _, err := conn.Exec(context.Background(), `INSERT INTO OrderProducts (DetailID, OrderID, ProductID) VALUES ($1, $2, $3) ON CONFLICT (DetailID) DO NOTHING`, detail.DetailID, detail.OrderID, detail.ProductID)
         if err != nil {
             log.Fatalf("Failed to insert order detail data: %v", err)
         }

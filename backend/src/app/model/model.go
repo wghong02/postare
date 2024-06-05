@@ -50,7 +50,7 @@ type Order struct {
 	PriceTotal        int64    `json:"price_total"`
 }
 
-type OrderDetail struct {
+type OrderProduct struct {
 	DetailID       int64     `json:"detail_id"`
 	OrderID           int64    `json:"order_id"`
 	ProductID     int64    `json:"product_id"`
@@ -99,7 +99,7 @@ var Orders = []Order{
     {OrderID: 401, SellerID: 101, BuyerID: 102, Date: time.Date(2024, 5, 10, 0, 0, 0, 0, time.UTC), PriceTotal: 15000},
 }
 
-var OrderDetails = []OrderDetail{
+var OrderProducts = []OrderProduct{
     {DetailID: 1, OrderID: 401, ProductID: 201},
 }
 
