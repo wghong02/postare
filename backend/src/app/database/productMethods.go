@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/jackc/pgx/v4"
 )
 
@@ -24,13 +26,13 @@ func SaveProductToSQL(product *model.Product) error {
     }
 
     // save product
-    query := `INSERT INTO Products (Title, 
+    query := `INSERT INTO Products (ProductID, Title, 
         Description, 
         Price, 
         CategoryID, 
         SellerID, 
         Condition, 
-        PutOutDate, 
+        PutOutTime, 
         ProductLocation, 
         ProductDetails, 
         Status, ImageUrl, Views) VALUES ($1, 
@@ -44,11 +46,12 @@ func SaveProductToSQL(product *model.Product) error {
             $9, 
             $10, 
             $11,
-            $12)`
+            $12, $13)`
 
     
     _, err = conn.Exec(context.Background(), 
     query, 
+    product.ProductID,
     product.Title, 
     product.Description, 
     product.Price, 
@@ -121,14 +124,14 @@ func SearchProductsByDescription(keyword string, limit int, offset int) ([]model
     return products, nil
 }
 
-func SearchProductByID(productID int64) (model.Product, error) {
+func SearchProductByID(productID uuid.UUID) (model.Product, error) {
     // connect to db
     conn := connectDB()
     defer conn.Close(context.Background())
 
     // search if product id exists
     var product model.Product
-	err := conn.QueryRow(context.Background(), `SELECT ProductID, Title, Description, Price, CategoryID, SellerID, Condition, PutOutDate, ProductLocation, ProductDetails, Status, ImageUrl, Views FROM Products WHERE ProductID=$1`, productID).Scan(
+	err := conn.QueryRow(context.Background(), `SELECT ProductID, Title, Description, Price, CategoryID, SellerID, Condition, PutOutTime, ProductLocation, ProductDetails, Status, ImageUrl, Views FROM Products WHERE ProductID=$1`, productID).Scan(
         &product.ProductID, 
         &product.Title, 
         &product.Description, 
@@ -155,7 +158,7 @@ func SearchProductByID(productID int64) (model.Product, error) {
     return product, nil
 }
 
-func DeleteProductFromSQL(productID int64, userID int64) error {
+func DeleteProductFromSQL(productID uuid.UUID, userID int64) error {
     conn := connectDB()
     defer conn.Close(context.Background())
 
@@ -177,7 +180,7 @@ func GetMostViewedProducts(limit int, offset int) ([]model.Product, error) {
     var args []interface{}
     
     // use args to avoid sql injection
-    query = `SELECT * FROM products ORDER BY views DESC, putoutdate DESC  LIMIT $1 OFFSET $2`
+    query = `SELECT * FROM products ORDER BY views DESC, putouttime DESC  LIMIT $1 OFFSET $2`
     args = append(args, limit, offset)
 
     // search top results with sql statement
@@ -229,7 +232,7 @@ func SearchProductsByUserID(userID int64, limit int, offset int) ([]model.Produc
     var args []interface{}
     
     // use args to avoid sql injection
-    query = `SELECT * FROM Products WHERE SellerID = $1 ORDER BY putoutdate DESC LIMIT $2 OFFSET $3`
+    query = `SELECT * FROM Products WHERE SellerID = $1 ORDER BY putouttime DESC LIMIT $2 OFFSET $3`
     args = append(args, userID, limit, offset)
 
     // search with sql statement

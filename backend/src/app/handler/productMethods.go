@@ -10,6 +10,8 @@ import (
 	"appBE/model"
 	"appBE/service"
 
+	"github.com/google/uuid"
+
 	jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/gorilla/mux"
 )
@@ -33,8 +35,10 @@ func uploadProductHandler(w http.ResponseWriter, r *http.Request) {
     
     // 1. process data
     // Parse from body of request to get a json object.
+    productUUID := uuid.New()
     decoder := json.NewDecoder(r.Body)
     product := model.Product{
+        ProductID: productUUID,
         SellerID: userID,
         PutOutTime: time.Now(),
         Views:0,
@@ -73,7 +77,7 @@ func deleteProductHandler(w http.ResponseWriter, r *http.Request) {
 
     // 1. process data
     userID := int64(userIDFloat)
-	productID, err := strconv.ParseInt(productIDStr, 10, 64)
+	productID, err := uuid.Parse(productIDStr)
     if err != nil {
         http.Error(w, "Invalid product ID provided", http.StatusBadRequest)
         return
@@ -137,7 +141,7 @@ func getProductHandler(w http.ResponseWriter, r *http.Request) {
 	productIDStr := mux.Vars(r)["productID"]
 	
     // 1. process data
-	productID, err := strconv.ParseInt(productIDStr, 10, 64)
+	productID, err := uuid.Parse(productIDStr)
     if err != nil {
         http.Error(w, "Invalid product ID provided", http.StatusBadRequest)
         return

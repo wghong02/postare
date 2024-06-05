@@ -4,6 +4,8 @@ import (
 	sqlMethods "appBE/database"
 	"appBE/model"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 func UploadProduct(product *model.Product) error {
@@ -15,7 +17,7 @@ func UploadProduct(product *model.Product) error {
 	return nil
 }
 
-func DeleteProduct(productID int64, userID int64) error {
+func DeleteProduct(productID uuid.UUID, userID int64) error {
 	// first verify that the product is owned by the user
 	product, err := sqlMethods.SearchProductByID(productID)
 	if err != nil {
@@ -33,7 +35,7 @@ func DeleteProduct(productID int64, userID int64) error {
 	return nil
 }
 
-func SearchProductByID(productID int64) (model.Product, error) {
+func SearchProductByID(productID uuid.UUID) (model.Product, error) {
 	
 	// call backend to get the product information, return the product info and if there is error
 	product, err := sqlMethods.SearchProductByID(productID)

@@ -92,7 +92,7 @@ func createTables(conn *pgx.Conn) {
             CommentID SERIAL PRIMARY KEY,
             BuyerID INTEGER REFERENCES Users(UserID),
             Comment TEXT,
-			ProductID INTEGER,
+			ProductID UUID REFERENCES Products(ProductID),
 			SellerID INTEGER REFERENCES Users(UserID)
         )`,
         `CREATE TABLE IF NOT EXISTS Products (

@@ -134,10 +134,10 @@ func getUserInfoHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // 2. call service level to get product info
+    // 2. call service level to get user info
     user, err := service.SearchUserByID(userID)
     if err != nil {
-        // Check if the error is due to the product not being found
+        // Check if the error is due to the user not being found
         if err.Error() == fmt.Sprintf("no user found with ID %d", userID) {
             http.Error(w, err.Error(), http.StatusNotFound)
         } else {

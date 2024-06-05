@@ -73,7 +73,7 @@ var Users = []User{
         UserRating: 4.5, TotalItemsSold: 1, TotalReviews: 5,
     },
     {
-        UserID: 102, Username: "qwerty", UserEmail: "antique2@example.com",
+        UserID: 102, Username: "Johnny", UserEmail: "antique2@example.com",
         UserPhone: "+134562897", Password: "encrypted_password2", Address: "1234 Vintage St, Oldtown",
         ProfilePicture: "profile_pic_url2.jpg", RegisterDate: time.Date(2023, 1, 2, 0, 0, 0, 0, time.UTC),
         UserRating: 4.2, TotalItemsSold: 157, TotalReviews: 23,
