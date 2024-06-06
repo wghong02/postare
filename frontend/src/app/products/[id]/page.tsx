@@ -23,32 +23,31 @@ const ProductPage = ({ params }: { params: { id: string } }) => {
   const [loading, setLoading] = useState(true);
 
   // when we go to a new product, load the page again
+  const fetchProduct = async () => {
+    setLoading(true);
+    try {
+      const response = await getProduct(params.id);
+      setProduct(response);
+      if (response) {
+        fetchUser(response.sellerId);
+      }
+    } catch (error) {
+      console.error("Failed to fetch product:", error);
+    }
+  };
+
+  const fetchUser = async (sellerId: number) => {
+    try {
+      const response = await getUserInfo(sellerId);
+      setUser(response);
+    } catch (error) {
+      console.error("Failed to fetch the corresponding user:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProduct = async () => {
-      setLoading(true);
-      try {
-        const response = await getProduct(params.id);
-        setProduct(response);
-        console.log(response);
-        if (response) {
-          fetchUser(response.sellerId);
-        }
-      } catch (error) {
-        console.error("Failed to fetch product:", error);
-      }
-    };
-
-    const fetchUser = async (sellerId: number) => {
-      try {
-        const response = await getUserInfo(sellerId);
-        setUser(response);
-      } catch (error) {
-        console.error("Failed to fetch the corresponding user:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProduct();
   }, [params.id]);
 

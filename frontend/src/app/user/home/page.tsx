@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, Spinner } from "@chakra-ui/react";
 import Header from "@/ui/components/web/Header";
 import Sidebar from "@/ui/components/web/Sidebar";
 import { UserCard } from "@/ui/components/users/userInfoComponent";
@@ -56,7 +56,7 @@ const UserHomePage = () => {
           justifyContent="center"
         >
           {/* User card for now */}
-          {loading ? <p>Loading...</p> : user && <UserCard user={user} />}
+          {loading ? <Spinner size="xl" /> : user && <UserCard user={user} />}
         </Box>
       </Flex>
     </>

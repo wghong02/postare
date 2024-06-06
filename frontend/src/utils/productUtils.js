@@ -6,7 +6,6 @@ const domain = "http://localhost:8080";
 export const getProduct = (productID) => {
   // get a single product by product ID. response is json
   const url = `${domain}/products/${productID}`;
-  console.log(url);
 
   return fetch(url)
     .then((response) => {
@@ -115,7 +114,7 @@ export const rateProduct = (data, productID) => {
 };
 
 export const getMostViewedProducts = (query) => {
-  // get a single product by product ID. response is
+  // get a single product by product ID. response is json
 
   const url = `${domain}/products/get/mostViewed`;
   if (query?.batch) {

@@ -2,7 +2,7 @@
 import React from "react";
 import { Flex } from "@chakra-ui/react";
 import Header from "@/ui/components/web/Header";
-import MostViewedRow from "@/ui/components/products/mostViewedRow";
+import MostViewedRow from "@/ui/components/products/MostViewedRow";
 
 const HomePage = () => {
   // home page should have the header, rows of products in the middle

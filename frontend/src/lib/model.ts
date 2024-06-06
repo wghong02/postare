@@ -17,14 +17,14 @@ export interface User {
 
 // Product Model
 export interface Product {
-  productID: number;
+  productID: string;
   title: string;
   description: string;
   price: number;
   categoryID: number;
   sellerID: number;
   condition: string;
-  putOutDate: DateString;
+  putOutTime: DateString;
   productLocation: string;
   productDetails: string;
   status: string;
@@ -77,4 +77,14 @@ export interface ProductPost {
 export interface RatingData {
   rating: number;
   comment: string;
+}
+
+export interface UploadFormData {
+  title: string;
+  description: string;
+  price: string;
+  condition: string;
+  productLocation: string;
+  productDetails: string;
+  imageUrl: string;
 }
