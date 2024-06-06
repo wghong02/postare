@@ -102,7 +102,7 @@ func SearchProductByID(productID uuid.UUID) (model.Product, error) {
 	err := conn.QueryRow(context.Background(),
 		`SELECT ProductID, Title, Description, Price, CategoryID, SellerID, 
         Condition, PutOutTime, ProductLocation, ProductDetails, Status, 
-        mageUrl, Views FROM Products WHERE ProductID=$1`, productID).Scan(
+        ImageUrl, Views FROM Products WHERE ProductID=$1`, productID).Scan(
 		&product.ProductID, &product.Title, &product.Description,
 		&product.Price, &product.CategoryID, &product.SellerID,
 		&product.Condition, &product.PutOutTime, &product.ProductLocation,
