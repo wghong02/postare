@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Box, Flex, Spinner } from "@chakra-ui/react";
-import Header from "@/ui/components/web/Header";
 import Sidebar from "@/ui/components/web/Sidebar";
 import { UserCard } from "@/ui/components/users/userInfoComponent";
 import { jwtDecode } from "jwt-decode";
@@ -44,7 +43,6 @@ const UserHomePage = () => {
 
   return (
     <>
-      <Header />
       <Flex>
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <Box

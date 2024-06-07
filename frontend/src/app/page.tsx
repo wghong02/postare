@@ -12,7 +12,6 @@ const HomePage = () => {
 
   return (
     <>
-      <Header />
       <Flex direction="column" align="center" m="4">
         <MostViewedRow title="Most Viewed Products" />
         {/* <ProductRow

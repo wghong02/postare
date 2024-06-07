@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { Box, Flex } from "@chakra-ui/react";
-import Header from "@/ui/components/web/Header";
 import Sidebar from "@/ui/components/web/Sidebar";
 
 const UserOrderHistoryPage = () => {
@@ -13,7 +12,6 @@ const UserOrderHistoryPage = () => {
 
   return (
     <>
-      <Header />
       <Flex>
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <Box

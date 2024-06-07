@@ -8,7 +8,6 @@ import {
   StackDivider,
   HStack,
 } from "@chakra-ui/react";
-import Header from "@/ui/components/web/Header";
 import { getProduct } from "@/utils/productUtils";
 import { getUserInfo } from "@/utils/userUtils";
 import { Product, User } from "@/lib/model";
@@ -55,7 +54,6 @@ const ProductPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <>
-      <Header />
       {loading ? (
         <div>Loading...</div>
       ) : !product && hasFetched ? (

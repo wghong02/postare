@@ -3,8 +3,9 @@ import { Box, IconButton, VStack, Button } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
+import { SidebarProps } from "@/lib/productFunctionTypes";
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   // side bar for user pages
   // can pull out or stay in
 

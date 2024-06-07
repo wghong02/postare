@@ -1,30 +1,31 @@
+"use client";
 import { Box, Flex, Text, Button, Input, FormControl } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const Header = () => {
+const Header: React.FC = () => {
   const router = useRouter();
   // header of the website for the entire website
   // includes a search bar in the middle, app icon and link to home on topleft
   // user login/logout organization on top right
-  const [authed, setAuthed] = useState(false);
+  const [authed, setAuthed] = useState<boolean>(false);
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     setAuthed(authToken !== null);
   }, []);
 
-  const handleLogOut = () => {
+  const handleLogOut = (): void => {
     localStorage.removeItem("authToken");
     setAuthed(false);
   };
 
-  const handleSearchSubmit = (event) => {
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    const searchQuery = formData.get("searchInput");
+    const formData = new FormData(event.currentTarget);
+    const searchQuery = formData.get("searchInput") as string;
     console.log("Searching for:", searchQuery);
     if (searchQuery === "") {
       router.push(`/`);

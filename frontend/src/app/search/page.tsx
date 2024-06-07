@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Box, Flex, Spinner, Grid } from "@chakra-ui/react";
-import Header from "@/ui/components/web/Header";
+import { Box, Spinner, Grid } from "@chakra-ui/react";
 import ProductCard from "@/ui/components/products/ProductCard";
 import { searchProduct } from "@/utils/productUtils";
 import { Product } from "@/lib/model";
@@ -34,7 +33,6 @@ const SearchPage = () => {
 
   return (
     <Box>
-      <Header></Header>
       <Box p={4} width="65%" mx="auto">
         {loading ? (
           <Spinner size="xl" />
@@ -42,7 +40,7 @@ const SearchPage = () => {
           <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
             {products.length > 0 ? (
               products.map((product) => (
-                <ProductCard key={product.productID} product={product} />
+                <ProductCard key={product.productId} product={product} />
               ))
             ) : (
               <p>No products found.</p>

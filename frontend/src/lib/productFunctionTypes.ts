@@ -17,3 +17,8 @@ export interface UploadProductFormProps {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleFormSubmit: (event: FormEvent) => Promise<void>;
 }
+
+export interface SidebarProps {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+}

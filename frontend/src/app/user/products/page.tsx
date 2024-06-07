@@ -1,7 +1,6 @@
 "use client";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Box, Button, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
-import Header from "@/ui/components/web/Header";
 import Sidebar from "@/ui/components/web/Sidebar";
 import UserProductCard from "@/ui/components/products/UserProductCard";
 import { getUserProducts, uploadProduct } from "@/utils/productUtils";
@@ -79,7 +78,6 @@ const UserProductPage = () => {
 
   return (
     <>
-      <Header />
       <Flex>
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <Box

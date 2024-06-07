@@ -1,6 +1,8 @@
 import { fonts } from "../ui/fonts";
 import { Providers } from "./providers";
 import React from "react";
+import Header from "@/ui/components/web/Header";
+import { Box } from "@chakra-ui/react";
 
 export default function RootLayout({
   // default root layout using chakraUI
@@ -11,7 +13,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={fonts.rubik.variable}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Header />
+          <Box as="main">{children}</Box>
+        </Providers>
       </body>
     </html>
   );
