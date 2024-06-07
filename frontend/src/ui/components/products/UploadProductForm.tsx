@@ -12,15 +12,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { UploadFormData } from "@/lib/model";
-
-interface UploadProductFormProps {
-  formData: UploadFormData;
-  isOpen: boolean;
-  onClose: () => void;
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleFormSubmit: (event: FormEvent) => Promise<void>;
-}
+import { UploadProductFormProps } from "@/lib/productFunctionTypes";
 
 const UploadProductForm: React.FC<UploadProductFormProps> = ({
   formData,

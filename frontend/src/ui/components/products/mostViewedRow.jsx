@@ -4,12 +4,11 @@ import { getMostViewedProducts } from "@/utils/productUtils";
 
 const MostViewedRow = ({ title }) => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
     const fetchProducts = async (query) => {
-      setLoading(true);
       try {
         const response = await getMostViewedProducts(query);
         setProducts(response || []);

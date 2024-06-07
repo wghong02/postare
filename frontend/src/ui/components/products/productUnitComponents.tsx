@@ -3,12 +3,13 @@ import { Box, Image, Badge } from "@chakra-ui/react";
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
+import { Product } from "@/lib/model";
 
-function ProductCard({ product }) {
+export function ProductPageCard(product: Product): React.ReactElement {
   // card of each individual product
   // shows basic info of the product
-  const registerTime = timeAgo(product.putOutDate);
-  const postedRecent = isPostedWithin(product.putOutDate, "month");
+  const registerTime = timeAgo(product.putOutTime);
+  const postedRecent = isPostedWithin(product.putOutTime, "month");
   const isAvailable = product.status === "available";
   const isHot = product.views >= 500;
 
@@ -46,7 +47,7 @@ function ProductCard({ product }) {
               textTransform="uppercase"
               ml="4"
             >
-              {product.address}
+              {product.productLocation}
             </Box>
             <Box
               color="gray.500"
@@ -83,5 +84,3 @@ function ProductCard({ product }) {
     </Link>
   );
 }
-
-export default ProductCard;

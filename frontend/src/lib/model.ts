@@ -2,7 +2,7 @@ type DateString = string;
 
 // User Model
 export interface User {
-  userID: number;
+  userId: number;
   username: string;
   userEmail: string;
   userPhone: string;
@@ -17,11 +17,11 @@ export interface User {
 
 // Product Model
 export interface Product {
-  productID: string;
+  productId: string;
   title: string;
   description: string;
   price: number;
-  categoryID: number;
+  categoryId: number;
   sellerID: number;
   condition: string;
   putOutTime: DateString;
@@ -34,32 +34,32 @@ export interface Product {
 
 // Comment Model
 export interface Comment {
-  commentID: number;
-  buyerID: number;
+  commentId: number;
+  buyerId: number;
   comment: string;
-  productID: number;
-  sellerID: number;
+  productId: number;
+  sellerId: number;
 }
 
 // Order Model
 export interface Order {
-  orderID: number;
-  sellerID: number;
-  buyerID: number;
+  orderId: number;
+  sellerId: number;
+  buyerId: number;
   date: DateString;
   priceTotal: number;
 }
 
 // OrderDetail Model
 export interface OrderDetail {
-  detailID: number;
-  orderID: number;
-  productID: number;
+  detailId: number;
+  orderId: number;
+  productId: number;
 }
 
 // Category Model
 export interface Category {
-  categoryID: number;
+  categoryId: number;
   categoryName: string;
 }
 
@@ -77,14 +77,4 @@ export interface ProductPost {
 export interface RatingData {
   rating: number;
   comment: string;
-}
-
-export interface UploadFormData {
-  title: string;
-  description: string;
-  price: string;
-  condition: string;
-  productLocation: string;
-  productDetails: string;
-  imageUrl: string;
 }

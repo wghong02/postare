@@ -3,11 +3,11 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { Box, Button, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import Header from "@/ui/components/web/Header";
 import Sidebar from "@/ui/components/web/Sidebar";
-import UserProductCard from "@/ui/components/products/userProductCard";
+import UserProductCard from "@/ui/components/products/UserProductCard";
 import { getUserProducts, uploadProduct } from "@/utils/productUtils";
 import { jwtDecode } from "jwt-decode";
 import UploadProductForm from "@/ui/components/products/UploadProductForm";
-import { UploadFormData } from "@/lib/model";
+import { UploadFormData } from "@/lib/productFunctionTypes";
 import { Product } from "@/lib/model";
 
 const UserProductPage = () => {
