@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Box, Flex, Spinner } from "@chakra-ui/react";
-import Sidebar from "@/ui/components/web/Sidebar";
+import { Flex, Spinner } from "@chakra-ui/react";
 import { UserCard } from "@/ui/components/users/userInfoComponent";
 import { jwtDecode } from "jwt-decode";
 import { getUserInfo } from "@/utils/userUtils";
@@ -9,13 +8,8 @@ import { User } from "@/lib/model";
 
 const UserHomePage = () => {
   // user home page, allows each user to view and edit personal profile
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
-  };
 
   useEffect(() => {
     const fetchUser = async (userId: number) => {
@@ -42,22 +36,10 @@ const UserHomePage = () => {
   }, []);
 
   return (
-    <>
-      <Flex>
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <Box
-          flex="1"
-          p="4"
-          marginLeft={isSidebarOpen ? "250px" : "0"}
-          transition="margin-left 0.3s"
-          alignItems="center"
-          justifyContent="center"
-        >
-          {/* User card for now */}
-          {loading ? <Spinner size="xl" /> : user && <UserCard user={user} />}
-        </Box>
-      </Flex>
-    </>
+    <Flex alignItems="center" justifyContent="center">
+      {/* User card for now */}
+      {loading ? <Spinner size="xl" /> : user && <UserCard user={user} />}
+    </Flex>
   );
 };
 export default UserHomePage;

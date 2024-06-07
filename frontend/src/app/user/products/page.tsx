@@ -1,7 +1,6 @@
 "use client";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Box, Button, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
-import Sidebar from "@/ui/components/web/Sidebar";
 import UserProductCard from "@/ui/components/products/UserProductCard";
 import { getUserProducts, uploadProduct } from "@/utils/productUtils";
 import { jwtDecode } from "jwt-decode";
@@ -11,7 +10,6 @@ import { Product } from "@/lib/model";
 
 const UserProductPage = () => {
   // product page for the users to upload and delete and view products they own
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [hasFetched, setHasFetched] = useState(false); // to handle init state
   const [loading, setLoading] = useState(false);
@@ -34,10 +32,6 @@ const UserProductPage = () => {
       ...prevData,
       [name]: value,
     }));
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
   };
 
   // fetch product from the user
@@ -78,47 +72,37 @@ const UserProductPage = () => {
 
   return (
     <>
-      <Flex>
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <Box
-          flex="1"
-          p="4"
-          marginLeft={isSidebarOpen ? "250px" : "0"}
-          transition="margin-left 0.3s"
-        >
-          {/* can view products the user uploaded and upload new and delete existing products */}
-          {loading ? (
-            <Spinner size="xl" />
-          ) : (
+      {/* can view products the user uploaded and upload new and delete existing products */}
+      {loading ? (
+        <Spinner size="xl" />
+      ) : (
+        <>
+          {hasFetched && (
             <>
-              {hasFetched && (
-                <>
-                  <Button onClick={onOpen} mb="4">
-                    Upload New Product
-                  </Button>
-                  <UploadProductForm
-                    formData={formData}
-                    isOpen={isOpen}
-                    onClose={onClose}
-                    handleChange={handleChange}
-                    handleFormSubmit={handleFormSubmit}
-                  />
-                </>
-              )}
-
-              <Flex justify="space-between" wrap="wrap">
-                {hasFetched && products.length === 0 ? (
-                  <p>No products available</p>
-                ) : (
-                  products.map((product, index) => (
-                    <UserProductCard key={index} product={product} />
-                  ))
-                )}
-              </Flex>
+              <Button onClick={onOpen} mb="4">
+                Upload New Product
+              </Button>
+              <UploadProductForm
+                formData={formData}
+                isOpen={isOpen}
+                onClose={onClose}
+                handleChange={handleChange}
+                handleFormSubmit={handleFormSubmit}
+              />
             </>
           )}
-        </Box>
-      </Flex>
+
+          <Flex justify="space-between" wrap="wrap">
+            {hasFetched && products.length === 0 ? (
+              <p>No products available</p>
+            ) : (
+              products.map((product, index) => (
+                <UserProductCard key={index} product={product} />
+              ))
+            )}
+          </Flex>
+        </>
+      )}
     </>
   );
 };
