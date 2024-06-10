@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Flex,
@@ -15,47 +15,31 @@ import RatingDisplay from "@/ui/components/users/ratingComponent";
 import { SellerCard } from "@/ui/components/users/userInfoComponent";
 import ProductPageCard from "@/ui/components/products/productInfoComponent";
 import { fetchSingleProduct, fetchUser } from "@/utils/fetchFunctions";
+import { useLoading } from "@/utils/generalUtils";
+import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 
 const ProductInfoPage = ({ params }: { params: { id: string } }) => {
   // product page for the users to upload and delete and view products they own
   const [product, setProduct] = useState<Product | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [hasFetched, setHasFetched] = useState(false);
+  const fetchData = async () => {
+    const productData = await fetchSingleProduct(
+      params.id,
+      setProduct,
+      getProduct
+    );
+    if (productData && productData.sellerId) {
+      await fetchUser(productData.sellerId, setUser, getUserInfo);
+    }
+    return { product: productData, user };
+  };
 
-  useEffect(() => {
-    const loadData = async () => {
-      // need to get product first then user its sellerId to get the seller's info
-      try {
-        const productData = await fetchSingleProduct(
-          params.id,
-          setProduct,
-          getProduct
-        );
-        if (productData && productData.sellerId) {
-          await fetchUser(productData.sellerId, setUser, getUserInfo);
-          console.log(productData)
-        }
-      } catch (error) {
-        // Handle any errors thrown during fetchProduct
-        console.error("Error in loading data:", error);
-      } finally {
-        setHasFetched(true);
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [params.id]);
+  const { loading, hasFetched } = useLoading(fetchData);
 
   return (
     <>
-      {loading ? (
-        <div>Loading...</div>
-      ) : !product && hasFetched ? (
-        <div>No product found</div>
-      ) : (
-        <Box display="flex" justifyContent="center" mt="4">
+      <Box display="flex" justifyContent="center" mt="4">
+        <LoadingWrapper loading={loading} hasFetched={hasFetched}>
           <VStack
             width="60%"
             divider={<StackDivider borderColor="gray.200" />}
@@ -106,8 +90,8 @@ const ProductInfoPage = ({ params }: { params: { id: string } }) => {
               For future recommendations
             </Box>
           </VStack>
-        </Box>
-      )}
+        </LoadingWrapper>
+      </Box>
     </>
   );
 };
