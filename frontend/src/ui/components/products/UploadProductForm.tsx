@@ -12,7 +12,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { UploadProductFormProps } from "@/lib/productFunctionTypes";
+import { UploadProductFormProps } from "@/lib/types";
 
 const UploadProductForm: React.FC<UploadProductFormProps> = ({
   formData,

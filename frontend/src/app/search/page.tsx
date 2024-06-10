@@ -2,54 +2,40 @@
 import React, { useEffect, useState } from "react";
 import { Box, Spinner, Grid } from "@chakra-ui/react";
 import ProductCard from "@/ui/components/products/ProductCard";
-import { searchProduct } from "@/utils/productUtils";
+import { searchProductsByDescription } from "@/utils/productUtils";
 import { Product } from "@/lib/model";
+import { fetchProducts } from "@/utils/fetchFunctions";
+import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 
-const SearchPage = () => {
+const SearchProductsPage = () => {
   // show search results of product cards
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
     // Parse the query parameters from the URL
     const searchParams = new URLSearchParams(window.location.search);
-    const query: any = searchParams.get("query");
+    const query: any = searchParams.get("description");
 
     if (query) {
-      const fetchProducts = async () => {
-        try {
-          const response = await searchProduct({ description: query });
-          setProducts(response);
-        } catch (error) {
-          console.error("Failed to fetch products:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchProducts();
+      fetchProducts({description: query}, setProducts, searchProductsByDescription);
     }
+    setLoading(false);
+    setHasFetched(true);
   }, []);
 
   return (
-    <Box>
-      <Box p={4} width="65%" mx="auto">
-        {loading ? (
-          <Spinner size="xl" />
-        ) : (
-          <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-            {products.length > 0 ? (
-              products.map((product) => (
-                <ProductCard key={product.productId} product={product} />
-              ))
-            ) : (
-              <p>No products found.</p>
-            )}
-          </Grid>
-        )}
-      </Box>
+    <Box p={4} width="65%" mx="auto">
+      <LoadingWrapper loading={loading} hasFetched={hasFetched}>
+        <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
+          {products.map((product) => (
+            <ProductCard key={product.productId} product={product} />
+          ))}
+        </Grid>
+      </LoadingWrapper>
     </Box>
   );
 };
 
-export default SearchPage;
+export default SearchProductsPage;

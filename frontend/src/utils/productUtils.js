@@ -1,7 +1,8 @@
 import handleResponseStatus from "@/utils/errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-const domain = "http://localhost:8080";
+const domain = "http://localhost:8080"; // local test
+// const domain = "http://18.216.40.20:8080"; // aws container
 
 export const getProduct = (productID) => {
   // get a single product by product ID. response is json
@@ -15,7 +16,7 @@ export const getProduct = (productID) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const searchProduct = (query) => {
+export const searchProductsByDescription = (query) => {
   // use query parameters to search for products. result is a batch of products
   const description = query?.description ?? "";
   const batch = query?.batch ?? "";

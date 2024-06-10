@@ -3,7 +3,12 @@ import { Box, IconButton, VStack, Button } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
-import { SidebarProps } from "@/lib/productFunctionTypes";
+
+interface SidebarProps {
+  // only used for sidebars
+  isOpen: boolean;
+  toggleSidebar: () => void;
+}
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   // side bar for user pages

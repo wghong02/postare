@@ -22,7 +22,7 @@ export interface Product {
   description: string;
   price: number;
   categoryId: number;
-  sellerID: number;
+  sellerId: number;
   condition: string;
   putOutTime: DateString;
   productLocation: string;

@@ -18,7 +18,3 @@ export interface UploadProductFormProps {
   handleFormSubmit: (event: FormEvent) => Promise<void>;
 }
 
-export interface SidebarProps {
-  isOpen: boolean;
-  toggleSidebar: () => void;
-}

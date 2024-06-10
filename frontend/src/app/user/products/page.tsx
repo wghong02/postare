@@ -5,7 +5,7 @@ import UserProductCard from "@/ui/components/products/UserProductCard";
 import { getUserProducts, uploadProduct } from "@/utils/productUtils";
 import { jwtDecode } from "jwt-decode";
 import UploadProductForm from "@/ui/components/products/UploadProductForm";
-import { UploadFormData } from "@/lib/productFunctionTypes";
+import { UploadFormData } from "@/lib/types";
 import { Product } from "@/lib/model";
 
 const UserProductPage = () => {

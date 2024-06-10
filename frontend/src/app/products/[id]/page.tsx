@@ -14,42 +14,38 @@ import { Product, User } from "@/lib/model";
 import RatingDisplay from "@/ui/components/users/ratingComponent";
 import { SellerCard } from "@/ui/components/users/userInfoComponent";
 import ProductPageCard from "@/ui/components/products/productInfoComponent";
+import { fetchSingleProduct, fetchUser } from "@/utils/fetchFunctions";
 
-const ProductPage = ({ params }: { params: { id: string } }) => {
+const ProductInfoPage = ({ params }: { params: { id: string } }) => {
   // product page for the users to upload and delete and view products they own
   const [product, setProduct] = useState<Product | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
 
-  // when we go to a new product, load the page again
-  const fetchProduct = async () => {
-    setLoading(true);
-    try {
-      const response = await getProduct(params.id);
-      setProduct(response);
-      if (response) {
-        fetchUser(response.sellerId);
-      }
-    } catch (error) {
-      console.error("Failed to fetch product:", error);
-    }
-  };
-
-  const fetchUser = async (sellerId: number) => {
-    try {
-      const response = await getUserInfo(sellerId);
-      setUser(response);
-    } catch (error) {
-      console.error("Failed to fetch the corresponding user:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchProduct();
-    setHasFetched(true);
+    const loadData = async () => {
+      // need to get product first then user its sellerId to get the seller's info
+      try {
+        const productData = await fetchSingleProduct(
+          params.id,
+          setProduct,
+          getProduct
+        );
+        if (productData && productData.sellerId) {
+          await fetchUser(productData.sellerId, setUser, getUserInfo);
+          console.log(productData)
+        }
+      } catch (error) {
+        // Handle any errors thrown during fetchProduct
+        console.error("Error in loading data:", error);
+      } finally {
+        setHasFetched(true);
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, [params.id]);
 
   return (
@@ -102,7 +98,7 @@ const ProductPage = ({ params }: { params: { id: string } }) => {
                 <ProductPageCard product={product}></ProductPageCard>
               </Flex>
               <Flex width="30%" h="200px">
-                Map/online payment
+                For future Map/online payment
               </Flex>
             </HStack>
 
@@ -115,4 +111,4 @@ const ProductPage = ({ params }: { params: { id: string } }) => {
     </>
   );
 };
-export default ProductPage;
+export default ProductInfoPage;

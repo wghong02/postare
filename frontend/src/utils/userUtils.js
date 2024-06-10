@@ -14,6 +14,7 @@ export const login = (credential) => {
     body: JSON.stringify(decamelizeKeys(credential)),
   })
     .then((response) => {
+      console.log(response)
       handleResponseStatus(response, "Fail to Log in");
       return response.text();
     })
@@ -21,28 +22,6 @@ export const login = (credential) => {
       localStorage.setItem("authToken", data);
     });
 };
-
-// export const logout = () => {
-//   // logout, use auth token
-//   const authToken = localStorage.getItem("authToken");
-//   const url = `${domain}/auth/logout`;
-
-//   return fetch(url, {
-//     method: "POST",
-//     headers: {
-//       Authorization: `Bearer ${authToken}`,
-//       "Content-Type": "application/json",
-//     },
-//   })
-//     .then((response) => {
-//       handleResponseStatus(response, "Fail to Log out");
-//       return response.json();
-//     })
-//     .then(() => {
-//       localStorage.removeItem("authToken");
-//     })
-//     .then((data) => camelizeKeys(data));
-// };
 
 export const register = (credential) => {
   // register, input json, output status

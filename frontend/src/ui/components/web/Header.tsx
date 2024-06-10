@@ -26,11 +26,13 @@ const Header: React.FC = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const searchQuery = formData.get("searchInput") as string;
-    console.log("Searching for:", searchQuery);
+    // console.log("Searching for:", searchQuery);
     if (searchQuery === "") {
       router.push(`/`);
     } else {
-      window.location.href = `/search?query=${encodeURIComponent(searchQuery)}`;
+      window.location.href = `/search?description=${encodeURIComponent(
+        searchQuery
+      )}`;
     }
   };
 
