@@ -75,55 +75,55 @@ func createTables(conn *pgx.Conn) {
 	commands := []string{
 		`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`,
 		`CREATE TABLE IF NOT EXISTS Users (
-            UserID SERIAL PRIMARY KEY,
-            Username VARCHAR(255),
-            UserEmail VARCHAR(255),
+            UserID SERIAL PRIMARY KEY NOT NULL,
+            Username VARCHAR(255) NOT NULL,
+            UserEmail VARCHAR(255) NOT NULL,
             UserPhone VARCHAR(50),
-            Password TEXT,
+            Password TEXT NOT NULL,
             Address TEXT,
             ProfilePicture TEXT,
-            RegisterDate DATE,
-			UserRating FLOAT,
-			TotalItemsSold INTEGER,
-            TotalReviews INTEGER
+            RegisterDate TIMESTAMP WITH TIME ZONE NOT NULL,
+			UserRating FLOAT NOT NULL,
+			TotalItemsSold INTEGER NOT NULL,
+            TotalReviews INTEGER NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS Comments (
-            CommentID SERIAL PRIMARY KEY,
-            BuyerID INTEGER REFERENCES Users(UserID),
-            Comment TEXT,
-			ProductID UUID REFERENCES Products(ProductID),
-			SellerID INTEGER REFERENCES Users(UserID)
+            CommentID SERIAL PRIMARY KEY NOT NULL,
+            BuyerID INTEGER REFERENCES Users(UserID) NOT NULL,
+            Comment TEXT NOT NULL,
+			ProductID UUID REFERENCES Products(ProductID) NOT NULL,
+			SellerID INTEGER REFERENCES Users(UserID) NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS Products (
-            ProductID UUID PRIMARY KEY,
-            Title VARCHAR(255),
-            Description TEXT,
-            Price NUMERIC(10, 2),
-            CategoryID INTEGER,
-            SellerID INTEGER REFERENCES Users(UserID),
-            Condition VARCHAR(50),
-            PutOutTime TIMESTAMP WITH TIME ZONE,
-            ProductLocation TEXT,
+            ProductID UUID PRIMARY KEY NOT NULL,
+            Title VARCHAR(255) NOT NULL,
+            Description TEXT NOT NULL,
+            Price NUMERIC(10, 2) NOT NULL,
+            CategoryID INTEGER NOT NULL,
+            SellerID INTEGER REFERENCES Users(UserID) NOT NULL,
+            Condition VARCHAR(50) NOT NULL,
+            PutOutTime TIMESTAMP WITH TIME ZONE NOT NULL,
+            ProductLocation TEXT NOT NULL,
             ProductDetails TEXT,
-			Status status,
-            ImageUrl TEXT,
-            Views INTEGER
+			Status status NOT NULL,
+            ImageUrl TEXT NOT NULL,
+            Views INTEGER NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS Orders (
-            OrderID SERIAL PRIMARY KEY,
-            SellerID INTEGER REFERENCES Users(UserID),
-			BuyerID INTEGER REFERENCES Users(UserID),
-            DateTime TIMESTAMP WITH TIME ZONE,
-			PriceTotal NUMERIC(10, 2)
+            OrderID SERIAL PRIMARY KEY NOT NULL,
+            SellerID INTEGER REFERENCES Users(UserID) NOT NULL,
+			BuyerID INTEGER REFERENCES Users(UserID) NOT NULL,
+            DateTime TIMESTAMP WITH TIME ZONE NOT NULL,
+			PriceTotal NUMERIC(10, 2) NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS OrderProducts (
-            DetailID SERIAL PRIMARY KEY,
-            OrderID INTEGER REFERENCES Orders(OrderID),
-			ProductID UUID REFERENCES Products(ProductID)
+            DetailID SERIAL PRIMARY KEY NOT NULL,
+            OrderID INTEGER REFERENCES Orders(OrderID) NOT NULL,
+			ProductID UUID REFERENCES Products(ProductID) NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS Categories (
-            CategoryID SERIAL PRIMARY KEY,
-            CategoryName VARCHAR(50)
+            CategoryID SERIAL PRIMARY KEY NOT NULL,
+            CategoryName VARCHAR(50) NOT NULL
         )`,
 	}
 
