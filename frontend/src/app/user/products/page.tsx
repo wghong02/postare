@@ -7,12 +7,15 @@ import { jwtDecode } from "jwt-decode";
 import UploadProductForm from "@/ui/components/products/UploadProductForm";
 import { UploadFormData } from "@/lib/types";
 import { Product } from "@/lib/model";
+import { useLoading } from "@/utils/generalUtils";
+import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
+import { fetchProducts } from "@/utils/fetchFunctions";
 
 const UserProductPage = () => {
   // product page for the users to upload and delete and view products they own
   const [products, setProducts] = useState<Product[]>([]);
-  const [hasFetched, setHasFetched] = useState(false); // to handle init state
-  const [loading, setLoading] = useState(false);
+  const [needsRefresh, setNeedsRefresh] = useState(false);
+
   // for the pop up chakra modal
   const { isOpen, onOpen, onClose } = useDisclosure();
   // to upload the product
@@ -35,74 +38,69 @@ const UserProductPage = () => {
   };
 
   // fetch product from the user
-  const fetchProducts = async (query = "") => {
-    setLoading(true);
-    const token: any = localStorage.getItem("authToken");
-    const decodedToken: any = jwtDecode(token);
-    const userID = decodedToken.userID;
-
-    try {
-      const response = await getUserProducts(userID, query);
-      setProducts(response || []);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    } finally {
-      setLoading(false);
-      setHasFetched(true); // Set hasFetched to true after loading is complete
+  const fetchData = async () => {
+    const token: string | null = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        const userId = decodedToken.userID;
+        await fetchProducts(
+          { userID: userId, query: "" },
+          setProducts,
+          getUserProducts
+        );
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        throw error; // Re-throw the error to handle it in useLoading
+      }
     }
   };
+
+  const { loading, hasFetched } = useLoading(fetchData);
 
   // default is not show delete
   const handleFormSubmit = async (event: any) => {
     event.preventDefault();
     try {
       await uploadProduct(formData);
-      console.log("Form submitted");
       onClose(); // Close the modal after form submission
       // Optionally refresh the product list
-      fetchProducts();
+      setNeedsRefresh(true);
     } catch (error) {
       console.error("Failed to upload product:", error);
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  useEffect(() => {}), [needsRefresh]; // !!! edit to refresh on submit
 
   return (
     <>
       {/* can view products the user uploaded and upload new and delete existing products */}
-      {loading ? (
-        <Spinner size="xl" />
-      ) : (
-        <>
-          {hasFetched && (
-            <>
-              <Button onClick={onOpen} mb="4">
-                Upload New Product
-              </Button>
-              <UploadProductForm
-                formData={formData}
-                isOpen={isOpen}
-                onClose={onClose}
-                handleChange={handleChange}
-                handleFormSubmit={handleFormSubmit}
-              />
-            </>
-          )}
 
-          <Flex justify="space-between" wrap="wrap">
-            {hasFetched && products.length === 0 ? (
-              <p>No products available</p>
-            ) : (
-              products.map((product, index) => (
-                <UserProductCard key={index} product={product} />
-              ))
-            )}
-          </Flex>
-        </>
-      )}
+      <Flex>
+        <Button onClick={onOpen} mb="4">
+          Upload New Product
+        </Button>
+      </Flex>
+
+      <UploadProductForm
+        formData={formData}
+        isOpen={isOpen}
+        onClose={onClose}
+        handleChange={handleChange}
+        handleFormSubmit={handleFormSubmit}
+      />
+      <LoadingWrapper
+        loading={loading}
+        hasFetched={hasFetched}
+        hasData={products.length > 0}
+      >
+        <Flex justify="space-between" wrap="wrap">
+          {products.map((product, index) => (
+            <UserProductCard key={index} product={product} />
+          ))}
+        </Flex>
+      </LoadingWrapper>
     </>
   );
 };

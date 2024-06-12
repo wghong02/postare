@@ -134,7 +134,7 @@ export const getMostViewedProducts = (query) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const getUserProducts = (userID, query) => {
+export const getUserProducts = ({ userID, query }) => {
   // get the upload history of a user with its id
   const url = `${domain}/productHistory/${userID}`;
   if (query?.batch) {

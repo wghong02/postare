@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -35,6 +37,35 @@ func uploadProductHandler(w http.ResponseWriter, r *http.Request) {
 	userID := int64(userIDFloat)
 
 	// 1. process data
+	// change proce to cents
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Unable to read body", http.StatusBadRequest)
+		return
+	}
+
+	// Decode the body into a map to manipulate the data
+	var data map[string]interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		http.Error(w, "Unable to parse JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Convert the price field from dollars to cents
+	if price, ok := data["price"].(float64); ok {
+		data["price"] = int(price * 100)
+	}
+
+	// Encode the modified data back to JSON
+	modifiedBody, err := json.Marshal(data)
+	if err != nil {
+		http.Error(w, "Unable to encode JSON", http.StatusInternalServerError)
+		return
+	}
+
+	// Replace the request body with the modified data
+	r.Body = io.NopCloser(bytes.NewBuffer(modifiedBody))
 	// Parse from body of request to get a json object.
 	productUUID := uuid.New()
 	decoder := json.NewDecoder(r.Body)

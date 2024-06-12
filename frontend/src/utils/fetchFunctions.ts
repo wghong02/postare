@@ -8,7 +8,7 @@ export const fetchUser = async (
   // function to handle any request to fetch the user
   try {
     const response = await userUtilFunction(parameter);
-    setUser(response);
+    setUser(response || []);
   } catch (error) {
     console.error("Failed to fetch the user:", error);
   }
@@ -22,7 +22,7 @@ export const fetchSingleProduct = async (
   // function to handle any request to fetch the product
   try {
     const response = await productUtilFunction(parameter);
-    setProduct(response);
+    setProduct(response || []);
     return response; // return here for the special occasion that fetch both product and user
   } catch (error) {
     console.error("Failed to fetch the product:", error);
@@ -38,7 +38,7 @@ export const fetchProducts = async (
   // function to handle any request to fetch the product
   try {
     const response = await productUtilFunction(parameter);
-    setProducts(response);
+    setProducts(response || []);
   } catch (error) {
     console.error("Failed to fetch the product:", error);
   }

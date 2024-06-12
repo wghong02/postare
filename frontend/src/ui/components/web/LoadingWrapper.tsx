@@ -6,19 +6,21 @@ interface LoadingWrapperProps {
   loading: boolean;
   hasFetched: boolean;
   children: React.ReactNode;
+  hasData?: boolean;
 }
 
 const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
   loading,
   hasFetched,
   children,
+  hasData= true,
 }) => {
   // wraps around a child react component to handle loading screen
   if (loading) {
     return <Spinner size="xl" />;
   }
 
-  if (hasFetched && !React.Children.count(children)) {
+  if (hasFetched && !hasData) {
     return <>No products found.</>; // !!! handle when no product (maybe separate page)
   }
 

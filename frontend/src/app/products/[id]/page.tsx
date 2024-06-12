@@ -23,15 +23,24 @@ const ProductInfoPage = ({ params }: { params: { id: string } }) => {
   const [product, setProduct] = useState<Product | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const fetchData = async () => {
-    const productData = await fetchSingleProduct(
-      params.id,
-      setProduct,
-      getProduct
-    );
-    if (productData && productData.sellerId) {
-      await fetchUser(productData.sellerId, setUser, getUserInfo);
+    try {
+      const productData = await fetchSingleProduct(
+        params.id,
+        setProduct,
+        getProduct
+      );
+      if (productData && productData.sellerId) {
+        try {
+          await fetchUser(productData.sellerId, setUser, getUserInfo);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+          throw error; // Re-throw the error to handle it in useLoading
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error; // Re-throw the error to handle it in useLoading
     }
-    return { product: productData, user };
   };
 
   const { loading, hasFetched } = useLoading(fetchData);
