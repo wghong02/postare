@@ -11,7 +11,7 @@ const Header: React.FC = () => {
   // includes a search bar in the middle, app icon and link to home on topleft
   // user login/logout organization on top right
   const [authed, setAuthed] = useState<boolean>(false);
-
+  
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     setAuthed(authToken !== null);
