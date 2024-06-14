@@ -57,7 +57,6 @@ export const uploadProduct = (data) => {
     condition,
     product_location: productLocation,
     product_details: productDetails,
-    status: "available",
     image_url: imageUrl,
   });
 
