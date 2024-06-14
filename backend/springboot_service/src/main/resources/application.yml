@@ -1,0 +1,27 @@
+logging:
+  level:
+    org.apache.coyote.http11.Http11InputBuffer: DEBUG
+
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://database-2.c3c2acce4ku5.us-east-2.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: 88888888
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      #      ddl-auto: <create | create-drop | update | validate | none>
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        show-sql: true
+
+jwt:
+  token:
+    validity: 10800
+  secret: MEgCQQCVLUrhxnooS+smVoYXd0YXP1lTybhzg0XnNUUg6sM+mw7/ItGKND/8ncNHx3vw+4v5J0wR+hR5IfHeU9274sBzAgMBAAE=
