@@ -3,7 +3,7 @@ package org.example.postplaceSpring.controller;
 import org.example.postplaceSpring.model.JwtRequest;
 import org.example.postplaceSpring.model.JwtResponse;
 import org.example.postplaceSpring.service.CustomUserDetails;
-import org.example.postplaceSpring.service.CustomUserDetailsService;
+import org.example.postplaceSpring.service.UserAuthService;
 import org.example.postplaceSpring.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
-public class JwtAuthenticationController {
+public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
-    private final CustomUserDetailsService userDetailsService;
+    private final UserAuthService userDetailsService;
 
     @Autowired
-    public JwtAuthenticationController(AuthenticationManager authenticationManager,
+    public AuthController(AuthenticationManager authenticationManager,
                                        JwtTokenUtil jwtTokenUtil,
-                                       CustomUserDetailsService userDetailsService) {
+                          UserAuthService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userDetailsService = userDetailsService;

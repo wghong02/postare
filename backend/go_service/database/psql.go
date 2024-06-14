@@ -21,7 +21,7 @@ func connectDB() *pgx.Conn {
 	if dbPassword == "" {
 		log.Fatal("DB_PASSWORD is not set in the environment variables")
 	}
-	dbURL := os.Getenv("DB_URL_LOCAL")
+	dbURL := os.Getenv("DB_URL_CLOUD")
 	if dbURL == "" {
 		log.Fatal("DB_URL_LOCAL is not set in the environment variables")
 	}
@@ -44,28 +44,30 @@ func InitSQLDatabase() {
 	defer conn.Close(context.Background())
 
 	// if not empty then no need to create
-	fmt.Println("initializing sql")
-	createTables(conn)
-	insertSampleData(conn)
+	if empty := checkIfDBEmpty(conn); empty{
+		fmt.Println("initializing sql")
+		createTables(conn)
+		insertSampleData(conn)
+	}
 	fmt.Println("sql initialization succeeded")
 }
 
-// func checkIfDBEmpty(conn *pgx.Conn) bool {
-// 	var exists string
-// 	// if string is not empty, then db is not empty
-// 	err := conn.QueryRow(context.Background(), "SELECT to_regclass('public.users')").Scan(&exists)
-// 	if err != nil {
-// 		if err == pgx.ErrNoRows {
-// 			return true // Table does not exist
-// 		}
-// 		log.Printf("Error checking if table exists: %v\n", err)
-// 		return true // Assume DB is empty if there's an error
-// 	}
-// 	if exists == "" {
-// 		return true // to_regclass returns NULL, which is scanned as an empty string
-// 	}
-// 	return false
-// }
+func checkIfDBEmpty(conn *pgx.Conn) bool {
+	var exists string
+	// if string is not empty, then db is not empty
+	err := conn.QueryRow(context.Background(), "SELECT to_regclass('public.likes')").Scan(&exists)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return true // Table does not exist
+		}
+		log.Printf("Error checking if table exists: %v\n", err)
+		return true // Assume DB is empty if there's an error
+	}
+	if exists == "" {
+		return true // to_regclass returns NULL, which is scanned as an empty string
+	}
+	return false
+}
 
 func createTables(conn *pgx.Conn) {
 	// create sql tables

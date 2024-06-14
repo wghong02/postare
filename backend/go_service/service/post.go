@@ -75,9 +75,9 @@ func DeletePost(postID uuid.UUID, userID int64) error {
 
 func SearchPostsByDescription(description string, batch int, totalSize int) ([]model.Post, error) {
 	// call backend to get posts by description
-	// totalSize is the total number of products to load from the server
+	// totalSize is the total number of posts to load from the server
 	// batch k determines the kth number of batch to load in to the client
-	// if no keywords given, return the first totalSize products
+	// if no keywords given, return the first totalSize posts
 	offset := (batch - 1) * totalSize
 	posts, err := sqlMethods.SearchPostsByDescription(description, totalSize, offset)
 	if err != nil {

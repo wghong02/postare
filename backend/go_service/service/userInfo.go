@@ -2,8 +2,8 @@ package service
 
 import (
 	sqlMethods "appBE/database"
-	"appBE/model"
 	"appBE/errors"
+	"appBE/model"
 	"fmt"
 )
 
@@ -27,7 +27,7 @@ func checkIfUserExistByID(userID int64) (bool, error) {
 
 func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 	
-	// call backend to get the product information, return the product info and if there is error
+	// call backend to get the user information, return the user info and if there is error
 	exists, err := checkIfUserExistByID(userID)
 	if err != nil {
 		fmt.Printf("Failed to search user by id from SQL, %v\n", err)
@@ -42,4 +42,23 @@ func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 		return model.UserInfo{}, err
 	}
 	return user, err
+}
+
+func GetUserIdByName(username string) (int64, error) {
+	
+	// call backend to get the product information, return the product info and if there is error
+	exists, err := checkIfUserExistByName(username)
+	if err != nil {
+		fmt.Printf("Failed to search user by id from SQL, %v\n", err)
+		return -1, err // -1 is error
+	}
+	if !exists {
+		return -1, errors.ErrUserNotFound
+	}
+	userID, err := sqlMethods.GetUserIdByName(username)
+	if err != nil {
+		fmt.Printf("Failed to search user by id from SQL, %v\n", err)
+		return -1, err
+	}
+	return userID, nil
 }

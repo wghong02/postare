@@ -1,6 +1,6 @@
 package org.example.postplaceSpring.service;
 
-import org.example.postplaceSpring.entity.Users;
+import org.example.postplaceSpring.entity.UserAuth;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,14 +8,16 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final Users user;
+    private final UserAuth userAuth;
+    private final long userId;
 
-    public CustomUserDetails(Users user) {
-        this.user = user;
+    public CustomUserDetails(UserAuth userAuth, long userId) {
+        this.userAuth = userAuth;
+        this.userId = userId;
     }
 
     public long getUserId() {
-        return user.getUserId();
+        return userId;
     }
 
     @Override
@@ -25,12 +27,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getHashedPassword();
+        return userAuth.getEncodedPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return userAuth.getUsername();
     }
 
     @Override
@@ -51,5 +53,20 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CustomUserDetails that = (CustomUserDetails) o;
+
+        return userAuth.getUsername().equals(that.userAuth.getUsername());
+    }
+
+    @Override
+    public int hashCode() {
+        return userAuth.getUsername().hashCode();
     }
 }

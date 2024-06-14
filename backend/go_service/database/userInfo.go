@@ -75,3 +75,23 @@ func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 
 	return user, nil
 }
+
+func GetUserIdByName(username string) (int64, error) {
+	// connect to db
+	conn := connectDB()
+	defer conn.Close(context.Background())
+
+	// search if user id exists
+	var userID int64
+	err := conn.QueryRow(context.Background(),
+		`SELECT UserID FROM UserInfo WHERE Username = $1`,
+		username).Scan(&userID)
+
+	// Check if the query returned an error
+	if err != nil {
+
+		return -1, err 
+	}
+
+	return userID, nil
+}

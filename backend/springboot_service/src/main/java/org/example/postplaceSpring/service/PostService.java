@@ -11,7 +11,7 @@ import java.util.UUID;
 @Service
 public class PostService {
 
-    // connect directly to go BE to get data from be using RESTAPI  
+    // connect directly to go BE to get data from be using RESTAPI
     private final RestTemplate restTemplate;
     private final String GO_SERVICE_URL = "http://localhost:8081"; // Replace with your Go service URL
 

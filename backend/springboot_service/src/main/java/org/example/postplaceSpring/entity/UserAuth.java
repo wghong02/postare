@@ -1,5 +1,6 @@
 package org.example.postplaceSpring.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -7,8 +8,11 @@ import jakarta.persistence.*;
 public class UserAuth {
 
     @Id
+    @Column(name = "username", updatable = false, nullable = false)
     private String username;
 
+    @JsonProperty("encoded_password")
+    @Column(name = "encodedpassword", updatable = false, nullable = false)
     private String encodedPassword;
 
     // Getters and Setters
