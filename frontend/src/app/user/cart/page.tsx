@@ -3,7 +3,7 @@ import React from "react";
 import { Flex } from "@chakra-ui/react";
 
 const UserCartPage = () => {
-  // shopping cart for the user, rows of product intend to buy
+  // shopping cart for the user, rows of post intend to buy
 
   return (
     <>

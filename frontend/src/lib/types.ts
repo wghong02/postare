@@ -5,16 +5,14 @@ export interface UploadFormData {
   description: string;
   price: string;
   condition: string;
-  productLocation: string;
-  productDetails: string;
+  postDetails: string;
   imageUrl: string;
 }
 
-export interface UploadProductFormProps {
+export interface UploadPostFormProps {
   formData: UploadFormData;
   isOpen: boolean;
   onClose: () => void;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleFormSubmit: (event: FormEvent) => Promise<void>;
 }
-

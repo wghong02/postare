@@ -1,23 +1,23 @@
 import handleResponseStatus from "@/utils/errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-// const domain = "http://localhost:8080"; // local test
-const domain = "http://18.216.40.20:8080"; // aws container
+const domain = "http://localhost:8080"; // local test
+// const domain = "http://18.216.40.20:8080"; // aws container
 
-export const getProduct = (productID) => {
-  // get a single product by product ID. response is json
-  const url = `${domain}/products/${productID}`;
+export const getPost = (postID) => {
+  // get a single post by post ID. response is json
+  const url = `${domain}/posts/${postID}`;
 
   return fetch(url)
     .then((response) => {
-      handleResponseStatus(response, "Fail to get product");
+      handleResponseStatus(response, "Fail to get post");
       return response.json();
     })
     .then((data) => camelizeKeys(data));
 };
 
-export const searchProductsByDescription = (query) => {
-  // use query parameters to search for products. result is a batch of products
+export const searchPostsByDescription = (query) => {
+  // use query parameters to search for posts. result is a batch of posts
   const description = query?.description ?? "";
   const batch = query?.batch ?? "";
   const totalSize = query?.totalSize ?? "";
@@ -29,24 +29,24 @@ export const searchProductsByDescription = (query) => {
 
   return fetch(url)
     .then((response) => {
-      handleResponseStatus(response, "Fail to search for products");
+      handleResponseStatus(response, "Fail to search for posts");
       return response.json();
     })
     .then((data) => camelizeKeys(data));
 };
 
-export const uploadProduct = (data) => {
-  // user post product with auth token
+export const uploadPost = (data) => {
+  // user post post with auth token
   const authToken = localStorage.getItem("authToken");
-  const url = `${domain}/user/products/upload`;
+  const url = `${domain}/user/posts/upload`;
 
   const {
     title,
     description,
     price,
     condition,
-    productLocation,
-    productDetails,
+    postLocation,
+    postDetails,
     imageUrl,
   } = data;
 
@@ -55,8 +55,8 @@ export const uploadProduct = (data) => {
     description,
     price: Number(price),
     condition,
-    product_location: productLocation,
-    product_details: productDetails,
+    post_location: postLocation,
+    post_details: postDetails,
     image_url: imageUrl,
   });
 
@@ -68,14 +68,14 @@ export const uploadProduct = (data) => {
     },
     body: body,
   }).then((response) => {
-    handleResponseStatus(response, "Fail to upload product");
+    handleResponseStatus(response, "Fail to upload post");
   });
 };
 
-export const deleteProduct = (productID) => {
-  // delete product using its id
+export const deletePost = (postID) => {
+  // delete post using its id
   const authToken = localStorage.getItem("authToken");
-  const url = `${domain}/user/products/delete/${productID}`;
+  const url = `${domain}/user/posts/delete/${postID}`;
 
   return fetch(url, {
     method: "DELETE",
@@ -84,15 +84,15 @@ export const deleteProduct = (productID) => {
     },
   })
     .then((response) => {
-      handleResponseStatus(response, "Fail to delete product");
+      handleResponseStatus(response, "Fail to delete post");
     })
     .then((data) => camelizeKeys(data));
 };
 
-export const rateProduct = (data, productID) => {
-  // user can rate product they have purchased, requires auth token
+export const ratePost = (data, postID) => {
+  // user can rate post they have purchased, requires auth token
   const authToken = localStorage.getItem("authToken");
-  const url = `${domain}/user/purchaseHistory/${productID}/rate`;
+  const url = `${domain}/user/purchaseHistory/${postID}/rate`;
 
   const { rating, comment } = data;
   const formData = new FormData();
@@ -113,10 +113,10 @@ export const rateProduct = (data, productID) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const getMostViewedProducts = (query) => {
-  // get a single product by product ID. response is json
+export const getMostViewedPosts = (query) => {
+  // get a single post by post ID. response is json
 
-  const url = `${domain}/products/get/mostViewed`;
+  const url = `${domain}/post/get/mostViewed`;
   if (query?.batch) {
     url.searchParams.append("batch", query.batch);
   }
@@ -127,15 +127,15 @@ export const getMostViewedProducts = (query) => {
 
   return fetch(url)
     .then((response) => {
-      handleResponseStatus(response, "Fail to get product");
+      handleResponseStatus(response, "Fail to get post");
       return response.json();
     })
     .then((data) => camelizeKeys(data));
 };
 
-export const getUserProducts = ({ userID, query }) => {
+export const getUserPosts = ({ userID, query }) => {
   // get the upload history of a user with its id
-  const url = `${domain}/productHistory/${userID}`;
+  const url = `${domain}/postHistory/${userID}`;
   if (query?.batch) {
     url.searchParams.append("batch", query.batch);
   }

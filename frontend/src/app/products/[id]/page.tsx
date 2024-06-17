@@ -8,37 +8,33 @@ import {
   StackDivider,
   HStack,
 } from "@chakra-ui/react";
-import { getProduct } from "@/utils/productUtils";
+import { getPost } from "@/utils/postUtils";
 import { getUserInfo } from "@/utils/userUtils";
-import { Product, User } from "@/lib/model";
+import { Post, User } from "@/lib/model";
 import RatingDisplay from "@/ui/components/users/ratingComponent";
 import { SellerCard } from "@/ui/components/users/userInfoComponent";
-import ProductPageCard from "@/ui/components/products/productInfoComponent";
-import { fetchSingleProduct, fetchUser } from "@/utils/fetchFunctions";
+import PostPageCard from "@/ui/components/posts/postInfoComponent";
+import { fetchSinglePost, fetchUser } from "@/utils/fetchFunctions";
 import { useLoading } from "@/utils/generalUtils";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 
-const ProductInfoPage = ({ params }: { params: { id: string } }) => {
-  // product page for the users to upload and delete and view products they own
-  const [product, setProduct] = useState<Product | null>(null);
+const PostInfoPage = ({ params }: { params: { id: string } }) => {
+  // post page for the users to upload and delete and view posts they own
+  const [post, setPost] = useState<Post | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const fetchData = async () => {
     try {
-      const productData = await fetchSingleProduct(
-        params.id,
-        setProduct,
-        getProduct
-      );
-      if (productData && productData.sellerId) {
+      const postData = await fetchSinglePost(params.id, setPost, getPost);
+      if (postData && postData.sellerID) {
         try {
-          await fetchUser(productData.sellerId, setUser, getUserInfo);
+          await fetchUser(postData.sellerID, setUser, getUserInfo);
         } catch (error) {
-          console.error("Error fetching products:", error);
+          console.error("Error fetching posts:", error);
           throw error; // Re-throw the error to handle it in useLoading
         }
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching posts:", error);
       throw error; // Re-throw the error to handle it in useLoading
     }
   };
@@ -55,12 +51,12 @@ const ProductInfoPage = ({ params }: { params: { id: string } }) => {
             spacing="5"
             align="stretch"
           >
-            {/* Hstacks to organize the details of the product */}
+            {/* Hstacks to organize the details of the post */}
             <HStack spacing={4}>
               <Flex width="70%" h="400px" align={"center"} justify={"center"}>
                 <Image
-                  src={product?.imageUrl}
-                  alt="Product Image"
+                  src={post?.imageUrl}
+                  alt="Post Image"
                   objectFit="cover"
                   maxW="100%"
                   maxH="100%"
@@ -88,7 +84,7 @@ const ProductInfoPage = ({ params }: { params: { id: string } }) => {
 
             <HStack spacing={4}>
               <Flex width="70%" h="200px">
-                <ProductPageCard product={product}></ProductPageCard>
+                <PostPageCard post={post}></PostPageCard>
               </Flex>
               <Flex width="30%" h="200px">
                 For future Map/online payment
@@ -104,4 +100,4 @@ const ProductInfoPage = ({ params }: { params: { id: string } }) => {
     </>
   );
 };
-export default ProductInfoPage;
+export default PostInfoPage;

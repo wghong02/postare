@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               User Information
             </Button>
           </Link>
-          <Link as={NextLink} href="/user/products" passHref>
+          <Link as={NextLink} href="/user/posts" passHref>
             <Button
               width="100%"
               colorScheme="blackAlpha"
@@ -56,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               shadow="md"
               fontFamily="'Roboto', sans-serif"
             >
-              Manage Products
+              Manage Posts
             </Button>
           </Link>
           <Link as={NextLink} href="/user/orderHistory" passHref>

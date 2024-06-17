@@ -35,9 +35,9 @@ func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 	return user, err
 }
 
-func GetUserIdByName(username string) (int64, error) {
+func GetUserIDByName(username string) (int64, error) {
 	
-	// call backend to get the product information, return the product info and if there is error
+	// call backend to get the post information, return the post info and if there is error
 	userID, err := sqlMethods.GetUserIDByUsername(username)
 	if err != nil {
 		fmt.Printf("Failed to search user by name from SQL, %v\n", err)
@@ -48,7 +48,7 @@ func GetUserIdByName(username string) (int64, error) {
 
 func GetUsernameByID(userID int64) (string, error) {
 	
-	// call backend to get the product information, return the product info and if there is error
+	// call backend to get the post information, return the post info and if there is error
 	username, err := sqlMethods.GetUsernameByUserID(userID)
 	if err != nil {
 		fmt.Printf("Failed to search user by id from SQL, %v\n", err)

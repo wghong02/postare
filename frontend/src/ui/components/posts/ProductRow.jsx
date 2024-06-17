@@ -1,51 +1,51 @@
 import { React, useEffect, useState } from "react";
 import { Box, Flex, Text, Button } from "@chakra-ui/react";
-import ProductCard from "@/ui/components/products/ProductCard";
+import PostCard from "@/ui/components/posts/PostCard";
 
-const ProductRow = ({ title, products, page, onPageChange }) => {
-  // a row of products based on the specific needs. each product is presented as cards
-  // products are organized by
+const PostRow = ({ title, posts, page, onPageChange }) => {
+  // a row of posts based on the specific needs. each post is presented as cards
+  // posts are organized by
   const [currentPage, setCurrentPage] = useState(page || 0);
-  const [currentProducts, setCurrentProducts] = useState([]);
-  const [productsPerRow, setProductsPerRow] = useState(4); // default to 10 products per row
+  const [currentPosts, setCurrentPosts] = useState([]);
+  const [postsPerRow, setPostsPerRow] = useState(4); // default to 4 posts per row
 
   // set how many cards to show based on website size
   // load page when either window size changes or pagination is called
   useEffect(() => {
-    const updateProductsPerRow = () => {
+    const updatePostsPerRow = () => {
       const width = window.innerWidth;
       if (width < 800) {
-        setProductsPerRow(1);
+        setPostsPerRow(1);
       } else if (width < 1200) {
-        setProductsPerRow(2);
+        setPostsPerRow(2);
       } else if (width < 1600) {
-        setProductsPerRow(3);
+        setPostsPerRow(3);
       } else {
-        setProductsPerRow(4);
+        setPostsPerRow(4);
       }
     };
 
-    const updateCurrentProducts = () => {
-      const startIndex = currentPage * productsPerRow;
-      const endIndex = startIndex + productsPerRow;
-      setCurrentProducts(products.slice(startIndex, endIndex));
+    const updateCurrentPosts = () => {
+      const startIndex = currentPage * postsPerRow;
+      const endIndex = startIndex + postsPerRow;
+      setCurrentPosts(posts.slice(startIndex, endIndex));
     };
 
-    updateProductsPerRow();
-    updateCurrentProducts();
+    updatePostsPerRow();
+    updateCurrentPosts();
 
     window.addEventListener("resize", () => {
-      updateProductsPerRow();
-      updateCurrentProducts();
+      updatePostsPerRow();
+      updateCurrentPosts();
     });
 
     return () => {
       window.removeEventListener("resize", () => {
-        updateProductsPerRow();
-        updateCurrentProducts();
+        updatePostsPerRow();
+        updateCurrentPosts();
       });
     };
-  }, [currentPage, products, productsPerRow]);
+  }, [currentPage, posts, postsPerRow]);
 
   // handle pagination
   const handlePageChange = (direction) => {
@@ -59,12 +59,12 @@ const ProductRow = ({ title, products, page, onPageChange }) => {
         {title}
       </Text>
       <Flex justify="space-between" wrap="wrap">
-        {currentProducts.length > 0 ? (
-          currentProducts.map((product, index) => (
-            <ProductCard key={index} product={product} />
+        {currentPosts.length > 0 ? (
+          currentPosts.map((post, index) => (
+            <PostCard key={index} post={post} />
           ))
         ) : (
-          <p>No products available</p>
+          <p>No posts available</p>
         )}
       </Flex>
       <Flex justify="center" mt="4">
@@ -77,7 +77,7 @@ const ProductRow = ({ title, products, page, onPageChange }) => {
         </Button>
         <Button
           onClick={() => handlePageChange(1)}
-          disabled={currentPage >= Math.ceil(products.length / 10) - 1}
+          disabled={currentPage >= Math.ceil(posts.length / 10) - 1}
         >
           Next
         </Button>
@@ -86,4 +86,4 @@ const ProductRow = ({ title, products, page, onPageChange }) => {
   );
 };
 
-export default ProductRow;
+export default PostRow;

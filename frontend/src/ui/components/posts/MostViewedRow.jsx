@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
-import ProductRow from "@/ui/components/products/ProductRow";
-import { getMostViewedProducts } from "@/utils/productUtils";
+import PostRow from "@/ui/components/posts/PostRow";
+import { getMostViewedPosts } from "@/utils/postUtils";
 
 const MostViewedRow = ({ title }) => {
-  const [products, setProducts] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    const fetchProducts = async (query) => {
+    const fetchPosts = async (query) => {
       try {
-        const response = await getMostViewedProducts(query);
-        setProducts(response || []);
+        const response = await getMostViewedPosts(query);
+        setPosts(response || []);
       } catch (error) {
-        console.error("Failed to fetch products:", error);
+        console.error("Failed to fetch posts:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchPosts();
   }, []);
 
   const handlePageChange = (direction) => {
@@ -28,9 +28,9 @@ const MostViewedRow = ({ title }) => {
   return loading ? (
     <p>Loading...</p>
   ) : (
-    <ProductRow
+    <PostRow
       title={title}
-      products={products}
+      posts={posts}
       page={page}
       onPageChange={handlePageChange}
     />

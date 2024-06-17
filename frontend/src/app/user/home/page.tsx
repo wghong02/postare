@@ -17,10 +17,10 @@ const UserHomePage = () => {
     if (token) {
       try {
         const decodedToken: any = jwtDecode(token);
-        const userId = decodedToken.userID;
-        await fetchUser(userId, setUser, getUserInfo);
+        const userID = decodedToken.userID;
+        await fetchUser(userID, setUser, getUserInfo);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching posts:", error);
         throw error; // Re-throw the error to handle it in useLoading
       }
     }

@@ -1,4 +1,4 @@
-import { User, Product } from "@/lib/model";
+import { User, Post } from "@/lib/model";
 
 export const fetchUser = async (
   parameter: any,
@@ -14,32 +14,32 @@ export const fetchUser = async (
   }
 };
 
-export const fetchSingleProduct = async (
+export const fetchSinglePost = async (
   parameter: any,
-  setProduct: (product: Product | null) => void,
-  productUtilFunction: (parameter: any) => Promise<Product>
-): Promise<Product | null> => {
-  // function to handle any request to fetch the product
+  setPost: (post: Post | null) => void,
+  postUtilFunction: (parameter: any) => Promise<Post>
+): Promise<Post | null> => {
+  // function to handle any request to fetch the post
   try {
-    const response = await productUtilFunction(parameter);
-    setProduct(response || []);
-    return response; // return here for the special occasion that fetch both product and user
+    const response = await postUtilFunction(parameter);
+    setPost(response || []);
+    return response; // return here for the special occasion that fetch both post and user
   } catch (error) {
-    console.error("Failed to fetch the product:", error);
+    console.error("Failed to fetch the post:", error);
     return null;
   }
 };
 
-export const fetchProducts = async (
+export const fetchPosts = async (
   parameter: any,
-  setProducts: (products: Product[]) => void,
-  productUtilFunction: (parameter: any) => Promise<Product[]>
+  setPosts: (posts: Post[]) => void,
+  postUtilFunction: (parameter: any) => Promise<Post[]>
 ): Promise<void> => {
-  // function to handle any request to fetch the product
+  // function to handle any request to fetch the post
   try {
-    const response = await productUtilFunction(parameter);
-    setProducts(response || []);
+    const response = await postUtilFunction(parameter);
+    setPosts(response || []);
   } catch (error) {
-    console.error("Failed to fetch the product:", error);
+    console.error("Failed to fetch the post:", error);
   }
 };

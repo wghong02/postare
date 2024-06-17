@@ -3,19 +3,20 @@ import { Box, Image, Badge } from "@chakra-ui/react";
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
+import { Post } from "@/lib/model";
 
-function ProductCard({ product }) {
-  // card of each individual product
-  // shows basic info of the product
-  const registerTime = timeAgo(product.putOutDate);
-  const postedRecent = isPostedWithin(product.putOutDate, "month");
-  const isAvailable = product.status === "available";
-  const isHot = product.views >= 500;
+export function PostPageCard(post: Post): React.ReactElement {
+  // card of each individual post
+  // shows basic info of the post
+  const registerTime = timeAgo(post.putOutTime);
+  const postedRecent = isPostedWithin(post.putOutTime, "month");
+  const isAvailable = post.status === "available";
+  const isHot = post.views >= 500;
 
   return (
-    <Link as={NextLink} href={`/products/${product.productId}`} passHref>
+    <Link as={NextLink} href={`/posts/${post.postID}`} passHref>
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-        <Image src={product.imageUrl} />
+        <Image src={post.imageUrl} />
         {/* //show badges of new if new and not sold, sold if sold, hot if have many views */}
         <Box p="6">
           <Box display="flex" alignItems="baseline">
@@ -46,7 +47,7 @@ function ProductCard({ product }) {
               textTransform="uppercase"
               ml="4"
             >
-              {product.address}
+              {post.condition}
             </Box>
             <Box
               color="gray.500"
@@ -56,7 +57,7 @@ function ProductCard({ product }) {
               textTransform="uppercase"
               ml="4"
             >
-              {product.views} views
+              {post.views} views
             </Box>
           </Box>
 
@@ -67,7 +68,7 @@ function ProductCard({ product }) {
             lineHeight="tight"
             noOfLines={1}
           >
-            {product.title}
+            {post.title}
           </Box>
 
           <Box>
@@ -76,12 +77,9 @@ function ProductCard({ product }) {
               currency: "USD",
               minimumFractionDigits: 2, // Ensures two decimal places in the output
               maximumFractionDigits: 2, // Ensures two decimal places even if the number is whole
-            }).format(product.price / 100)}
-          </Box>
+              post          </Box>
         </Box>
       </Box>
     </Link>
   );
 }
-
-export default ProductCard;

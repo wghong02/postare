@@ -21,7 +21,7 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
   }
 
   if (hasFetched && !hasData) {
-    return <>No products found.</>; // !!! handle when no product (maybe separate page)
+    return <>No posts found.</>; // !!! handle when no post (maybe separate page)
   }
 
   return <>{children}</>;

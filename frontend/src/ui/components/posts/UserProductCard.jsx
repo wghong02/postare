@@ -12,19 +12,19 @@ import {
 import { timeAgo } from "@/utils/generalUtils";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
-import { deleteProduct } from "@/utils/productUtils";
+import { deletePost } from "@/utils/postUtils";
 
-function UserProductCard({ product }) {
-  const registerTime = timeAgo(product.putOutDate);
-  const productID = product.productId;
+function UserPostCard({ post }) {
+  const registerTime = timeAgo(post.putOutDate);
+  const postID = post.postID;
 
-  // to delete the product
-  const deleteOnClick = async (productID) => {
+  // to delete the post
+  const deleteOnClick = async (postID) => {
     try {
-      await deleteProduct(productID);
-      window.location.href = `/user/products`; // Inform parent component about the deletion
+      await deletePost(postID);
+      window.location.href = `/user/posts`; // Inform parent component about the deletion
     } catch (error) {
-      console.error("Failed to delete product:", error);
+      console.error("Failed to delete post:", error);
     }
   };
 
@@ -39,20 +39,20 @@ function UserProductCard({ product }) {
         <Image
           objectFit="cover"
           maxW={{ base: "100%", sm: "200px" }}
-          src={product.imageUrl}
-          alt="Product Image"
+          src={post.imageUrl}
+          alt="Post Image"
         />
 
         <Stack>
           <CardBody>
-            <Heading size="md">{product.title}</Heading>
+            <Heading size="md">{post.title}</Heading>
 
-            <Text py="2">{product.description}</Text>
-            <Text py="3">Product posted {registerTime}</Text>
+            <Text py="2">{post.description}</Text>
+            <Text py="3">Post posted {registerTime}</Text>
           </CardBody>
 
           <CardFooter>
-            <Link as={NextLink} href={`/products/${productID}`} passHref>
+            <Link as={NextLink} href={`/posts/${postID}`} passHref>
               <Button variant="solid" colorScheme="blue" mr="6">
                 View
               </Button>
@@ -60,7 +60,7 @@ function UserProductCard({ product }) {
             <Button
               variant="solid"
               colorScheme="red"
-              onClick={() => deleteOnClick(productID)}
+              onClick={() => deleteOnClick(postID)}
             >
               Delete
             </Button>
@@ -71,4 +71,4 @@ function UserProductCard({ product }) {
   );
 }
 
-export default UserProductCard;
+export default UserPostCard;

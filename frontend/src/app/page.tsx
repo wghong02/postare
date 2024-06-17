@@ -2,28 +2,17 @@
 import React from "react";
 import { Flex } from "@chakra-ui/react";
 import Header from "@/ui/components/web/Header";
-import MostViewedRow from "@/ui/components/products/MostViewedRow";
+import MostViewedRow from "@/ui/components/posts/MostViewedRow";
 
 const HomePage = () => {
-  // home page should have the header, rows of products in the middle
+  // home page should have the header, rows of posts in the middle
 
   // Handler functions for pagination
-
 
   return (
     <>
       <Flex direction="column" align="center" m="4">
-        <MostViewedRow title="Most Viewed Products" />
-        {/* <ProductRow
-          title="Closest Products"
-          page={closestPage}
-          onPageChange={(dir: any) => handlePageChange(setClosestPage, dir)}
-        />
-        <ProductRow
-          title="Recommended Products"
-          page={recommendedPage}
-          onPageChange={(dir: any) => handlePageChange(setRecommendedPage, dir)}
-        /> */}
+        <MostViewedRow title="Most Viewed Posts" />
       </Flex>
     </>
   );

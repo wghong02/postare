@@ -94,7 +94,7 @@ func getUserInfoByIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func getUserIdByNameHandler(w http.ResponseWriter, r *http.Request) {
+func getUserIDByNameHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one get user id request")
 
 	// 1. process data
@@ -103,7 +103,7 @@ func getUserIdByNameHandler(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
 	// 2. call service level to get user id
-	userID, err := service.GetUserIdByName(username)
+	userID, err := service.GetUserIDByName(username)
 	if err != nil {
 		// Check if the error is due to the user not being found
 		if errors.Is(err, customErrors.ErrUserNotFound){

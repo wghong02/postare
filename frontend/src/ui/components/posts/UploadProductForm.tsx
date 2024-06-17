@@ -12,9 +12,9 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { UploadProductFormProps } from "@/lib/types";
+import { UploadPostFormProps } from "@/lib/types";
 
-const UploadProductForm: React.FC<UploadProductFormProps> = ({
+const UploadPostForm: React.FC<UploadPostFormProps> = ({
   formData,
   isOpen,
   onClose,
@@ -25,80 +25,80 @@ const UploadProductForm: React.FC<UploadProductFormProps> = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Upload New Product</ModalHeader>
+        <ModalHeader>Upload New Post</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl>
-            <FormLabel>Product Name</FormLabel>
+            <FormLabel>Post Name</FormLabel>
             <Input
               type="text"
               name="title"
-              placeholder="Enter product name"
+              placeholder="Enter post name"
               value={formData.title}
               onChange={handleChange}
               required
             />
           </FormControl>
           <FormControl mt={4}>
-            <FormLabel>Product Description</FormLabel>
+            <FormLabel>Post Description</FormLabel>
             <Input
               type="text"
               name="description"
-              placeholder="Enter product description"
+              placeholder="Enter post description"
               value={formData.description}
               onChange={handleChange}
               required
             />
           </FormControl>
           <FormControl mt={4}>
-            <FormLabel>Product Price</FormLabel>
+            <FormLabel>Post Price</FormLabel>
             <Input
               type="number"
               name="price"
-              placeholder="Enter product price"
+              placeholder="Enter post price"
               value={formData.price}
               onChange={handleChange}
               required
             />
           </FormControl>
           <FormControl mt={5}>
-            <FormLabel>Product Condition</FormLabel>
+            <FormLabel>Post Condition</FormLabel>
             <Input
               type="text"
               name="condition"
-              placeholder="Enter product condition"
+              placeholder="Enter post condition"
               value={formData.condition}
               onChange={handleChange}
               required
             />
           </FormControl>
           <FormControl mt={6}>
-            <FormLabel>Product Location</FormLabel>
+            <FormLabel>Post Location</FormLabel>
             <Input
               type="text"
               name="productLocation"
-              placeholder="Enter product location"
-              value={formData.productLocation}
+              placeholder="Enter post location"
+              value="TODO!!!"
               onChange={handleChange}
               required
             />
           </FormControl>
           <FormControl mt={7}>
-            <FormLabel>Product Details</FormLabel>
+            <FormLabel>Post Details</FormLabel>
             <Input
               type="text"
-              name="productDetails"
-              placeholder="A more detailed description of the product"
-              value={formData.productDetails}
+              name="postDetails"
+              placeholder="A more detailed description of the post"
+              value={formData.postDetails}
               onChange={handleChange}
             />
           </FormControl>
           <FormControl mt={8}>
-            <FormLabel>Product Image</FormLabel>
+            <FormLabel>Post Image</FormLabel>
             <Input
               type="text"
               name="imageUrl"
-              placeholder="Image URL for the product"
+              placeholder="Image URL for the post"
               value={formData.imageUrl}
               onChange={handleChange}
             />
@@ -116,4 +116,4 @@ const UploadProductForm: React.FC<UploadProductFormProps> = ({
   );
 };
 
-export default UploadProductForm;
+export default UploadPostForm;
