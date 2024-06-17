@@ -2,12 +2,13 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 
-	"appBE/errors"
+	customErrors "appBE/errors"
 	"appBE/model"
 	"appBE/service"
 
@@ -53,8 +54,8 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Call service to process and save the post
 	if err := service.UploadPost(&post, userIDInt); err != nil {
-		if err == errors.ErrUserNotFound {
-			http.Error(w, "user not found", http.StatusNotFound)
+		if errors.Is(err, customErrors.ErrUserNotFound) {
+			http.Error(w, "post owner does not exist", http.StatusBadRequest)
 		} else {
 			// For all other errors, return internal server error
 			http.Error(w, "Failed to search post by ID from backend",
@@ -95,9 +96,9 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	// Call service level to delete post
 	if err := service.DeletePost(postID, userIDInt); err != nil {
 		// Check if the error is due to the post not being found
-		if err == errors.ErrPostNotFound {
+		if errors.Is(err, customErrors.ErrPostNotFound) {
 			http.Error(w, "post not found", http.StatusNotFound)
-		} else if err == errors.ErrPostNotOwnedByUser{
+		} else if errors.Is(err, customErrors.ErrPostNotOwnedByUser){
 			http.Error(w, "post not owned by user", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
@@ -162,7 +163,7 @@ func getPostByIDHandler(w http.ResponseWriter, r *http.Request) {
 	post, err := service.GetPostByID(postID)
 	if err != nil {
 		// Check if the error is due to the post not being found
-		if err == errors.ErrPostNotFound {
+		if errors.Is(err, customErrors.ErrPostNotFound) {
 			http.Error(w, "post not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
@@ -245,7 +246,7 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 	posts, err := service.GetPostsByUserID(userID, batch, totalSize)
 	if err != nil {
 		// Check if the error is due to the posts not being found
-		if err == errors.ErrUserNotFound {
+		if errors.Is (err, customErrors.ErrUserNotFound) {
 			http.Error(w, "user not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error

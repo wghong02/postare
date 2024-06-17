@@ -1,17 +1,18 @@
 package sqlMethods
 
 import (
+	customErrors "appBE/errors"
 	"appBE/model"
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 )
 
 func SavePostToSQL(post *model.Post) error {
-	// connect to db
-	conn := connectDB()
-	defer conn.Close(context.Background())
 
 	// save post
 	query := `INSERT INTO Posts (PostID, Title, 
@@ -20,18 +21,49 @@ func SavePostToSQL(post *model.Post) error {
         $2, $3, $4, $5, $6, $7, $8, 
         $9, $10, $11)`
 
-	_, err := conn.Exec(context.Background(),
+	_, err := dbPool.Exec(context.Background(),
 		query, post.PostID, post.Title, post.Description,
 		post.Likes, post.CategoryID, post.PostOwnerID, post.PutOutTime,
 		post.PostDetails, post.IsAvailable, post.ImageUrl, post.Views)
+	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
+		// 23505 is the foreign key violation error code in PostgreSQL
+		return customErrors.ErrUserNotFound
+	}
 
 	return err
 }
 
+func CheckIfPostOwnedByUser(postID uuid.UUID, userID int64) (bool, error) {
+	var postOwnerID int64
+    err := dbPool.QueryRow(context.Background(), "SELECT PostOwnerID FROM Posts WHERE PostID=$1", postID).Scan(&postOwnerID)
+    if err != nil {
+        if errors.Is (err, pgx.ErrNoRows) {
+            return false, customErrors.ErrPostNotFound
+        }
+        return false, err
+    }
+    if postOwnerID != userID {
+        return false, customErrors.ErrPostNotOwnedByUser
+    }
+    return true, nil
+}
+
+func DeletePostFromSQL(postID uuid.UUID) error {
+
+	// delete from db
+	result, err := dbPool.Exec(context.Background(), "DELETE FROM Posts WHERE PostID=$1", postID)
+	if err != nil {
+		return err
+	}
+	// if post does not exist, the 0 row is affected
+	if result.RowsAffected() == 0 {
+        return customErrors.ErrPostNotFound
+    }
+
+	return nil
+}
+
 func SearchPostsByDescription(keyword string, limit int, offset int) ([]model.Post, error) {
-	// connect to db
-	conn := connectDB()
-	defer conn.Close(context.Background())
 
 	var posts []model.Post
 	var query string
@@ -48,7 +80,7 @@ func SearchPostsByDescription(keyword string, limit int, offset int) ([]model.Po
 	}
 
 	// search with sql statement
-	rows, err := conn.Query(context.Background(), query, args...)
+	rows, err := dbPool.Query(context.Background(), query, args...)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -76,30 +108,11 @@ func SearchPostsByDescription(keyword string, limit int, offset int) ([]model.Po
 	return posts, nil
 }
 
-func CheckIfPostExistByID(postID uuid.UUID) (bool, error) {
-	conn := connectDB()
-	defer conn.Close(context.Background())
-
-	// check if user exists
-	var exists bool
-	err := conn.QueryRow(context.Background(),
-		"SELECT EXISTS(SELECT 1 FROM Posts WHERE postID = $1)",
-		postID).Scan(&exists)
-	if err != nil {
-		return false, err
-	}
-
-	return exists, nil
-}
-
 func GetPostByID(postID uuid.UUID) (model.Post, error) {
-	// connect to db
-	conn := connectDB()
-	defer conn.Close(context.Background())
 
 	// search if post id exists
 	var post model.Post
-	err := conn.QueryRow(context.Background(),
+	err := dbPool.QueryRow(context.Background(),
 		`SELECT PostID, Title, Description, Likes, CategoryID, PostOwnerID, 
         PutOutTime, PostDetails, IsAvailable, ImageUrl, Views 
         FROM Posts WHERE PostID=$1`, postID).Scan(
@@ -111,28 +124,16 @@ func GetPostByID(postID uuid.UUID) (model.Post, error) {
 
 	// Check if the query returned an error
 	if err != nil {
+		if errors.Is (err, pgx.ErrNoRows) {
+            return model.Post{}, customErrors.ErrPostNotFound
+        }
 		return model.Post{}, err
 	}
 
 	return post, nil
 }
 
-func DeletePostFromSQL(postID uuid.UUID, userID int64) error {
-	conn := connectDB()
-	defer conn.Close(context.Background())
-
-	// delete from db
-	_, err := conn.Exec(context.Background(), "DELETE FROM Posts WHERE PostID=$1", postID)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func GetMostViewedPosts(limit int, offset int) ([]model.Post, error) {
-	// connect to db
-	conn := connectDB()
-	defer conn.Close(context.Background())
 
 	var posts []model.Post
 	var query string
@@ -143,7 +144,7 @@ func GetMostViewedPosts(limit int, offset int) ([]model.Post, error) {
 	args = append(args, limit, offset)
 
 	// search top results with sql statement
-	rows, err := conn.Query(context.Background(), query, args...)
+	rows, err := dbPool.Query(context.Background(), query, args...)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -172,11 +173,16 @@ func GetMostViewedPosts(limit int, offset int) ([]model.Post, error) {
 }
 
 func SearchPostsByUserID(userID int64, limit int, offset int) ([]model.Post, error) {
-	// connect to db
-	conn := connectDB()
-	defer conn.Close(context.Background())
 
-	// search if post id exists
+	// Check if user exists
+    exists, err := checkIfUserExistsByID(userID)
+    if err != nil {
+        return nil, err
+    }
+    if !exists {
+        return nil, customErrors.ErrUserNotFound
+    }
+
 	var posts []model.Post
 	var query string
 	var args []interface{}
@@ -186,9 +192,8 @@ func SearchPostsByUserID(userID int64, limit int, offset int) ([]model.Post, err
 	args = append(args, userID, limit, offset)
 
 	// search with sql statement
-	rows, err := conn.Query(context.Background(), query, args...)
+	rows, err := dbPool.Query(context.Background(), query, args...)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()

@@ -8,10 +8,14 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 )
 
-func connectDB() *pgx.Conn {
+// use a connection pool to avoid connecting at each request
+var dbPool *pgxpool.Pool
+
+func connectDB() *pgxpool.Pool {
 	// use pgx to connect to db
 	dbUser := os.Getenv("DB_USER")
 	if dbUser == "" {
@@ -26,11 +30,17 @@ func connectDB() *pgx.Conn {
 		log.Fatal("DB_URL_LOCAL is not set in the environment variables")
 	}
 	connString := fmt.Sprintf("postgres://%s:%s@%s", dbUser, dbPassword, dbURL)
-	conn, err := pgx.Connect(context.Background(), connString)
-	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
-	}
-	return conn
+	
+	config, err := pgxpool.ParseConfig(connString)
+    if err != nil {
+        log.Fatalf("Unable to parse connection string: %v\n", err)
+    }
+    
+    pool, err := pgxpool.ConnectConfig(context.Background(), config)
+    if err != nil {
+        log.Fatalf("Unable to connect to database: %v\n", err)
+    }
+    return pool
 }
 
 func InitSQLDatabase() {
@@ -40,22 +50,20 @@ func InitSQLDatabase() {
 	}
 
 	// defer close to continue useing
-	conn := connectDB()
-	defer conn.Close(context.Background())
-
+	dbPool = connectDB()
 	// if not empty then no need to create
-	if empty := checkIfDBEmpty(conn); empty{
+	if empty := checkIfDBEmpty(); empty{
 		fmt.Println("initializing sql")
-		createTables(conn)
-		insertSampleData(conn)
+		createTables()
+		insertSampleData()
 	}
 	fmt.Println("sql initialization succeeded")
 }
 
-func checkIfDBEmpty(conn *pgx.Conn) bool {
+func checkIfDBEmpty() bool {
 	var exists string
 	// if string is not empty, then db is not empty
-	err := conn.QueryRow(context.Background(), "SELECT to_regclass('public.likes')").Scan(&exists)
+	err := dbPool.QueryRow(context.Background(), "SELECT to_regclass('public.likes')").Scan(&exists)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return true // Table does not exist
@@ -69,7 +77,7 @@ func checkIfDBEmpty(conn *pgx.Conn) bool {
 	return false
 }
 
-func createTables(conn *pgx.Conn) {
+func createTables() {
 	// create sql tables
 	commands := []string{
 		`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`,
@@ -130,7 +138,7 @@ func createTables(conn *pgx.Conn) {
 	// Execute all SQL commands.
 
 	for _, sql := range commands {
-		_, err := conn.Exec(context.Background(), sql)
+		_, err := dbPool.Exec(context.Background(), sql)
 		if err != nil {
 			log.Fatalf("Failed to execute SQL command: %s\nError: %v", sql, err)
 		} else {
@@ -139,10 +147,10 @@ func createTables(conn *pgx.Conn) {
 	}
 }
 
-func insertSampleData(conn *pgx.Conn) {
+func insertSampleData() {
 	// Insert Auth
 	for _, auth := range model.Auths {
-		_, err := conn.Exec(context.Background(), `INSERT INTO UserAuth (
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO UserAuth (
             Username, EncodedPassword) VALUES ($1, $2) 
             ON CONFLICT (Username) DO NOTHING`, auth.Username, auth.EncodedPassword)
 		if err != nil {
@@ -152,7 +160,7 @@ func insertSampleData(conn *pgx.Conn) {
 	fmt.Println("Users inserted successfully")
 	// Insert users
 	for _, user := range model.Users {
-		_, err := conn.Exec(context.Background(), `INSERT INTO UserInfo (UserID, 
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO UserInfo (UserID, 
             Username, UserEmail, UserPhone, Nickname,ProfilePicture, RegisterTime, 
 			TotalViews, TotalComments, TotalLikes, 
             UserExperience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
@@ -167,7 +175,7 @@ func insertSampleData(conn *pgx.Conn) {
 
 	// Insert categories
 	for _, category := range model.Categories {
-		_, err := conn.Exec(context.Background(), `INSERT INTO Categories
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO Categories
         (CategoryID, CategoryName) VALUES ($1, $2) ON CONFLICT (CategoryID) 
         DO NOTHING`, category.CategoryID, category.CategoryName)
 		if err != nil {
@@ -178,7 +186,7 @@ func insertSampleData(conn *pgx.Conn) {
 
 	// Insert posts
 	for _, post := range model.Posts {
-		_, err := conn.Exec(context.Background(), `INSERT INTO Posts (PostID, 
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO Posts (PostID, 
             Title, Description, Likes, CategoryID, PostOwnerID, PutOutTime, 
             PostDetails, IsAvailable, ImageUrl, Views) VALUES 
             ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
@@ -193,7 +201,7 @@ func insertSampleData(conn *pgx.Conn) {
 
 	// Insert comments
 	for _, comment := range model.Comments {
-		_, err := conn.Exec(context.Background(), `INSERT INTO Comments (CommentID, 
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO Comments (CommentID, 
             PosterID, Comment, PostID) VALUES 
             ($1, $2, $3, $4) ON CONFLICT (CommentID) DO NOTHING`,
 			comment.CommentID, comment.PosterID, comment.Comment, comment.PostID)
@@ -205,7 +213,7 @@ func insertSampleData(conn *pgx.Conn) {
 
 	// Insert sub-comments
 	for _, subComment := range model.SubComments {
-		_, err := conn.Exec(context.Background(), `INSERT INTO SubComments (SubCommentID, 
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO SubComments (SubCommentID, 
             PosterID, Comment, CommentID) VALUES 
             ($1, $2, $3, $4) ON CONFLICT (SubCommentID) DO NOTHING`,
 			subComment.SubCommentID, subComment.PosterID, subComment.Comment, subComment.CommentID)
@@ -217,7 +225,7 @@ func insertSampleData(conn *pgx.Conn) {
 
 	// Insert likes
 	for _, like := range model.Likes {
-		_, err := conn.Exec(context.Background(), `INSERT INTO Likes (LikeID, 
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO Likes (LikeID, 
             PostID, LikerID, DateTime) VALUES 
             ($1, $2, $3, $4) ON CONFLICT (LikeID) DO NOTHING`,
 			like.LikeID, like.PostID, like.LikerID, like.DateTime)

@@ -34,7 +34,7 @@ public class UserAuthService implements UserDetailsService {
     }
 
     private Long getUserIdFromGoService(String username) {
-        String url = "http://localhost:8081/userid/" + username;  // Replace with actual URL
+        String url = "http://localhost:8081/user/getUserID" + username;  // Replace with actual URL
         return restTemplate.getForObject(url, Long.class);
     }
 }

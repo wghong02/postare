@@ -24,8 +24,8 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/search", searchPostsHandler).Methods("GET")
 	router.HandleFunc("/postHistory/{userID}", getUserPostsHandler).Methods("GET")
 	router.HandleFunc("/users/{userID}", getUserInfoByIDHandler).Methods("GET")
-	// router.HandleFunc("/auth/register", handlers.RegisterHandler).Methods("POST")
-	// router.HandleFunc("/auth/login", handlers.LogInHandler).Methods("POST")
+	router.HandleFunc("/auth/register", saveUserInfoHandler).Methods("POST")
+	router.HandleFunc("/user/getUserID/{username}", getUserIdByNameHandler).Methods("GET")
 
 	// Set up CORS middleware
 	corsMiddleware := handlers.CORS(

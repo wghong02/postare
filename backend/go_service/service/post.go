@@ -2,7 +2,7 @@ package service
 
 import (
 	sqlMethods "appBE/database"
-	"appBE/errors"
+	customErrors "appBE/errors"
 	"appBE/model"
 	"fmt"
 	"time"
@@ -12,14 +12,6 @@ import (
 
 func UploadPost(post *model.Post, userID int64) error {
 	// Set additional fields
-
-	exists, err := checkIfUserExistByID(userID)
-	if err != nil {
-		return err
-	}
-	if !exists {
-		return errors.ErrUserNotFound
-	}
 
 	post.PostID = uuid.New()
 	post.PostOwnerID = userID
@@ -36,37 +28,17 @@ func UploadPost(post *model.Post, userID int64) error {
 	return nil
 }
 
-func CheckIfPostPostedByUser(postID uuid.UUID, userID int64) (bool, error) {
-    post, err := GetPostByID(postID)
-    if err != nil {
-        return false, fmt.Errorf("failed to search post by ID: %v", err)
-    }
-
-    if post.PostOwnerID == userID {
-        return true, nil
-    }
-    return false, nil
-}
-
 func DeletePost(postID uuid.UUID, userID int64) error {
-	// first check if post exists
-	exists, err := sqlMethods.CheckIfPostExistByID(postID)
+	// verify that the post is owned by the user
+	postedByUser, err := sqlMethods.CheckIfPostOwnedByUser(postID, userID)
 	if err != nil {
 		return err
-	}
-	if !exists {
-		return errors.ErrPostNotFound
-	}
-	// then verify that the post is owned by the user
-	postedByUser, err := CheckIfPostPostedByUser(postID, userID)
-	if err != nil {
-		return err
-	}
+	}	
 	if !postedByUser {
-		return errors.ErrPostNotOwnedByUser
+		return customErrors.ErrPostNotOwnedByUser
 	}
 	// call backend to delete the post, return if there is error
-	if err = sqlMethods.DeletePostFromSQL(postID, userID); err != nil {
+	if err = sqlMethods.DeletePostFromSQL(postID); err != nil {
 		fmt.Printf("Failed to delete post from SQL %v\n", err)
 		return err
 	}
@@ -89,13 +61,7 @@ func SearchPostsByDescription(description string, batch int, totalSize int) ([]m
 
 func GetPostByID(postID uuid.UUID) (model.Post, error) {
 	// call backend to get the post information, return the post info and if there is error
-	exists, err := sqlMethods.CheckIfPostExistByID(postID)
-	if err != nil {
-		return model.Post{}, err
-	}
-	if !exists {
-		return model.Post{}, errors.ErrPostNotFound
-	}
+
 	post, err := sqlMethods.GetPostByID(postID)
 	if err != nil {
 		fmt.Printf("Failed to search post from SQL, %v\n", err)
@@ -119,14 +85,6 @@ func GetMostViewedPosts(batch int, totalSize int) ([]model.Post, error) {
 
 
 func GetPostsByUserID(userID int64, batch int, totalSize int) ([]model.Post, error) {
-
-	exists, err := checkIfUserExistByID(userID)
-	if err != nil {
-		return []model.Post{}, err
-	}
-	if !exists {
-		return []model.Post{}, errors.ErrUserNotFound
-	}
 
 	// Calculate offset based on batch and totalSize
 	offset := (batch - 1) * totalSize
