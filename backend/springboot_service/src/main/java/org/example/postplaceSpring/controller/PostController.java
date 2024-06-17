@@ -24,7 +24,7 @@
             this.postService = postService;
         }
 
-        @GetMapping("/post/{postId}")
+        @GetMapping("/posts/{postId}")
         public ResponseEntity<String> getIdPost(@PathVariable UUID postId) {
             ResponseEntity<String> response = postService.findPostById(postId);
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -57,5 +57,23 @@
         public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
             postService.deletePostByPostId(postId);
             return ResponseEntity.noContent().build();
+        }
+
+        @GetMapping("/posts/get/mostViewed")
+        public ResponseEntity<String> getMostViewedPosts(
+                @RequestParam(defaultValue = "60") int limit,
+                @RequestParam(defaultValue = "0") int offset) {
+            return postService.findMostViewedPosts(limit, offset);
+        }
+
+        @GetMapping("/postHistory/{userId}")
+        public ResponseEntity<String> getUserPostHistory(@PathVariable long userId) {
+            ResponseEntity<String> response = postService.findUserPostHistory(userId);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                logger.info("Post {} returned", userId);
+                return response;
+            } else {
+                throw new ResponseStatusException(response.getStatusCode(), "Post not found");
+            }
         }
     }

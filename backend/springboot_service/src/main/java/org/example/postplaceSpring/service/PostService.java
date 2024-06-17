@@ -43,4 +43,14 @@ public class PostService {
         String url = GO_SERVICE_URL + "/user/posts/delete/" + postId;
         restTemplate.delete(url);
     }
+
+    public ResponseEntity<String> findMostViewedPosts(int limit, int offset) {
+        String url = GO_SERVICE_URL + "/search?limit=" + limit + "&offset=" + offset;
+        return restTemplate.getForEntity(url, String.class);
+    }
+
+    public ResponseEntity<String> findUserPostHistory(long userId) {
+        String url = GO_SERVICE_URL + "/postHistory/" + userId;
+        return restTemplate.getForEntity(url, String.class);
+    }
 }

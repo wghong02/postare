@@ -58,7 +58,7 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "post owner does not exist", http.StatusBadRequest)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search post by ID from backend",
+			http.Error(w, "Failed to upload post from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -102,7 +102,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "post not owned by user", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search post by ID from backend",
+			http.Error(w, "Failed to delete post from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -167,7 +167,7 @@ func getPostByIDHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "post not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search post by ID from backend",
+			http.Error(w, "Failed to get post by ID from backend",
 				http.StatusInternalServerError)
 		}
 		return

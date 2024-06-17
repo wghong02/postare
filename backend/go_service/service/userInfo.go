@@ -40,8 +40,19 @@ func GetUserIdByName(username string) (int64, error) {
 	// call backend to get the product information, return the product info and if there is error
 	userID, err := sqlMethods.GetUserIDByUsername(username)
 	if err != nil {
-		fmt.Printf("Failed to search user by id from SQL, %v\n", err)
+		fmt.Printf("Failed to search user by name from SQL, %v\n", err)
 		return -1, err
 	}
 	return userID, nil
+}
+
+func GetUsernameByID(userID int64) (string, error) {
+	
+	// call backend to get the product information, return the product info and if there is error
+	username, err := sqlMethods.GetUsernameByUserID(userID)
+	if err != nil {
+		fmt.Printf("Failed to search user by id from SQL, %v\n", err)
+		return "", err
+	}
+	return username, nil
 }

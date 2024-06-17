@@ -65,8 +65,7 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String userId = getUserIdFromToken(token);
-        return (userId.equals(String.valueOf(((CustomUserDetails) userDetails).getUserId())) && !isTokenExpired(token));
+    public Boolean validateToken(String token) {
+        return (!isTokenExpired(token));
     }
 }

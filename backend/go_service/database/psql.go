@@ -96,7 +96,8 @@ func createTables() {
             TotalViews BIGINT NOT NULL,
             TotalComments BIGINT NOT NULL,
             TotalLikes BIGINT NOT NULL,
-            UserExperience BIGINT NOT NULL
+            UserExperience BIGINT NOT NULL,
+			TotalPosts BIGINT NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS Categories (
             CategoryID BIGSERIAL PRIMARY KEY NOT NULL,
@@ -133,6 +134,31 @@ func createTables() {
             Liker BIGINT REFERENCES UserInfo(UserID) NOT NULL,
             DateTime TIMESTAMP WITH TIME ZONE NOT NULL
         )`,
+		`CREATE OR REPLACE FUNCTION update_total_posts() RETURNS TRIGGER AS $$
+		BEGIN
+			IF TG_OP = 'INSERT' THEN
+				UPDATE UserInfo
+				SET TotalPosts = TotalPosts + 1
+				WHERE UserID = NEW.PostOwnerID;
+			ELSIF TG_OP = 'DELETE' THEN
+				UPDATE UserInfo
+				SET TotalPosts = TotalPosts - 1
+				WHERE UserID = OLD.PostOwnerID;
+			END IF;
+			RETURN NULL;
+		END;
+		$$ LANGUAGE plpgsql;
+		`,
+		`CREATE TRIGGER post_insert_trigger
+		AFTER INSERT ON Posts
+		FOR EACH ROW
+		EXECUTE FUNCTION update_total_posts();
+
+		CREATE TRIGGER post_delete_trigger
+		AFTER DELETE ON Posts
+		FOR EACH ROW
+		EXECUTE FUNCTION update_total_posts();
+		`,
 	}
 
 	// Execute all SQL commands.
@@ -162,11 +188,11 @@ func insertSampleData() {
 	for _, user := range model.Users {
 		_, err := dbPool.Exec(context.Background(), `INSERT INTO UserInfo (UserID, 
             Username, UserEmail, UserPhone, Nickname,ProfilePicture, RegisterTime, 
-			TotalViews, TotalComments, TotalLikes, 
-            UserExperience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+			TotalViews, TotalComments, TotalLikes, UserExperience, TotalPosts)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
             ON CONFLICT (UserID) DO NOTHING`, user.UserID, user.Username, user.UserEmail,
-			user.UserPhone, user.Nickname, user.ProfilePicture,
-			user.RegisterTime, user.TotalViews, user.TotalComments, user.TotalLikes, user.UserExperience)
+			user.UserPhone, user.Nickname, user.ProfilePicture, user.RegisterTime, user.TotalViews, 
+			user.TotalComments, user.TotalLikes, user.UserExperience, user.TotalPosts)
 		if err != nil {
 			log.Fatalf("Failed to insert user data: %v", err)
 		}

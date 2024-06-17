@@ -20,6 +20,7 @@ type UserInfo struct {
 	TotalComments   int64     `json:"total_comments"`
 	TotalLikes      int64     `json:"total_likes"`
 	UserExperience  int64     `json:"user_experience"`
+	TotalPosts      int64	  `json:"total_posts"`
 }
 
 type UserAuth struct {
@@ -81,13 +82,13 @@ var Users = []UserInfo{
 		UserID: 101, Username: "antique_seller", UserEmail: "antique@example.com",
 		UserPhone: "+1234567890",  Nickname: "Ann",
 		ProfilePicture: "profile_pic_url.jpg", RegisterTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
-		TotalComments: 3, TotalLikes: 1, TotalViews: 5, UserExperience: 17,
+		TotalComments: 3, TotalLikes: 1, TotalViews: 5, UserExperience: 17, TotalPosts: 0,
 	},
 	{
 		UserID: 102, Username: "antique_seller2", UserEmail: "antique2@example.com",
 		UserPhone: "+134562897",  Nickname: "Johnny",
 		ProfilePicture: "profile_pic_url2.jpg", RegisterTime: time.Date(2023, 1, 2, 0, 0, 0, 0, time.UTC),
-		TotalComments: 4, TotalLikes: 157, TotalViews: 23, UserExperience: 45,
+		TotalComments: 4, TotalLikes: 157, TotalViews: 23, UserExperience: 45, TotalPosts: 0,
 	},
 }
 

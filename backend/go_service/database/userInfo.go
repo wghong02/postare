@@ -13,9 +13,9 @@ import (
 func SaveUserInfoToSQL(user *model.UserInfo) error {
 	
 	// save user
-	query := `INSERT INTO Users (Username, UserEmail, UserPhone, Nickname,
+	query := `INSERT INTO UserInfo (Username, UserEmail, UserPhone, Nickname,
         ProfilePicture, RegisterTime, TotalViews, TotalComments,
-        TotalLikes, UserExperience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
+        TotalLikes, UserExperience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
 	_, err := dbPool.Exec(context.Background(),
 		query, user.Username, user.UserEmail, user.UserPhone, user.Nickname,
@@ -38,11 +38,11 @@ func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 	err := dbPool.QueryRow(context.Background(),
 		`SELECT UserID, Username, UserEmail, UserPhone, Nickname,
     ProfilePicture, RegisterTime, TotalViews, TotalComments, TotalLikes, 
-    UserExperience FROM UserInfo WHERE UserID = $1`,
+    UserExperience, TotalPosts FROM UserInfo WHERE UserID = $1`,
 		userID).Scan(&user.UserID, &user.Username, &user.UserEmail,
 		&user.UserPhone, &user.Nickname, &user.ProfilePicture,
 		&user.RegisterTime, &user.TotalViews, &user.TotalComments,
-		&user.TotalLikes, &user.UserExperience,
+		&user.TotalLikes, &user.UserExperience, &user.TotalPosts,
 	)
 
 	// Check if the query returned an error
@@ -73,6 +73,25 @@ func GetUserIDByUsername(username string) (int64, error) {
 	}
 
 	return userID, nil
+}
+
+func GetUsernameByUserID(userID int64) (string, error) {
+
+	// search if user id exists
+	var username string
+	err := dbPool.QueryRow(context.Background(),
+		`SELECT Username FROM UserInfo WHERE UserID = $1`,
+		userID).Scan(&username)
+
+	// Check if the query returned an error
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+            return "", customErrors.ErrUserNotFound
+        }
+		return "", err 
+	}
+
+	return username, nil
 }
 
 func checkIfUserExistsByID(userID int64) (bool, error) {

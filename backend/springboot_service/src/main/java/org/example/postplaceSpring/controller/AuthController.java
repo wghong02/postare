@@ -2,10 +2,13 @@ package org.example.postplaceSpring.controller;
 
 import org.example.postplaceSpring.model.JwtRequest;
 import org.example.postplaceSpring.model.JwtResponse;
+import org.example.postplaceSpring.model.UserRegistrationRequest;
 import org.example.postplaceSpring.service.CustomUserDetails;
 import org.example.postplaceSpring.service.UserAuthService;
 import org.example.postplaceSpring.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,5 +50,15 @@ public class AuthController {
         final String token = jwtTokenUtil.generateToken(userDetails, userId);
 
         return new JwtResponse(token);
+    }
+
+    @PostMapping("/auth/register")
+    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
+        try {
+            userDetailsService.registerNewUser(registrationRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

@@ -1,37 +1,28 @@
 package org.example.postplaceSpring.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.UUID;
 
 @Service
 public class UserInfoService {
-//    private final UsersRepo userRepository;
-//
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-//
-//    @Autowired
-//    public UserInfoService(UsersRepo userRepository) {
-//        this.userRepository = userRepository;
-//    }
-//
-//    public Iterable<Users> findAllUsers() {
-//        return this.userRepository.findAll();
-//    }
+    // connect directly to go BE to get data from be using RESTAPI
+    private final RestTemplate restTemplate;
+    private final String GO_SERVICE_URL = "http://localhost:8081";
 
-//    public Users findUserById(long id) {
-//        Optional<Users> user = userRepository.findById(id);
-//        return user.orElse(null); // Handle the Optional if user is not found
-//    }
-//
-//    public void deleteUserByUserId(long userID) {
-//        userRepository.findById(userID)
-//                .orElseThrow(() -> new NoSuchElementException("Invalid delete no seller found with the ID: " + userID));
-//        this.userRepository.deleteById(userID);
-//    }
-//
-//    public long getUserIdByUsername(String username) {
-//        return userRepository.findByUsername(username)
-//                .orElseThrow(() -> new RuntimeException("User not found with username: " + username))
-//                .getUserId();
-//    }
+    @Autowired
+    public UserInfoService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public ResponseEntity<String> getUserInfoById(long userId) {
+        String url = GO_SERVICE_URL + "/users/" + userId;
+        return restTemplate.getForEntity(url, String.class);
+    }
 }

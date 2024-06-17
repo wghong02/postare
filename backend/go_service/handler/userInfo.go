@@ -46,7 +46,7 @@ fmt.Println("Received one save user info request")
 		} else {
 			log.Printf("Error saving user info: %v", err)
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search post by ID from backend",
+			http.Error(w, "Failed to save user from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -118,6 +118,44 @@ func getUserIdByNameHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 3. format json response
 	js, err := json.Marshal(userID)
+	if err != nil {
+		http.Error(w, "Failed to parse user into JSON format",
+			http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
+}
+
+func getUsernameByIDHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get username request")
+
+	// 1. process data
+	
+	w.Header().Set("Content-Type", "application/json")
+	userIDStr := mux.Vars(r)["userID"]
+
+	// 1. process data
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid userID provided", http.StatusBadRequest)
+		return
+	}
+	// 2. call service level to get user id
+	username, err := service.GetUsernameByID(userID)
+	if err != nil {
+		// Check if the error is due to the user not being found
+		if errors.Is(err, customErrors.ErrUserNotFound){
+			http.Error(w, "User not found", http.StatusNotFound)
+		} else {
+			// For all other errors, return internal server error
+			http.Error(w, err.Error(),
+				http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// 3. format json response
+	js, err := json.Marshal(username)
 	if err != nil {
 		http.Error(w, "Failed to parse user into JSON format",
 			http.StatusInternalServerError)

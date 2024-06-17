@@ -17,9 +17,9 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show-sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
   token:

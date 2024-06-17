@@ -12,7 +12,6 @@ import (
 
 func UploadPost(post *model.Post, userID int64) error {
 	// Set additional fields
-
 	post.PostID = uuid.New()
 	post.PostOwnerID = userID
 	post.PutOutTime = time.Now()
