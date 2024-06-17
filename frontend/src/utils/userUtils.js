@@ -1,7 +1,8 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-const domain = "http://localhost:8080";
+// const domain = "http://localhost:8080";
+const domain = "http://18.216.40.20:8080"; // aws container
 
 export const login = (credential) => {
   // login, input json with credentials, output auth token

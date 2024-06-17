@@ -1,8 +1,8 @@
 import handleResponseStatus from "@/utils/errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-const domain = "http://localhost:8080"; // local test
-// const domain = "http://18.216.40.20:8080"; // aws container
+// const domain = "http://localhost:8080"; // local test
+const domain = "http://18.216.40.20:8080"; // aws container
 
 export const getProduct = (productID) => {
   // get a single product by product ID. response is json
