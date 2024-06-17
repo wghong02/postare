@@ -1,18 +1,12 @@
 package org.example.postplaceSpring.controller;
 
-import org.example.postplaceSpring.service.CustomUserDetails;
-import org.example.postplaceSpring.service.PostService;
 import org.example.postplaceSpring.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.UUID;
 
 @RestController
 public class UserInfoController {
