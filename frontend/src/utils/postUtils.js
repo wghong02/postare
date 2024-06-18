@@ -89,34 +89,10 @@ export const deletePost = (postID) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const ratePost = (data, postID) => {
-  // user can rate post they have purchased, requires auth token
-  const authToken = localStorage.getItem("authToken");
-  const url = `${domain}/user/purchaseHistory/${postID}/rate`;
-
-  const { rating, comment } = data;
-  const formData = new FormData();
-  formData.append("rating", rating);
-  formData.append("comment", comment);
-
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json",
-    },
-    body: formData,
-  })
-    .then((response) => {
-      handleResponseStatus(response, "Fail to post ratings");
-    })
-    .then((data) => camelizeKeys(data));
-};
-
 export const getMostViewedPosts = (query) => {
-  // get a single post by post ID. response is json
+  // get a most viewed posts for recommendation. response is json
 
-  const url = `${domain}/post/get/mostViewed`;
+  const url = `${domain}/posts/get/mostViewed`;
   if (query?.batch) {
     url.searchParams.append("batch", query.batch);
   }

@@ -1,8 +1,8 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-// const domain = "http://localhost:8080";
-const domain = "http://18.216.40.20:8080"; // aws container
+const domain = "http://localhost:8080";
+// const domain = "http://18.216.40.20:8080"; // aws container
 
 export const login = (credential) => {
   // login, input json with credentials, output auth token
@@ -15,7 +15,7 @@ export const login = (credential) => {
     body: JSON.stringify(decamelizeKeys(credential)),
   })
     .then((response) => {
-      console.log(response)
+      console.log(response);
       handleResponseStatus(response, "Fail to Log in");
       return response.text();
     })
@@ -85,4 +85,3 @@ export const getShoppingCart = () => {
     })
     .then((data) => camelizeKeys(data));
 };
-

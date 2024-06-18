@@ -1,18 +1,25 @@
 type DateString = string;
 
-// User Model
-export interface User {
+// UserInfo Model
+export interface UserInfo {
   userID: number;
   username: string;
   userEmail: string;
   userPhone: string;
-  password: string;
-  address: string;
+  nickname: string;
   profilePicture: string;
-  registerDate: DateString;
-  userRating: number;
-  totalItemsSold: number;
-  totalReviews: number;
+  registerTime: DateString;
+  totalViews: number;
+  totalComments: number;
+  totalLikes: number;
+  userExperience: number;
+  totalPosts: number;
+}
+
+// UserAuth Model
+export interface UserAuth {
+  username: string;
+  encodedPassword: string;
 }
 
 // Post Model
@@ -20,13 +27,12 @@ export interface Post {
   postID: string;
   title: string;
   description: string;
-  price: number;
+  likes: number;
   categoryID: number;
-  sellerID: number;
-  condition: string;
+  postOwnerID: number;
   putOutTime: DateString;
   postDetails: string;
-  status: string;
+  isAvailable: boolean;
   imageUrl: string;
   views: number;
 }
@@ -34,25 +40,25 @@ export interface Post {
 // Comment Model
 export interface Comment {
   commentID: number;
-  buyerID: number;
+  posterID: number;
   comment: string;
-  postID: number;
+  postID: string;
 }
 
-// Order Model
-export interface Order {
-  orderID: number;
-  sellerID: number;
-  buyerID: number;
-  date: DateString;
-  priceTotal: number;
+// SubComment Model
+export interface SubComment {
+  subCommentID: number;
+  posterID: number;
+  comment: string;
+  commentID: number;
 }
 
-// OrderDetail Model
-export interface OrderDetail {
-  detailID: number;
-  orderID: number;
-  postID: number;
+// Like Model
+export interface Like {
+  likeID: number;
+  postID: string;
+  likerID: number;
+  dateTime: DateString;
 }
 
 // Category Model

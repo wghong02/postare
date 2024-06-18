@@ -2,7 +2,7 @@
 import React from "react";
 import { Flex } from "@chakra-ui/react";
 import Header from "@/ui/components/web/Header";
-import MostViewedRow from "@/ui/components/posts/MostViewedRow";
+import MostViewedPage from "@/ui/components/posts/MostViewedPage";
 
 const HomePage = () => {
   // home page should have the header, rows of posts in the middle
@@ -12,7 +12,7 @@ const HomePage = () => {
   return (
     <>
       <Flex direction="column" align="center" m="4">
-        <MostViewedRow title="Most Viewed Posts" />
+        <MostViewedPage />
       </Flex>
     </>
   );

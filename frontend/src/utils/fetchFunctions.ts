@@ -1,9 +1,9 @@
-import { User, Post } from "@/lib/model";
+import { UserInfo, Post } from "@/lib/model";
 
 export const fetchUser = async (
   parameter: any,
-  setUser: (user: User | null) => void,
-  userUtilFunction: (parameter: any) => Promise<User>
+  setUser: (user: UserInfo | null) => void,
+  userUtilFunction: (parameter: any) => Promise<UserInfo>
 ): Promise<void> => {
   // function to handle any request to fetch the user
   try {
@@ -40,6 +40,6 @@ export const fetchPosts = async (
     const response = await postUtilFunction(parameter);
     setPosts(response || []);
   } catch (error) {
-    console.error("Failed to fetch the post:", error);
+    console.error("Failed to fetch posts:", error);
   }
 };

@@ -2,7 +2,7 @@ import { React, useEffect, useState } from "react";
 import { Box, Flex, Text, Button } from "@chakra-ui/react";
 import PostCard from "@/ui/components/posts/PostCard";
 
-const PostRow = ({ title, posts, page, onPageChange }) => {
+const PostRow = ({ posts, page, onPageChange }) => {
   // a row of posts based on the specific needs. each post is presented as cards
   // posts are organized by
   const [currentPage, setCurrentPage] = useState(page || 0);
@@ -55,9 +55,6 @@ const PostRow = ({ title, posts, page, onPageChange }) => {
 
   return (
     <Box my="20px" w="full">
-      <Text fontSize="xl" mb="4">
-        {title}
-      </Text>
       <Flex justify="space-between" wrap="wrap">
         {currentPosts.length > 0 ? (
           currentPosts.map((post, index) => (

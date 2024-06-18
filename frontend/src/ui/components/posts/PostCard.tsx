@@ -3,15 +3,15 @@ import { Box, Image, Badge } from "@chakra-ui/react";
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
+import { Post } from "@/lib/model";
 
-function PostCard({ post }) {
+function PostCard({ post }: { post: Post }) {
   // card of each individual post
   // shows basic info of the post
-  const registerTime = timeAgo(post.putOutDate);
-  const postedRecent = isPostedWithin(post.putOutDate, "month");
-  const isAvailable = post.status === "available";
+  const registerTime = timeAgo(post.putOutTime);
+  const postedRecent = isPostedWithin(post.putOutTime, "month");
+  const isAvailable = post.isAvailable;
   const isHot = post.views >= 500;
-
   return (
     <Link as={NextLink} href={`/posts/${post.postID}`} passHref>
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
@@ -26,7 +26,7 @@ function PostCard({ post }) {
             )}
             {!isAvailable && (
               <Badge borderRadius="full" px="2" colorScheme="gray">
-                Sold
+                Archived
               </Badge>
             )}
             {isHot && (
@@ -46,7 +46,7 @@ function PostCard({ post }) {
               textTransform="uppercase"
               ml="4"
             >
-              {post.address}
+              {post.likes} likes
             </Box>
             <Box
               color="gray.500"
@@ -68,15 +68,6 @@ function PostCard({ post }) {
             noOfLines={1}
           >
             {post.title}
-          </Box>
-
-          <Box>
-            {Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              minimumFractionDigits: 2, // Ensures two decimal places in the output
-              maximumFractionDigits: 2, // Ensures two decimal places even if the number is whole
-            }).format(post.price / 100)}
           </Box>
         </Box>
       </Box>
