@@ -56,7 +56,7 @@ const Header: React.FC = () => {
             fontSize="md"
             fontWeight="bold"
           >
-            Marketplace
+            Postare
           </Button>
         </Link>
       </Flex>

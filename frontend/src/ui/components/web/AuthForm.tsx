@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import {
   Box,
   Button,
@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 const AuthForm = () => {
   // router for redirect
   const router = useRouter();
-  
+
   // fields that we need are to be entered by user
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -100,7 +100,7 @@ const AuthForm = () => {
           password,
         });
         alert("Login successful");
-        router.push("/");
+        window.location.href = "/";
       } catch (error: any) {
         alert("Login failed: " + error.message);
       }
