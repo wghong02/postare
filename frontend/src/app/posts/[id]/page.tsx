@@ -25,9 +25,9 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
   const fetchData = async () => {
     try {
       const postData = await fetchSinglePost(params.id, setPost, getPost);
-      if (postData && postData.sellerID) {
+      if (postData && postData.sellerId) {
         try {
-          await fetchUser(postData.sellerID, setUser, getUserInfo);
+          await fetchUser(postData.sellerId, setUser, getUserInfo);
         } catch (error) {
           console.error("Error fetching posts:", error);
           throw error; // Re-throw the error to handle it in useLoading

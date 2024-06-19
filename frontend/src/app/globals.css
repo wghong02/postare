@@ -105,3 +105,19 @@ a {
     color-scheme: dark;
   }
 }
+
+.my-masonry-grid {
+  display: flex;
+  width: auto;
+  margin-left: 0px; /* Adjust gutter size */
+}
+
+.my-masonry-grid_column {
+  padding-left: 20px; /* Adjust gutter size */
+  background-clip: padding-box;
+  padding-bottom: 20px;
+}
+
+.my-masonry-grid_column > div {
+  margin-bottom: 20px; /* Adjust gutter size */
+}

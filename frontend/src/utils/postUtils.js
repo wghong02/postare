@@ -4,9 +4,9 @@ import { camelizeKeys, decamelizeKeys } from "humps";
 const domain = "http://localhost:8080"; // local test
 // const domain = "http://18.216.40.20:8080"; // aws container
 
-export const getPost = (postID) => {
-  // get a single post by post ID. response is json
-  const url = `${domain}/posts/${postID}`;
+export const getPost = (postId) => {
+  // get a single post by post Id. response is json
+  const url = `${domain}/posts/${postId}`;
 
   return fetch(url)
     .then((response) => {
@@ -72,10 +72,10 @@ export const uploadPost = (data) => {
   });
 };
 
-export const deletePost = (postID) => {
+export const deletePost = (postId) => {
   // delete post using its id
   const authToken = localStorage.getItem("authToken");
-  const url = `${domain}/user/posts/delete/${postID}`;
+  const url = `${domain}/user/posts/delete/${postId}`;
 
   return fetch(url, {
     method: "DELETE",
@@ -92,7 +92,7 @@ export const deletePost = (postID) => {
 export const getMostViewedPosts = (query) => {
   // get a most viewed posts for recommendation. response is json
 
-  const url = `${domain}/posts/get/mostViewed`;
+  const url = new URL(`${domain}/posts/get/mostViewed`);
   if (query?.batch) {
     url.searchParams.append("batch", query.batch);
   }
@@ -100,8 +100,9 @@ export const getMostViewedPosts = (query) => {
   if (query?.totalSize) {
     url.searchParams.append("totalSize", query.totalSize);
   }
+  console.log(url.toString())
 
-  return fetch(url)
+  return fetch(url.toString())
     .then((response) => {
       handleResponseStatus(response, "Fail to get post");
       return response.json();
@@ -109,9 +110,9 @@ export const getMostViewedPosts = (query) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const getUserPosts = ({ userID, query }) => {
+export const getUserPosts = ({ userId, query }) => {
   // get the upload history of a user with its id
-  const url = `${domain}/postHistory/${userID}`;
+  const url = new URL(`${domain}/postHistory/${userId}`);
   if (query?.batch) {
     url.searchParams.append("batch", query.batch);
   }
@@ -120,7 +121,7 @@ export const getUserPosts = ({ userID, query }) => {
     url.searchParams.append("totalSize", query.totalSize);
   }
 
-  return fetch(url)
+  return fetch(url.toString())
     .then((response) => {
       handleResponseStatus(response, "Fail to search for upload history");
       return response.json();

@@ -14,7 +14,7 @@ export function PostPageCard(post: Post): React.ReactElement {
   const isHot = post.views >= 500;
 
   return (
-    <Link as={NextLink} href={`/posts/${post.postID}`} passHref>
+    <Link as={NextLink} href={`/posts/${post.postId}`} passHref>
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
         <Image src={post.imageUrl} />
         {/* //show badges of new if new and not sold, sold if sold, hot if have many views */}

@@ -2,7 +2,7 @@ type DateString = string;
 
 // UserInfo Model
 export interface UserInfo {
-  userID: number;
+  userId: number;
   username: string;
   userEmail: string;
   userPhone: string;
@@ -24,12 +24,12 @@ export interface UserAuth {
 
 // Post Model
 export interface Post {
-  postID: string;
+  postId: string;
   title: string;
   description: string;
   likes: number;
-  categoryID: number;
-  postOwnerID: number;
+  categoryId: number;
+  postOwnerId: number;
   putOutTime: DateString;
   postDetails: string;
   isAvailable: boolean;
@@ -39,31 +39,31 @@ export interface Post {
 
 // Comment Model
 export interface Comment {
-  commentID: number;
-  posterID: number;
+  commentId: number;
+  posterId: number;
   comment: string;
-  postID: string;
+  postId: string;
 }
 
 // SubComment Model
 export interface SubComment {
-  subCommentID: number;
-  posterID: number;
+  subCommentId: number;
+  posterId: number;
   comment: string;
-  commentID: number;
+  commentId: number;
 }
 
 // Like Model
 export interface Like {
-  likeID: number;
-  postID: string;
-  likerID: number;
+  likeId: number;
+  postId: string;
+  likerId: number;
   dateTime: DateString;
 }
 
 // Category Model
 export interface Category {
-  categoryID: number;
+  categoryId: number;
   categoryName: string;
 }
 

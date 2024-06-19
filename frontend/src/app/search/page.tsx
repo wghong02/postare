@@ -39,7 +39,7 @@ const SearchPostsPage = () => {
       <LoadingWrapper loading={loading} hasFetched={hasFetched}>
         <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
           {posts.map((post) => (
-            <PostCard key={post.postID} post={post} />
+            <PostCard key={post.postId} post={post} />
           ))}
         </Grid>
       </LoadingWrapper>

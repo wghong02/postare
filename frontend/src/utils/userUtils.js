@@ -15,7 +15,6 @@ export const login = (credential) => {
     body: JSON.stringify(decamelizeKeys(credential)),
   })
     .then((response) => {
-      console.log(response);
       handleResponseStatus(response, "Fail to Log in");
       return response.text();
     })
@@ -40,9 +39,9 @@ export const register = (credential) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const getUserInfo = (userID) => {
-  // get a single user's info by user ID. response is json
-  const url = `${domain}/users/${userID}`;
+export const getUserInfo = (userId) => {
+  // get a single user's info by user Id. response is json
+  const url = `${domain}/users/${userId}`;
 
   return fetch(url)
     .then((response) => {

@@ -3,6 +3,7 @@ import { Providers } from "./providers";
 import React from "react";
 import Header from "@/ui/components/web/Header";
 import { Box } from "@chakra-ui/react";
+import "./globals.css";
 
 export default function RootLayout({
   // default root layout using chakraUI

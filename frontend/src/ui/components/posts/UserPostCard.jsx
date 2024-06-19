@@ -16,12 +16,12 @@ import { deletePost } from "@/utils/postUtils";
 
 function UserPostCard({ post }) {
   const registerTime = timeAgo(post.putOutDate);
-  const postID = post.postID;
+  const postId = post.postId;
 
   // to delete the post
-  const deleteOnClick = async (postID) => {
+  const deleteOnClick = async (postId) => {
     try {
-      await deletePost(postID);
+      await deletePost(postId);
       window.location.href = `/user/posts`; // Inform parent component about the deletion
     } catch (error) {
       console.error("Failed to delete post:", error);
@@ -52,7 +52,7 @@ function UserPostCard({ post }) {
           </CardBody>
 
           <CardFooter>
-            <Link as={NextLink} href={`/posts/${postID}`} passHref>
+            <Link as={NextLink} href={`/posts/${postId}`} passHref>
               <Button variant="solid" colorScheme="blue" mr="6">
                 View
               </Button>
@@ -60,7 +60,7 @@ function UserPostCard({ post }) {
             <Button
               variant="solid"
               colorScheme="red"
-              onClick={() => deleteOnClick(postID)}
+              onClick={() => deleteOnClick(postId)}
             >
               Delete
             </Button>
