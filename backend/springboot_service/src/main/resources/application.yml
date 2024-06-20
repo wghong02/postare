@@ -19,7 +19,6 @@ spring:
       hibernate:
         format_sql: true
         show-sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
   token:

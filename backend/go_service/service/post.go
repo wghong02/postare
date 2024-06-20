@@ -69,12 +69,12 @@ func GetPostByID(postID uuid.UUID) (model.Post, error) {
 	return post, err
 }
 
-func GetMostViewedPosts(batch int, totalSize int) ([]model.Post, error) {
+func GetMostInOneAttributePosts(batch int, totalSize int, attribute string) ([]model.Post, error) {
 	// Calculate offset based on batch and totalSize
 	offset := (batch - 1) * totalSize
 
 	// Call backend to get the most viewed posts
-	posts, err := sqlMethods.GetMostViewedPosts(totalSize, offset)
+	posts, err := sqlMethods.GetMostInOneAttributePosts(totalSize, offset, attribute)
 	if err != nil {
 		fmt.Printf("Failed to search posts from SQL, %v\n", err)
 		return nil, err

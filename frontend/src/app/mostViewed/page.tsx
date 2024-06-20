@@ -3,7 +3,7 @@ import React from "react";
 import { Flex } from "@chakra-ui/react";
 import MostViewedPage from "@/ui/components/posts/MostViewedPage";
 
-const HomePage = () => {
+const MostViewedPostsPage = () => {
   // home page should have the header, rows of posts in the middle
 
   // Handler functions for pagination
@@ -17,4 +17,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default MostViewedPostsPage;

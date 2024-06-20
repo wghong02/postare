@@ -127,7 +127,7 @@ func searchPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	totalSize, err := strconv.Atoi(totalSizeStr)
 	if err != nil || totalSize < 1 {
-		totalSize = 60 // default total size to load from server
+		totalSize = 30 // default total size to load from server
 	}
 
 	// 2. call service to handle search
@@ -183,10 +183,11 @@ func getPostByIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func getMostViewedPostsHandler(w http.ResponseWriter, r *http.Request) {
+func getMostInOneAttributePostsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one get most viewed posts request")
 
 	w.Header().Set("Content-Type", "application/json")
+	attribute := mux.Vars(r)["attribute"]
 	batchStr := r.URL.Query().Get("batch")
 	totalSizeStr := r.URL.Query().Get("totalSize")
 
@@ -196,13 +197,13 @@ func getMostViewedPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	totalSize, err := strconv.Atoi(totalSizeStr)
 	if err != nil || totalSize < 1 {
-		totalSize = 60 // default total size to load from server
+		totalSize = 30 // default total size to load from server
 	}
 
 	var posts []model.Post
 
 	// 2. call service to handle search
-	posts, err = service.GetMostViewedPosts(batch, totalSize)
+	posts, err = service.GetMostInOneAttributePosts(batch, totalSize, attribute)
 	if err != nil {
 		http.Error(w, "Failed to read posts from backend", http.StatusInternalServerError)
 		return
@@ -232,7 +233,7 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	totalSize, err := strconv.Atoi(totalSizeStr)
 	if err != nil || totalSize < 1 {
-		totalSize = 60 // default total size to load from server
+		totalSize = 30 // default total size to load from server
 	}
 
 	// 1. process data

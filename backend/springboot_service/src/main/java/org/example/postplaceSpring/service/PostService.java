@@ -44,8 +44,8 @@ public class PostService {
         restTemplate.delete(url);
     }
 
-    public ResponseEntity<String> findMostViewedPosts(int limit, int offset) {
-        String url = GO_SERVICE_URL + "/search?limit=" + limit + "&offset=" + offset;
+    public ResponseEntity<String> findMostInOneAttributePosts(int batch, int totalSize, String attribute) {
+        String url = GO_SERVICE_URL + "/posts/get/most/" + attribute + "?batch=" + batch + "&totalSize=" + totalSize;
         return restTemplate.getForEntity(url, String.class);
     }
 

@@ -100,7 +100,6 @@ export const getMostViewedPosts = (query) => {
   if (query?.totalSize) {
     url.searchParams.append("totalSize", query.totalSize);
   }
-  console.log(url.toString())
 
   return fetch(url.toString())
     .then((response) => {

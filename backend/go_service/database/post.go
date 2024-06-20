@@ -5,7 +5,6 @@ import (
 	"appBE/model"
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
@@ -72,17 +71,17 @@ func SearchPostsByDescription(keyword string, limit int, offset int) ([]model.Po
 	// use args to avoid sql injection
 	// vague search so any description or title contains count
 	if keyword == "" {
-		query = `SELECT * FROM Posts LIMIT $1 OFFSET $2`
+		query = `SELECT * FROM Posts ORDER BY likes DESC, views DESC, putouttime DESC LIMIT $1 OFFSET $2`
 		args = append(args, limit, offset)
 	} else {
-		query = `SELECT * FROM Posts WHERE title ILIKE $1 OR description ILIKE $1 OR PostDetails ILIKE $1 LIMIT $2 OFFSET $3`
+		query = `SELECT * FROM Posts WHERE title ILIKE $1 OR description ILIKE $1 OR PostDetails ILIKE $1 
+				ORDER BY likes DESC, views DESC, putouttime DESC LIMIT $2 OFFSET $3`
 		args = append(args, "%"+keyword+"%", limit, offset)
 	}
 
 	// search with sql statement
 	rows, err := dbPool.Query(context.Background(), query, args...)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -133,20 +132,27 @@ func GetPostByID(postID uuid.UUID) (model.Post, error) {
 	return post, nil
 }
 
-func GetMostViewedPosts(limit int, offset int) ([]model.Post, error) {
+
+func GetMostInOneAttributePosts(limit int, offset int, attribute string) ([]model.Post, error) {
 
 	var posts []model.Post
 	var query string
 	var args []interface{}
 
 	// use args to avoid sql injection
-	query = `SELECT * FROM Posts ORDER BY views DESC, putouttime DESC LIMIT $1 OFFSET $2`
+	if attribute == "liked" {
+		query = `SELECT * FROM Posts ORDER BY likes DESC, views DESC, putouttime DESC LIMIT $1 OFFSET $2`
+	} else if attribute == "viewed" {
+		query = `SELECT * FROM Posts ORDER BY views DESC, likes DESC, putouttime DESC LIMIT $1 OFFSET $2`
+	} else if attribute == "recent" {
+		query = `SELECT * FROM Posts ORDER BY putouttime DESC, likes DESC, views DESC LIMIT $1 OFFSET $2`
+	}
+	
 	args = append(args, limit, offset)
 
 	// search top results with sql statement
 	rows, err := dbPool.Query(context.Background(), query, args...)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()

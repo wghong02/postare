@@ -38,7 +38,7 @@
         @GetMapping("/search")
         public ResponseEntity<String> findPostsByDescription(
                 @RequestParam(required = false) String description,
-                @RequestParam(defaultValue = "60") int limit,
+                @RequestParam(defaultValue = "30") int limit,
                 @RequestParam(defaultValue = "0") int offset) {
             return postService.findPostsByDescription(description, limit, offset);
         }
@@ -59,11 +59,12 @@
             return ResponseEntity.noContent().build();
         }
 
-        @GetMapping("/posts/get/mostViewed")
-        public ResponseEntity<String> getMostViewedPosts(
-                @RequestParam(defaultValue = "60") int limit,
-                @RequestParam(defaultValue = "0") int offset) {
-            return postService.findMostViewedPosts(limit, offset);
+        @GetMapping("/posts/get/most/{attribute}")
+        public ResponseEntity<String> getMostInOneAttributePosts(
+                @PathVariable String attribute,
+                @RequestParam(defaultValue = "1") int batch,
+                @RequestParam(defaultValue = "30") int totalSize) {
+            return postService.findMostInOneAttributePosts(batch, totalSize, attribute);
         }
 
         @GetMapping("/postHistory/{userId}")

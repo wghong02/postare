@@ -20,7 +20,7 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/user/posts/upload", uploadPostHandler).Methods("POST")
 	router.HandleFunc("/user/posts/delete/{postID}", deletePostHandler).Methods("DELETE")
 	router.HandleFunc("/posts/{postID}", getPostByIDHandler).Methods("GET")
-	router.HandleFunc("/posts/get/mostViewed", getMostViewedPostsHandler).Methods("GET")
+	router.HandleFunc("/posts/get/most/{attribute}", getMostInOneAttributePostsHandler).Methods("GET")
 	router.HandleFunc("/search", searchPostsHandler).Methods("GET")
 	router.HandleFunc("/postHistory/{userID}", getUserPostsHandler).Methods("GET")
 	router.HandleFunc("/users/{userID}", getUserInfoByIDHandler).Methods("GET")
