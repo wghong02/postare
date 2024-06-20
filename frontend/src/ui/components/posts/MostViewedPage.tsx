@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
-import { getMostViewedPosts } from "@/utils/postUtils";
+import { getMostInOneAttributePosts } from "@/utils/postUtils";
 import { useLoading } from "@/utils/generalUtils";
 import LoadingWrapper from "../web/LoadingWrapper";
 import { fetchPosts } from "@/utils/fetchFunctions";
-import { Box, Flex, Heading } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import { Post } from "@/lib/model";
-import PostCard from "./PostCard";
+import PostPreviewCard from "./PostPreviewCard";
 import Masonry from "react-masonry-css";
 import {
   handleInfScroll,
-  Footer,
+  BackToTopFooter,
 } from "../basicComponents/productBasicComponents";
 
 const MostViewedPage = () => {
@@ -20,11 +20,16 @@ const MostViewedPage = () => {
 
   const fetchData = async () => {
     try {
-      await fetchPosts(
-        { batch: currentPage, totalSize: postsToLoad },
-        (newPosts) => setPosts((prevPosts) => [...prevPosts, ...newPosts]),
-        getMostViewedPosts
-      );
+      await fetchPosts({
+        parameter: {
+          // parameters for the postUtilFunction
+          attribute: "viewed",
+          query: { batch: currentPage, totalSize: postsToLoad },
+        },
+        setPosts: (newPosts) =>
+          setPosts((prevPosts) => [...prevPosts, ...newPosts]), // to set the add new results to the current posts of the page
+        postUtilFunction: getMostInOneAttributePosts,
+      });
       setLoadingMore(false);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -56,7 +61,7 @@ const MostViewedPage = () => {
   }, [loadingMore]);
 
   // number of posts to load per scroll
-  const rowsToLoad = 5;
+  const rowsToLoad = 4;
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -101,27 +106,32 @@ const MostViewedPage = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" justifyContent="center" mt="4">
-      <LoadingWrapper loading={loading} hasFetched={hasFetched}>
-        <Heading as="h1" mb="4">
-          Posts For You
-        </Heading>
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          className="my-masonry-grid"
-          columnClassName="my-masonry-grid_column"
-        >
-          {posts?.length > 0 ? (
-            posts.map((post, index) => <PostCard key={index} post={post} />)
-          ) : (
-            <p>No posts available</p>
-          )}
-          {loadingMore && renderPhantomCards(postsToLoad)}
-        </Masonry>
-        <div ref={loadMoreRef} />
-      </LoadingWrapper>
-      <Footer></Footer>
-    </Box>
+    <>
+      <Box display="flex" flexDirection="column" justifyContent="center" mt="4">
+        <LoadingWrapper loading={loading} hasFetched={hasFetched}>
+          <Heading as="h1" mb="4">
+            Posts For You
+          </Heading>
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            {posts?.length > 0 ? (
+              posts.map((post, index) => (
+                <PostPreviewCard key={index} post={post} />
+              ))
+            ) : (
+              <p>No posts available</p>
+            )}
+            {loadingMore && renderPhantomCards(postsToLoad)}
+          </Masonry>
+          <div ref={loadMoreRef} />
+        </LoadingWrapper>
+      </Box>
+
+      <BackToTopFooter></BackToTopFooter>
+    </>
   );
 };
 

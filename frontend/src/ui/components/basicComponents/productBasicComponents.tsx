@@ -18,7 +18,7 @@ export const handleInfScroll = (
   };
 };
 
-export function Footer() {
+export function BackToTopFooter() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

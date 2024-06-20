@@ -89,10 +89,10 @@ export const deletePost = (postId) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const getMostViewedPosts = (query) => {
+export const getMostInOneAttributePosts = ({ attribute, query }) => {
   // get a most viewed posts for recommendation. response is json
 
-  const url = new URL(`${domain}/posts/get/mostViewed`);
+  const url = new URL(`${domain}/posts/get/most/${attribute}`);
   if (query?.batch) {
     url.searchParams.append("batch", query.batch);
   }

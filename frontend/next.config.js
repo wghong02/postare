@@ -1,3 +1,3 @@
 module.exports = {
-  reactStrictMode: true, // set to false to avoid double rendering
+  reactStrictMode: false, // set to false to avoid double rendering
 };

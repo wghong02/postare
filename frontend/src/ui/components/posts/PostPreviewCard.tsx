@@ -5,7 +5,7 @@ import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 import { Post } from "@/lib/model";
 
-function PostCard({ post }: { post: Post }) {
+function PostPreviewCard({ post }: { post: Post }) {
   // card of each individual post
   // shows basic info of the post
   const registerTime = timeAgo(post.putOutTime);
@@ -77,4 +77,4 @@ function PostCard({ post }: { post: Post }) {
   );
 }
 
-export default PostCard;
+export default PostPreviewCard;
