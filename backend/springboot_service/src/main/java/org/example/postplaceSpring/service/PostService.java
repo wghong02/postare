@@ -44,8 +44,8 @@ public class PostService {
         restTemplate.delete(url);
     }
 
-    public ResponseEntity<String> findMostInOneAttributePosts(int batch, int totalSize, String attribute) {
-        String url = GO_SERVICE_URL + "/posts/get/most/" + attribute + "?batch=" + batch + "&totalSize=" + totalSize;
+    public ResponseEntity<String> findMostInOneAttributePosts(int limit, int offset, String attribute) {
+        String url = GO_SERVICE_URL + "/posts/get/most/" + attribute + "?limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 

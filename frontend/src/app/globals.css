@@ -106,18 +106,39 @@ a {
   }
 }
 
-.my-masonry-grid {
+.grid_class {
   display: flex;
   width: auto;
-  margin-left: 0px; /* Adjust gutter size */
+  margin-left: -20px; /* Adjust gutter size */
 }
 
-.my-masonry-grid_column {
+.grid_column {
   padding-left: 20px; /* Adjust gutter size */
   background-clip: padding-box;
-  padding-bottom: 20px;
 }
 
 .my-masonry-grid_column > div {
   margin-bottom: 20px; /* Adjust gutter size */
+}
+
+.masonry-grid {
+  margin-left: -10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 350px));
+  grid-auto-flow: dense;
+  gap: 0px;
+  width: 100%; /* Ensure the container spans across its parent */
+  min-width: 300px;
+}
+
+.masonry-grid_column {
+  padding-left: 10px; /* Adjust the gutter size */
+  background-clip: padding-box;
+}
+
+.masonry-card {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  overflow: hidden;
 }

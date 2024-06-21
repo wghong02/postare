@@ -1,24 +1,8 @@
 import { Box, Link } from "@chakra-ui/react";
-import React from "react";
-
-export const handleInfScroll = (
-  loadMore: () => void,
-  nextPage: () => void,
-  loadingMore: boolean
-) => {
-  return () => {
-    if (
-      // to detect if reach the bottom of the page
-      window.innerHeight + window.scrollY >= document.body.offsetHeight &&
-      !loadingMore
-    ) {
-      loadMore();
-      nextPage();
-    }
-  };
-};
+import React, { useEffect, useRef, useState } from "react";
 
 export function BackToTopFooter() {
+  // click to go back to the top of the page
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -39,3 +23,57 @@ export function BackToTopFooter() {
     </Box>
   );
 }
+
+interface MasonryProps {
+  children: React.ReactNode[];
+  columns: number;
+  gap: number;
+}
+
+export const Masonry: React.FC<MasonryProps> = ({ children, columns, gap }) => {
+  // set the column layout of the masonry page
+  const [columnWrappers, setColumnWrappers] = useState<React.ReactNode[][]>(
+    Array.from({ length: columns }, () => [])
+  );
+  const columnRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const columnWrappers: React.ReactNode[][] = Array.from(
+      { length: columns },
+      () => []
+    );
+
+    React.Children.forEach(children, (child, index) => {
+      columnWrappers[index % columns].push(child);
+      // columnWrappers[getShortestColumnIndex()].push(child);
+    });
+
+    setColumnWrappers(columnWrappers);
+  }, [children, columns]);
+
+  return (
+    <Box
+      className="masonry-grid"
+      style={{ marginLeft: -gap }}
+      justifyContent="center" // Centers items horizontally
+      display="flex"
+    >
+      {columnWrappers.map((column, index) => (
+        <div
+          className="masonry-grid_column"
+          key={index}
+          style={{ paddingLeft: gap }}
+          ref={(el) => {
+            columnRefs.current[index] = el;
+          }}
+        >
+          {column.map((child, i) => (
+            <div key={i} className="masonry-card" style={{ marginBottom: gap }}>
+              {child}
+            </div>
+          ))}
+        </div>
+      ))}
+    </Box>
+  );
+};

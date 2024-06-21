@@ -118,20 +118,20 @@ func searchPostsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one search request")
 	w.Header().Set("Content-Type", "application/json")
 	description := r.URL.Query().Get("description")
-	batchStr := r.URL.Query().Get("batch")
-	totalSizeStr := r.URL.Query().Get("totalSize")
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
 
-	batch, err := strconv.Atoi(batchStr)
-	if err != nil || batch < 1 {
-		batch = 1 // default to first page
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 1 {
+		offset = 0 // default to first page
 	}
-	totalSize, err := strconv.Atoi(totalSizeStr)
-	if err != nil || totalSize < 1 {
-		totalSize = 30 // default total size to load from server
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		limit = 30 // default total size to load from server
 	}
 
 	// 2. call service to handle search
-	posts, err := service.SearchPostsByDescription(description, batch, totalSize)
+	posts, err := service.SearchPostsByDescription(description, limit, offset)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -188,22 +188,22 @@ func getMostInOneAttributePostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	attribute := mux.Vars(r)["attribute"]
-	batchStr := r.URL.Query().Get("batch")
-	totalSizeStr := r.URL.Query().Get("totalSize")
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
 
-	batch, err := strconv.Atoi(batchStr)
-	if err != nil || batch < 1 {
-		batch = 1 // default to first page
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 1 {
+		offset = 0 // default to first page
 	}
-	totalSize, err := strconv.Atoi(totalSizeStr)
-	if err != nil || totalSize < 1 {
-		totalSize = 30 // default total size to load from server
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		limit = 30 // default total size to load from server
 	}
 
 	var posts []model.Post
 
 	// 2. call service to handle search
-	posts, err = service.GetMostInOneAttributePosts(batch, totalSize, attribute)
+	posts, err = service.GetMostInOneAttributePosts(limit, offset, attribute)
 	if err != nil {
 		http.Error(w, "Failed to read posts from backend", http.StatusInternalServerError)
 		return
@@ -224,16 +224,16 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 	// response is json
 	w.Header().Set("Content-Type", "application/json")
 	userIDStr := mux.Vars(r)["userID"]
-	batchStr := r.URL.Query().Get("batch")
-	totalSizeStr := r.URL.Query().Get("totalSize")
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
 
-	batch, err := strconv.Atoi(batchStr)
-	if err != nil || batch < 1 {
-		batch = 1 // default to first page
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 1 {
+		offset = 0 // default to first page
 	}
-	totalSize, err := strconv.Atoi(totalSizeStr)
-	if err != nil || totalSize < 1 {
-		totalSize = 30 // default total size to load from server
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		limit = 30 // default total size to load from server
 	}
 
 	// 1. process data
@@ -244,7 +244,7 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2. call service level to get post info
-	posts, err := service.GetPostsByUserID(userID, batch, totalSize)
+	posts, err := service.GetPostsByUserID(userID, limit, offset)
 	if err != nil {
 		// Check if the error is due to the posts not being found
 		if errors.Is (err, customErrors.ErrUserNotFound) {

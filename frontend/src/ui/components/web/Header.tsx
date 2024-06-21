@@ -80,7 +80,7 @@ const Header: React.FC = () => {
         </form>
       </Box>
 
-      <Box flex={1} maxW="350px">
+      <Box flex={1} maxW="300px">
         {authed && (
           <Link as={NextLink} href="/user/home" passHref>
             <Button

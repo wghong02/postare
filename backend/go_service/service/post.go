@@ -44,13 +44,10 @@ func DeletePost(postID uuid.UUID, userID int64) error {
 	return nil
 }
 
-func SearchPostsByDescription(description string, batch int, totalSize int) ([]model.Post, error) {
+func SearchPostsByDescription(description string, limit int, offset int) ([]model.Post, error) {
 	// call backend to get posts by description
-	// totalSize is the total number of posts to load from the server
-	// batch k determines the kth number of batch to load in to the client
-	// if no keywords given, return the first totalSize posts
-	offset := (batch - 1) * totalSize
-	posts, err := sqlMethods.SearchPostsByDescription(description, totalSize, offset)
+	
+	posts, err := sqlMethods.SearchPostsByDescription(description, limit, offset)
 	if err != nil {
 		fmt.Printf("Failed to search posts from SQL, %v\n", err)
 		return nil, err
@@ -69,12 +66,10 @@ func GetPostByID(postID uuid.UUID) (model.Post, error) {
 	return post, err
 }
 
-func GetMostInOneAttributePosts(batch int, totalSize int, attribute string) ([]model.Post, error) {
-	// Calculate offset based on batch and totalSize
-	offset := (batch - 1) * totalSize
+func GetMostInOneAttributePosts(limit int, offset int, attribute string) ([]model.Post, error) {
 
 	// Call backend to get the most viewed posts
-	posts, err := sqlMethods.GetMostInOneAttributePosts(totalSize, offset, attribute)
+	posts, err := sqlMethods.GetMostInOneAttributePosts(limit, offset, attribute)
 	if err != nil {
 		fmt.Printf("Failed to search posts from SQL, %v\n", err)
 		return nil, err
@@ -83,13 +78,10 @@ func GetMostInOneAttributePosts(batch int, totalSize int, attribute string) ([]m
 }
 
 
-func GetPostsByUserID(userID int64, batch int, totalSize int) ([]model.Post, error) {
-
-	// Calculate offset based on batch and totalSize
-	offset := (batch - 1) * totalSize
+func GetPostsByUserID(userID int64, limit int, offset int) ([]model.Post, error) {
 
 	// Call backend to get the posts information, return the post info and if there is error
-	posts, err := sqlMethods.SearchPostsByUserID(userID, totalSize, offset)
+	posts, err := sqlMethods.SearchPostsByUserID(userID, limit, offset)
 	if err != nil {
 		fmt.Printf("Failed to search user posts from SQL, %v\n", err)
 		return []model.Post{}, err

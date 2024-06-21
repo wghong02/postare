@@ -62,9 +62,9 @@
         @GetMapping("/posts/get/most/{attribute}")
         public ResponseEntity<String> getMostInOneAttributePosts(
                 @PathVariable String attribute,
-                @RequestParam(defaultValue = "1") int batch,
-                @RequestParam(defaultValue = "30") int totalSize) {
-            return postService.findMostInOneAttributePosts(batch, totalSize, attribute);
+                @RequestParam(defaultValue = "30") int limit,
+                @RequestParam(defaultValue = "0") int offset) {
+            return postService.findMostInOneAttributePosts(limit, offset, attribute);
         }
 
         @GetMapping("/postHistory/{userId}")
