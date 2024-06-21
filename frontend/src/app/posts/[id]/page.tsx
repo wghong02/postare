@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -7,30 +7,44 @@ import {
   Image,
   StackDivider,
   HStack,
+  Icon,
+  Text,
 } from "@chakra-ui/react";
 import { getPost } from "@/utils/postUtils";
 import { getUserInfo } from "@/utils/userUtils";
-import { Post, User } from "@/lib/model";
-import RatingDisplay from "@/ui/components/users/ratingComponent";
-import { SellerCard } from "@/ui/components/users/userInfoComponent";
-import PostPageCard from "@/ui/components/posts/postInfoComponent";
-import { fetchSinglePost, fetchUser } from "@/utils/fetchFunctions";
-import { useLoading } from "@/utils/generalUtils";
+import { Post, UserInfo } from "@/lib/model";
+import { PostOwnerInfoCard } from "@/ui/components/users/userInfoComponent";
+import {
+  PostPageSection,
+  CommentSection,
+} from "@/ui/components/posts/postPageComponents";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
+import { CiHeart } from "react-icons/ci";
+import { VscFlame } from "react-icons/vsc";
+import { TiMessages } from "react-icons/ti";
 
 const PostInfoPage = ({ params }: { params: { id: string } }) => {
   // post page for the users to upload and delete and view posts they own
   const [post, setPost] = useState<Post | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
+
   const fetchData = async () => {
     try {
-      const postData = await fetchSinglePost(params.id, setPost, getPost);
-      if (postData && postData.sellerId) {
+      setLoading(true);
+      const postData = await getPost(params.id);
+      setPost(postData);
+      if (postData && postData.postOwnerId) {
         try {
-          await fetchUser(postData.sellerId, setUser, getUserInfo);
+          const userInfo = await getUserInfo(postData.postOwnerId);
+          setUser(userInfo);
         } catch (error) {
           console.error("Error fetching posts:", error);
           throw error; // Re-throw the error to handle it in useLoading
+        } finally {
+          setLoading(false);
+          setHasFetched(true);
         }
       }
     } catch (error) {
@@ -39,57 +53,75 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const { loading, hasFetched } = useLoading(fetchData);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
-      <Box display="flex" justifyContent="center" mt="4">
+      <Box display="flex" justifyContent="center" mt="30" ml="50" mr="50">
         <LoadingWrapper loading={loading} hasFetched={hasFetched}>
           <VStack
-            width="60%"
+            maxW="1500px"
+            minW="60%"
+            maxH="100%"
             divider={<StackDivider borderColor="gray.200" />}
             spacing="5"
             align="stretch"
           >
             {/* Hstacks to organize the details of the post */}
             <HStack spacing={4}>
-              <Flex width="70%" h="400px" align={"center"} justify={"center"}>
+              <Flex maxH="400px" align="center" justify="center">
                 <Image
                   src={post?.imageUrl}
                   alt="Post Image"
                   objectFit="cover"
                   maxW="100%"
-                  maxH="100%"
+                  height="400px"
                 />
               </Flex>
-              <Flex width="30%" h="400px">
-                <VStack
-                  width="100%"
-                  spacing="5"
-                  align="stretch"
-                  divider={<StackDivider borderColor="gray.200" />}
-                >
-                  <Flex h="300px">
-                    <SellerCard user={user}></SellerCard>
-                  </Flex>
-                  <Flex h="100px">
-                    <RatingDisplay
-                      rating={user?.userRating}
-                      reviews={user?.totalReviews}
-                    ></RatingDisplay>
-                  </Flex>
-                </VStack>
-              </Flex>
+
+              {/* column of icons */}
+              <VStack
+                height="100%"
+                minW="50px"
+                maxH="400px"
+                align="center"
+                justify="space-between"
+                direction="column"
+              >
+                <Flex flexDirection="column" align="center">
+                  <Icon as={CiHeart} boxSize="30px" />
+                  <Text fontSize="sm">{post?.likes}</Text>
+                </Flex>
+
+                <Flex flexDirection="column" align="center">
+                  <Icon as={VscFlame} boxSize="30px" />
+                  <Text fontSize="sm">{post?.views}</Text>
+                </Flex>
+
+                <Flex flexDirection="column" align="center">
+                  <Icon as={TiMessages} boxSize="30px" color="blue" />
+                  <Text fontSize="sm">#1</Text>
+                </Flex>
+              </VStack>
+
+              {/* column of comments */}
+              <VStack minW="35%" height="100%" spacing="5" align={"left"}>
+                <Flex height="50px">
+                  <PostOwnerInfoCard user={user}></PostOwnerInfoCard>
+                </Flex>
+                <Flex height="calc(100% - 50px)" overflowY="auto">
+                  <CommentSection></CommentSection>
+                </Flex>
+              </VStack>
             </HStack>
 
-            <HStack spacing={4}>
-              <Flex width="70%" h="200px">
-                <PostPageCard post={post}></PostPageCard>
+            {post && (
+              <Flex width="100%" minH="100px">
+                <PostPageSection post={post}></PostPageSection>
               </Flex>
-              <Flex width="30%" h="200px">
-                For future Map/online payment
-              </Flex>
-            </HStack>
+            )}
 
             <Box h="200px" bg="pink.100">
               For future recommendations

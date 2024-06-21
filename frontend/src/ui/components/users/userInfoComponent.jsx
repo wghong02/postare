@@ -1,5 +1,13 @@
 import React from "react";
-import { Box, Badge, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Badge,
+  Text,
+  VStack,
+  Image,
+  HStack,
+  Link,
+} from "@chakra-ui/react";
 import { timeAgo } from "@/utils/generalUtils";
 
 export function UserCard({ user }) {
@@ -23,7 +31,7 @@ export function UserCard({ user }) {
         </Box>
 
         <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          Username {" "}
+          Username{" "}
           <Text as="span" fontWeight="semibold">
             {user.username}
           </Text>
@@ -60,61 +68,28 @@ export function UserCard({ user }) {
   );
 }
 
-export function SellerCard({ user }) {
+export function PostOwnerInfoCard({ user }) {
   // card of user info
   const registerTime = timeAgo(user.registerDate);
 
   // info of the seller to put on the post page
   return (
-    <Box maxW="sm" borderRadius="lg" overflow="hidden">
-      <VStack spacing={4} align="center">
-        <Box display="flex" alignItems="baseline">
-          <Box
-            color="gray.500"
-            fontWeight="semibold"
-            letterSpacing="wide"
-            fontSize="md"
-            ml="2"
-          >
-            Seller Information
-          </Box>
-        </Box>
-
-        <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          Selling By{" "}
-          <Text as="span" fontWeight="semibold">
+    <Link href={`/users/${user.userId}`} passHref>
+      <Box>
+        <HStack>
+          {/* add the user's profile picture */}
+          {/* <Image
+        src={user?.profilePicture}
+        objectFit="cover"
+        maxW="100%"
+        maxH="100%"
+      /> */}
+          <Text fontWeight="semibold">
+            {/* TODO: add a link to user's page */}
             {user.username}
           </Text>
-        </Box>
-
-        <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          Email{" "}
-          <Text as="span" fontWeight="semibold">
-            {user.userEmail}
-          </Text>
-        </Box>
-
-        <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          Seller was registered{" "}
-          <Text as="span" fontWeight="semibold">
-            {registerTime}
-          </Text>
-        </Box>
-
-        <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          {user.totalItemsSold >= 100 && (
-            <Badge borderRadius="full" px="2" colorScheme="yellow">
-              Star Seller
-            </Badge>
-          )}{" "}
-          Seller has sold{" "}
-          <Text as="span" fontWeight="semibold">
-            {user.totalItemsSold}
-          </Text>{" "}
-          items
-        </Box>
-      </VStack>
-    </Box>
+        </HStack>
+      </Box>
+    </Link>
   );
 }
-

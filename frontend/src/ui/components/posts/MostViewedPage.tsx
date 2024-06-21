@@ -124,7 +124,7 @@ const MostViewedPage = () => {
         mt="4"
       >
         <LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
-          <Heading as="h1" mb="4">
+          <Heading as="h1" mb="4" fontWeight={500}>
             Posts For You
           </Heading>
           <Masonry columns={numColumns} gap={10}>
