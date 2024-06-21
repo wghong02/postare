@@ -12,9 +12,9 @@ type UserInfo struct {
 	UserID          int64     `json:"user_id"`
 	Username        string    `json:"username"`
 	UserEmail       string    `json:"user_email"`
-	UserPhone       string    `json:"user_phone"`
+	UserPhone       *string    `json:"user_phone"`
 	Nickname		string	  `json:"nickname"`
-	ProfilePicture  string    `json:"profile_picture"`
+	ProfilePicture  *string    `json:"profile_picture"`
 	RegisterTime    time.Time `json:"register_time"`
 	TotalViews 	    int64     `json:"total_views"`
 	TotalComments   int64     `json:"total_comments"`
@@ -80,14 +80,14 @@ var Auths = []UserAuth{
 var Users = []UserInfo{
 	{
 		UserID: 101, Username: "antique_seller", UserEmail: "antique@example.com",
-		UserPhone: "+1234567890",  Nickname: "Ann",
-		ProfilePicture: "profile_pic_url.jpg", RegisterTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
+		UserPhone: nil,  Nickname: "Ann",
+		ProfilePicture: nil, RegisterTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
 		TotalComments: 3, TotalLikes: 1, TotalViews: 5, UserExperience: 17, TotalPosts: 0,
 	},
 	{
 		UserID: 102, Username: "antique_seller2", UserEmail: "antique2@example.com",
-		UserPhone: "+134562897",  Nickname: "Johnny",
-		ProfilePicture: "profile_pic_url2.jpg", RegisterTime: time.Date(2023, 1, 2, 0, 0, 0, 0, time.UTC),
+		UserPhone: nil,  Nickname: "Johnny",
+		ProfilePicture: nil, RegisterTime: time.Date(2023, 1, 2, 0, 0, 0, 0, time.UTC),
 		TotalComments: 4, TotalLikes: 157, TotalViews: 23, UserExperience: 45, TotalPosts: 0,
 	},
 }

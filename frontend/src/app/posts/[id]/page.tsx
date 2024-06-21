@@ -13,7 +13,7 @@ import {
 import { getPost } from "@/utils/postUtils";
 import { getUserInfo } from "@/utils/userUtils";
 import { Post, UserInfo } from "@/lib/model";
-import { PostOwnerInfoCard } from "@/ui/components/users/userInfoComponent";
+import { PostOwnerInfoCard } from "@/ui/components/users/userInfoComponents";
 import {
   PostPageSection,
   CommentSection,
@@ -108,9 +108,11 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 
               {/* column of comments */}
               <VStack minW="35%" height="100%" spacing="5" align={"left"}>
-                <Flex height="50px">
-                  <PostOwnerInfoCard user={user}></PostOwnerInfoCard>
-                </Flex>
+                {user && (
+                  <Flex height="50px">
+                    <PostOwnerInfoCard user={user}></PostOwnerInfoCard>
+                  </Flex>
+                )}
                 <Flex height="calc(100% - 50px)" overflowY="auto">
                   <CommentSection></CommentSection>
                 </Flex>

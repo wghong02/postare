@@ -4,17 +4,29 @@ import {
   Badge,
   Text,
   VStack,
-  Image,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Editable,
+  EditableInput,
+  EditableTextarea,
+  EditablePreview,
   HStack,
   Link,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { timeAgo } from "@/utils/generalUtils";
+import { UserInfo } from "@/lib/model";
 
-export function UserCard({ user }) {
+export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
   // card of user info
-  const registerTime = timeAgo(user.registerDate);
+  const registerTime = timeAgo(user.registerTime);
 
   // info of the seller to put on the post page
+
+  // TODO: use form and editable, make some attributes editable on the page, and shows other information
+
   return (
     <Box maxW="sm" borderRadius="lg" overflow="hidden">
       <VStack spacing={4} align="center">
@@ -52,29 +64,24 @@ export function UserCard({ user }) {
         </Box>
 
         <Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-          {user.totalItemsSold >= 100 && (
+          {user.totalLikes >= 100 && (
             <Badge borderRadius="full" px="2" colorScheme="yellow">
-              Star Seller
+              Star User
             </Badge>
           )}{" "}
-          You have sold{" "}
-          <Text as="span" fontWeight="semibold">
-            {user.totalItemsSold}
-          </Text>{" "}
-          items
         </Box>
       </VStack>
     </Box>
   );
 }
 
-export function PostOwnerInfoCard({ user }) {
+export function PostOwnerInfoCard({ user }: { user: UserInfo }) {
   // card of user info
-  const registerTime = timeAgo(user.registerDate);
+  const registerTime = timeAgo(user.registerTime);
 
   // info of the seller to put on the post page
   return (
-    <Link href={`/users/${user.userId}`} passHref>
+    <Link as={NextLink} href={`/users/${user.userId}`} passHref>
       <Box>
         <HStack>
           {/* add the user's profile picture */}

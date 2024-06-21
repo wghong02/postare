@@ -27,7 +27,7 @@ export function PostPageCard(post: Post): React.ReactElement {
             )}
             {!isAvailable && (
               <Badge borderRadius="full" px="2" colorScheme="gray">
-                Sold
+                Archived
               </Badge>
             )}
             {isHot && (

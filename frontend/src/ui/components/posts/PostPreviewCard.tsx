@@ -17,7 +17,7 @@ function PostPreviewCard({ post }: { post: Post }) {
       <Link as={NextLink} href={`/posts/${post.postId}`} passHref>
         <Box maxW="300px" borderWidth="1px" borderRadius="lg" overflow="hidden">
           <Image src={post.imageUrl} />
-          {/* //show badges of new if new and not sold, sold if sold, hot if have many views */}
+          {/* //show badges of new if new and available, archived, hot if have many views */}
           <Box p="3">
             <Box display="flex" alignItems="baseline">
               <Box as="span" color="gray.600" fontSize="sm">

@@ -68,7 +68,11 @@ export const Masonry: React.FC<MasonryProps> = ({ children, columns, gap }) => {
           }}
         >
           {column.map((child, i) => (
-            <div key={i} className="masonry-card" style={{ marginBottom: gap }}>
+            <div
+              key={i}
+              className="masonry-card"
+              style={{ marginBottom: gap, padding: gap }}
+            >
               {child}
             </div>
           ))}

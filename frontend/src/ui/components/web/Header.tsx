@@ -1,5 +1,13 @@
 "use client";
-import { Box, Flex, Text, Button, Input, FormControl } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Input,
+  FormControl,
+  useToast,
+} from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 import React, { FormEvent, useEffect, useState } from "react";
@@ -20,6 +28,18 @@ const Header: React.FC = () => {
   const handleLogOut = (): void => {
     localStorage.removeItem("authToken");
     setAuthed(false);
+    router.push(`/`);
+    showToast();
+  };
+
+  const toast = useToast();
+  const showToast = () => {
+    toast({
+      title: "Logged out successfully",
+      status: "success",
+      duration: 3000, // Duration in milliseconds the notification should be displayed
+      isClosable: true,
+    });
   };
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {

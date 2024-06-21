@@ -16,10 +16,10 @@ export const login = (credential) => {
   })
     .then((response) => {
       handleResponseStatus(response, "Fail to Log in");
-      return response.text();
+      return response.json();
     })
     .then((data) => {
-      localStorage.setItem("authToken", data);
+      localStorage.setItem("authToken", data.token);
     });
 };
 
@@ -39,11 +39,17 @@ export const register = (credential) => {
     .then((data) => camelizeKeys(data));
 };
 
-export const getUserInfo = (userId) => {
+export const getUserInfo = () => {
   // get a single user's info by user Id. response is json
-  const url = `${domain}/users/${userId}`;
 
-  return fetch(url)
+  const authToken = localStorage.getItem("authToken");
+  const url = `${domain}/user/userinfo`;
+
+  return fetch(url, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  })
     .then((response) => {
       handleResponseStatus(response, "Fail to get user");
       return response.json();

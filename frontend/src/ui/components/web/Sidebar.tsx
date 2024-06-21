@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               Manage Posts
             </Button>
           </Link>
-          <Link as={NextLink} href="/user/orderHistory" passHref>
+          {/* <Link as={NextLink} href="/user/orderHistory" passHref>
             <Button
               width="100%"
               colorScheme="blackAlpha"
@@ -69,8 +69,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
             >
               Order History
             </Button>
-          </Link>
-          <Link as={NextLink} href="/user/cart" passHref>
+          </Link> */}
+          <Link as={NextLink} href="/user/likes" passHref>
             <Button
               width="100%"
               colorScheme="blackAlpha"
@@ -78,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               shadow="md"
               fontFamily="'Roboto', sans-serif"
             >
-              Shopping Cart
+              Liked Posts
             </Button>
           </Link>
         </VStack>

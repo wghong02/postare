@@ -22,7 +22,7 @@ export function PostPageSection({ post }: { post: Post }) {
         )}
         {!isAvailable && (
           <Badge borderRadius="full" px="2" colorScheme="gray">
-            Sold
+            Archived
           </Badge>
         )}
         <Box fontWeight={500} letterSpacing="wide" fontSize="lg" ml="2">

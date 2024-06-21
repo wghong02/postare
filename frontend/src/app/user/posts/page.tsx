@@ -43,7 +43,11 @@ const UserPostPage = () => {
       try {
         const decodedToken: any = jwtDecode(token);
         const userId = decodedToken.userId;
-        await fetchPosts({ userId: userId, query: "" }, setPosts, getUserPosts);
+        await fetchPosts({
+          parameter: { userId: userId, query: "" },
+          setPosts: setPosts,
+          postUtilFunction: getUserPosts,
+        });
       } catch (error) {
         console.error("Error fetching posts:", error);
         throw error; // Re-throw the error to handle it in useLoading
