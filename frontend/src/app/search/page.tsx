@@ -1,52 +1,160 @@
 "use client";
-import React, { useState } from "react";
-import { Box, Grid } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Grid, Heading, StepDescription } from "@chakra-ui/react";
 import PostCard from "@/ui/components/posts/PostPreviewCard";
 import { searchPostsByDescription } from "@/utils/postUtils";
 import { Post } from "@/lib/model";
 import { fetchPosts } from "@/utils/fetchFunctions";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 import { useLoading } from "@/utils/generalUtils";
+import {
+  BackToTopFooter,
+  Masonry,
+} from "@/ui/components/basicComponents/productBasicComponents";
+import PostPreviewCard from "@/ui/components/posts/PostPreviewCard";
 
 const SearchPostsPage = () => {
   // show search results of post cards
 
   const [posts, setPosts] = useState<Post[]>([]); // posts to show
   const [currentPage, setCurrentPage] = useState(1);
+  const [initLoading, setInitLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [postsToLoad, setPostsToLoad] = useState(20);
+  const [numColumns, setNumColumns] = useState(4);
+  const [hasFetched, setHasFetched] = useState(false);
+  const [reachedEnd, setReachedEnd] = useState(false);
 
   const fetchData = async () => {
     try {
       const searchParams = new URLSearchParams(window.location.search);
-      const query: string | null = searchParams.get("description");
-      await fetchPosts({
-        parameter: { description: query },
-        setPosts: setPosts,
-        postUtilFunction: searchPostsByDescription,
+      const description: string | null = searchParams.get("description");
+      setLoadingMore(true); // Start loading
+      const newPosts = await searchPostsByDescription({
+        description: description,
+        limit: postsToLoad,
+        offset: posts.length,
       });
+
+      if (newPosts != null) {
+        if (currentPage == 1) {
+          setPosts(newPosts);
+        } else {
+          setPosts([...posts, ...newPosts]); // append new posts
+        }
+      } else {
+        setReachedEnd(true);
+      }
     } catch (error) {
       console.error("Error fetching posts:", error);
-      throw error; // Re-throw the error to handle it in useLoading
+      throw error;
+    } finally {
+      setHasFetched(true);
+      setInitLoading(false);
+      setLoadingMore(false);
     }
   };
 
-  const { loading, hasFetched, error } = useLoading(fetchData);
+  useEffect(() => {
+    // fetch more data when going to the next page
+    fetchData();
+  }, [currentPage]);
 
-  if (error) {
-    return <p>Error loading posts: {error}</p>; // !!! error page
-  }
+  // to handle if ha reached the bottom of the page
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+        !loadingMore &&
+        !reachedEnd
+      ) {
+        setCurrentPage(currentPage + 1);
+      }
+    };
+    setHasFetched(false);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loadingMore]);
+
+  // number of posts to load per scroll
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const rowsToLoad = 1;
+
+      let columns = 1;
+      if (width > 1500) {
+        columns = 4;
+      } else if (width > 1100) {
+        columns = 3;
+      } else if (width > 700) {
+        columns = 2;
+      }
+      setNumColumns(columns);
+      setPostsToLoad(numColumns * rowsToLoad);
+    };
+    // intializer
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const renderPhantomCards = (count: number) => {
+    const phantomCards = [];
+    for (let i = 0; i < count; i++) {
+      phantomCards.push(
+        <Box
+          key={`phantom-${i}`}
+          maxW="300px"
+          borderWidth="1px"
+          borderRadius="lg"
+          overflow="hidden"
+        >
+          <Box p="3" bg="gray.300" height="200px" />
+          <Box p="3" bg="gray.200" height="100px" />
+        </Box>
+      );
+    }
+    return phantomCards;
+  };
 
   return (
-    <Box p={4} width="65%" mx="auto">
-      <LoadingWrapper loading={loading} hasFetched={hasFetched}>
-        <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
-          {posts.map((post) => (
-            <PostCard key={post.postId} post={post} />
-          ))}
-        </Grid>
-      </LoadingWrapper>
-    </Box>
+    <>
+      <Box
+        display="flex"
+        width="100%"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        mt="4"
+      >
+        <LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
+          <Heading as="h1" mb="4">
+            Search Results
+          </Heading>
+          <Masonry columns={numColumns} gap={10}>
+            {posts?.length > 0 ? (
+              posts.map((post, index) => (
+                <PostPreviewCard key={index} post={post} />
+              ))
+            ) : (
+              <p>No posts available</p>
+            )}
+            {loadingMore && renderPhantomCards(numColumns)}
+          </Masonry>
+        </LoadingWrapper>
+      </Box>
+      {!loadingMore && currentPage > 3 && reachedEnd && (
+        <p>
+          <Box justifyContent={"center"} paddingBottom={8}>
+            You have reached the bottom of all posts.
+          </Box>
+        </p>
+      )}
+      <BackToTopFooter></BackToTopFooter>
+    </>
   );
 };
 

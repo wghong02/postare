@@ -139,7 +139,7 @@ const MostViewedPage = () => {
           </Masonry>
         </LoadingWrapper>
       </Box>
-      {!loadingMore && reachedEnd && (
+      {!loadingMore && currentPage > 3 && reachedEnd && (
         <p>
           <Box justifyContent={"center"} paddingBottom={8}>
             You have reached the bottom of all posts.
