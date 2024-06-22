@@ -6,6 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 public class GoSaveUserInfo implements Serializable {
+    // this is for the part of the user info that is to be saved by go backend
     @Serial
     private static final long serialVersionUID = 1L;
 

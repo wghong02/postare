@@ -28,9 +28,9 @@ public class AuthController {
     public AuthController(AuthenticationManager authenticationManager,
                                        JwtTokenUtil jwtTokenUtil,
                           UserAuthService userDetailsService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager; // by spring security to give auth
+        this.jwtTokenUtil = jwtTokenUtil;   // token util functions
+        this.userDetailsService = userDetailsService;   // apis to user's auth info
     }
 
     @PostMapping("/auth/login")

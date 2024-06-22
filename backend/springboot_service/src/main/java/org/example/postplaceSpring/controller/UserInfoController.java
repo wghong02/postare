@@ -22,7 +22,8 @@ public class UserInfoController {
     }
 
     @GetMapping("/user/userinfo")
-    public ResponseEntity<String> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<String> getUserInfo( // call user details related if authed
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new IllegalStateException("User details not found in authentication context");
         }

@@ -19,6 +19,7 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+    // to filter out requests that need auth
 
     private final JwtTokenUtil jwtTokenUtil;
     private final UserAuthService userAuthService;
@@ -31,6 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        // filter function
         final String requestTokenHeader = request.getHeader("Authorization");
 
         String userId = null;

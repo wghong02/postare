@@ -6,6 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 public class UserRegistrationRequest implements Serializable {
+    // all data required for user registration
     @Serial
     private static final long serialVersionUID = 1L;
 
