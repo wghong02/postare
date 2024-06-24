@@ -7,6 +7,7 @@
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.ResponseEntity;
     import org.springframework.security.core.Authentication;
+    import org.springframework.security.core.annotation.AuthenticationPrincipal;
     import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.web.bind.annotation.*;
     import org.springframework.web.server.ResponseStatusException;
@@ -67,9 +68,18 @@
             return postService.findMostInOneAttributePosts(limit, offset, attribute);
         }
 
-        @GetMapping("/postHistory/{userId}")
-        public ResponseEntity<String> getUserPostHistory(@PathVariable long userId) {
-            ResponseEntity<String> response = postService.findUserPostHistory(userId);
+        @GetMapping("/user/get/postHistory")
+        public ResponseEntity<String> getUserPostHistory(
+                @AuthenticationPrincipal CustomUserDetails userDetails,
+                @RequestParam(defaultValue = "30") int limit,
+                @RequestParam(defaultValue = "0") int offset) {
+            if (userDetails == null) {
+                throw new IllegalStateException("User details not found in authentication context");
+            }
+            // get userId using userDetail's function
+            long userId = userDetails.getUserId();
+
+            ResponseEntity<String> response = postService.findUserPostHistory(userId, limit, offset);
             if (response.getStatusCode().is2xxSuccessful()) {
                 logger.info("Post {} returned", userId);
                 return response;

@@ -16,16 +16,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
   // vertical stack for each button that direct to a different page
   return (
-    <Box position="relative" minH="100vh" bg="gray.50">
+    <Box position="relative" bg="gray.50" height="100%">
       <Box
         position="absolute"
-        left={isOpen ? "0" : "-250px"} // in screen if bar is open
+        left={isOpen ? "0" : "-200px"} // in screen if bar is open
         width="200px"
         bg="gray.100"
         color="black.50"
         transition="left 0.3s"
         height="100%"
         zIndex="10"
+        overflowY="auto"
       >
         <VStack spacing="5" align="stretch">
           <Box
@@ -59,17 +60,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               Manage Posts
             </Button>
           </Link>
-          {/* <Link as={NextLink} href="/user/orderHistory" passHref>
-            <Button
-              width="100%"
-              colorScheme="blackAlpha"
-              variant="ghost"
-              shadow="md"
-              fontFamily="'Roboto', sans-serif"
-            >
-              Order History
-            </Button>
-          </Link> */}
           <Link as={NextLink} href="/user/likes" passHref>
             <Button
               width="100%"

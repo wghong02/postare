@@ -1,5 +1,10 @@
 Ranked by priority
 
-    -   fix upload form
-    -   add post owner's pfp to postOwnerInfo card
-    -   refine details on user home info page
+-   fix upload form
+-   force to login page if not logged in and accesses the /user pages
+-   enable cookies to store token
+-   have users to re login if token expires
+-   add post owner's pfp to postOwnerInfo card
+-   change all the "any" type to the correct ones
+-   refine details on user home info page
+-   do pop ups for success and fail messages instead

@@ -8,11 +8,22 @@ const domain = "http://localhost:8080"; // local test
 
 const fetchAndTransformPostData = async (
   url: string,
-  singlePost: boolean = false
+  singlePost: boolean = false,
+  authToken: string | null = null
 ): Promise<Post | Post[]> => {
   // helper function to be called by all post functions
   try {
-    const response = await fetch(url);
+    let response;
+    if (authToken) {
+      response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+    } else {
+      response = await fetch(url);
+    }
+
     handleResponseStatus(response, "Failed to fetch data");
 
     const responseData: any = await response.json();
@@ -34,24 +45,26 @@ const fetchAndTransformPostData = async (
       };
       return post;
     } else {
-      const camelizedPosts: Post[] = responseData.map((camelizedPost: any) => {
-        const camelizedData = camelizeKeys(camelizedPost);
+      const camelizedPosts: Post[] = responseData
+        ? responseData.map((camelizedPost: any) => {
+            const camelizedData = camelizeKeys(camelizedPost);
 
-        return {
-          postId: camelizedData.postId,
-          title: camelizedData.title,
-          description: camelizedData.description,
-          likes: camelizedData.likes,
-          categoryId: camelizedData.categoryId,
-          postOwnerId: camelizedData.postOwnerId,
-          putOutTime: camelizedData.putOutTime,
-          postDetails: camelizedData.postDetails,
-          isAvailable: camelizedData.isAvailable,
-          imageUrl: camelizedData.imageUrl,
-          views: camelizedData.views,
-          // Add other fields as needed
-        };
-      });
+            return {
+              postId: camelizedData.postId,
+              title: camelizedData.title,
+              description: camelizedData.description,
+              likes: camelizedData.likes,
+              categoryId: camelizedData.categoryId,
+              postOwnerId: camelizedData.postOwnerId,
+              putOutTime: camelizedData.putOutTime,
+              postDetails: camelizedData.postDetails,
+              isAvailable: camelizedData.isAvailable,
+              imageUrl: camelizedData.imageUrl,
+              views: camelizedData.views,
+              // Add other fields as needed
+            };
+          })
+        : [];
       return camelizedPosts;
     }
   } catch (error) {
@@ -188,7 +201,9 @@ export const getUserPosts = async ({ query }: { query: any }) => {
 
   try {
     const posts: Post[] = (await fetchAndTransformPostData(
-      url.toString()
+      url.toString(),
+      false,
+      authToken
     )) as Post[];
 
     return posts;

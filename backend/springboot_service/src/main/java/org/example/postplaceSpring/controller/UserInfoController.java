@@ -21,12 +21,13 @@ public class UserInfoController {
         this.userInfoService = userInfoService;
     }
 
-    @GetMapping("/user/userinfo")
+    @GetMapping("/user/get/userinfo")
     public ResponseEntity<String> getUserInfo( // call user details related if authed
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             throw new IllegalStateException("User details not found in authentication context");
         }
+        // get userId using userDetail's function
         long userId = userDetails.getUserId();
 
         ResponseEntity<String> response = userInfoService.getUserInfoById(userId);

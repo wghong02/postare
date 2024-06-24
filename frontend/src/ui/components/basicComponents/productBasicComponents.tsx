@@ -1,10 +1,19 @@
 import { Box, Link } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 
-export function BackToTopFooter() {
+export function BackToTopFooter({
+  containerRef = null,
+}: {
+  containerRef: React.RefObject<HTMLDivElement> | null;
+}) {
   // click to go back to the top of the page
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (containerRef) {
+      const container = containerRef.current;
+      container?.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (

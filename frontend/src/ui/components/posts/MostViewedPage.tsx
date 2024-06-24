@@ -20,6 +20,8 @@ const MostViewedPage = () => {
   const [hasFetched, setHasFetched] = useState(false);
   const [reachedEnd, setReachedEnd] = useState(false);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   // Fetch data based on currentPage
   const fetchData = async () => {
     try {
@@ -29,7 +31,7 @@ const MostViewedPage = () => {
         query: { limit: postsToLoad, offset: posts.length },
       });
 
-      if (newPosts != null) {
+      if (newPosts != null && newPosts.length != 0) {
         if (currentPage == 1) {
           setPosts(newPosts);
         } else {
@@ -49,7 +51,7 @@ const MostViewedPage = () => {
   };
 
   useEffect(() => {
-    // fetch more data when going to the next page
+    // fetch more data when scroll to the bottom
     fetchData();
   }, [currentPage]);
 
@@ -146,7 +148,7 @@ const MostViewedPage = () => {
           </Box>
         </p>
       )}
-      <BackToTopFooter></BackToTopFooter>
+      <BackToTopFooter containerRef={null}></BackToTopFooter>
     </>
   );
 };

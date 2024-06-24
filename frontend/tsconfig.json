@@ -31,9 +31,9 @@
     ".next/types/**/*.ts",
     "src/app/user/page.tsx",
     "src/ui/components/web/Header.tsx",
-    "src/utils/userUtils.js",
+    "src/utils/userUtils.ts",
     "src/ui/components/users/userInfoComponents.tsx",
     "src/ui/components/posts/UserPostCard.jsx"
-  ],
+, "src/utils/postUtils.ts"  ],
   "exclude": ["node_modules"]
 }

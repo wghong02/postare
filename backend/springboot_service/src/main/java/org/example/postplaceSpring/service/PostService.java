@@ -49,8 +49,8 @@ public class PostService {
         return restTemplate.getForEntity(url, String.class);
     }
 
-    public ResponseEntity<String> findUserPostHistory(long userId) {
-        String url = GO_SERVICE_URL + "/postHistory/" + userId;
+    public ResponseEntity<String> findUserPostHistory(long userId, int limit, int offset) {
+        String url = GO_SERVICE_URL + "/postHistory/" + userId + "?limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 }

@@ -9,13 +9,13 @@ const UserLayout = ({ children }: { children: React.ReactNode }) => {
     setSidebarOpen(!isSidebarOpen);
   };
   return (
-    <Flex height="100vh">
+    <Flex height="calc(100vh - 56px)">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar}></Sidebar>
       <Box
-        flex="1"
         p="4"
-        ml={isSidebarOpen ? "250px" : "0"}
+        ml={isSidebarOpen ? "200px" : "0"}
         transition="margin-left 0.3s"
+        overflowY="hidden"
       >
         {children}
       </Box>
