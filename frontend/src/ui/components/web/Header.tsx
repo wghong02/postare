@@ -134,7 +134,7 @@ const Header: React.FC = () => {
               fontFamily="'Roboto', sans-serif"
               bg="yellow"
             >
-              Login
+              Login/Register
             </Button>
           </Link>
         )}

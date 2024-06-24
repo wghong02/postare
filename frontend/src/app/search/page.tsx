@@ -1,12 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Box, Grid, Heading, StepDescription } from "@chakra-ui/react";
-import PostCard from "@/ui/components/posts/PostPreviewCard";
+import { Box, Heading } from "@chakra-ui/react";
 import { searchPostsByDescription } from "@/utils/postUtils";
 import { Post } from "@/lib/model";
-import { fetchPosts } from "@/utils/fetchFunctions";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
-import { useLoading } from "@/utils/generalUtils";
 import {
   BackToTopFooter,
   Masonry,
@@ -153,7 +150,7 @@ const SearchPostsPage = () => {
           </Box>
         </p>
       )}
-      <BackToTopFooter></BackToTopFooter>
+      <BackToTopFooter containerRef={null}></BackToTopFooter>
     </>
   );
 };

@@ -41,7 +41,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
           setUser(userInfo);
         } catch (error) {
           console.error("Error fetching posts:", error);
-          throw error; // Re-throw the error to handle it in useLoading
+          throw error;
         } finally {
           setLoading(false);
           setHasFetched(true);
@@ -49,7 +49,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
-      throw error; // Re-throw the error to handle it in useLoading
+      throw error; 
     }
   };
 

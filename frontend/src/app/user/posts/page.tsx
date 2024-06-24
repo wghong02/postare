@@ -25,8 +25,6 @@ const UserPostPage = () => {
   const [formData, setFormData] = useState<UploadFormData>({
     title: "",
     description: "",
-    price: "",
-    condition: "",
     postDetails: "",
     imageUrl: "",
   });
@@ -59,7 +57,7 @@ const UserPostPage = () => {
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
-      throw error; // Re-throw the error to handle it in useLoading
+      throw error; // Re-throw the error to handle it
     } finally {
       setHasFetched(true);
       setInitLoading(false);
@@ -109,7 +107,7 @@ const UserPostPage = () => {
     }
   };
 
-  useEffect(() => {}), [needsRefresh]; // !!! TODO: edit to refresh on submit
+  useEffect(() => {}), [needsRefresh];
 
   return (
     <Box

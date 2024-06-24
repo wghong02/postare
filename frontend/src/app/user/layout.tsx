@@ -16,6 +16,7 @@ const UserLayout = ({ children }: { children: React.ReactNode }) => {
         ml={isSidebarOpen ? "200px" : "0"}
         transition="margin-left 0.3s"
         overflowY="hidden"
+        width="100%"
       >
         {children}
       </Box>

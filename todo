@@ -4,6 +4,6 @@ Ranked by priority
 -   enable cookies to store token
 -   have users to re login if token expires
 -   add post owner's pfp to postOwnerInfo card
--   change all the "any" type to the correct ones
--   refine details on user home info page
--   do pop ups for success and fail messages instead
+-   refine details on user home info page (allow adit)
+-   check if register info is valid
+-   make sure search bar's parameter does not disappear after search

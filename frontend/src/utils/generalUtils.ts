@@ -1,31 +1,5 @@
 import { useState, useEffect } from "react";
 
-export const useLoading = <T>(fetchFunction: () => Promise<T>) => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [hasFetched, setHasFetched] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // load the data once
-  const loadData = async () => {
-    setError(null);
-    setLoading(true); // Ensure loading state is set to true when loadData is called
-    try {
-      await fetchFunction();
-      setHasFetched(true);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  return { loading, hasFetched, error };
-};
-
 export const timeAgo = (dateString: string) => {
   // use js Date to transform it to date
   const date = new Date(dateString);

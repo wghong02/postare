@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { UserHomeInfoComponent } from "@/ui/components/users/userInfoComponents";
 import { getUserInfo } from "@/utils/userUtils";
 import { UserInfo } from "@/lib/model";
@@ -19,7 +19,7 @@ const UserHomePage = () => {
       setUser(userInfo);
     } catch (error) {
       console.error("Error fetching posts:", error);
-      throw error; // Re-throw the error to handle it in useLoading
+      throw error; // Re-throw the error to handle it
     } finally {
       setLoading(false);
       setHasFetched(true);
@@ -31,12 +31,16 @@ const UserHomePage = () => {
   }, []);
 
   return (
-    <Flex alignItems="center" justifyContent="center">
+    <Box
+      display="flex"
+      justifyContent="center"
+      minHeight="100vh"
+    >
       {/* User card for now */}
       <LoadingWrapper loading={loading} hasFetched={hasFetched}>
         {user && <UserHomeInfoComponent user={user} />}
       </LoadingWrapper>
-    </Flex>
+    </Box>
   );
 };
 export default UserHomePage;

@@ -3,8 +3,6 @@ import { ChangeEvent, FormEvent } from "react";
 export interface UploadFormData {
   title: string;
   description: string;
-  price: string;
-  condition: string;
   postDetails: string;
   imageUrl: string;
 }

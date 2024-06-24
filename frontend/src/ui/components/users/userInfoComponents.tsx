@@ -28,9 +28,18 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
   // TODO: use form and editable, make some attributes editable on the page, and shows other information
 
   return (
-    <Box maxW="sm" borderRadius="lg" overflow="hidden">
+    <Box
+      display="flex"
+      width="100%"
+      height="100%"
+      flexDirection="column"
+      alignItems="center"
+      ml="4"
+      mt="4"
+      style={{ overflowY: "auto" }}
+    >
       <VStack spacing={4} align="center">
-        <Box display="flex" alignItems="baseline">
+        <Box display="flex">
           <Box
             color="gray.500"
             fontWeight="semibold"
