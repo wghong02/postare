@@ -17,7 +17,8 @@ public class UserInfoService {
     }
 
     public ResponseEntity<String> getUserInfoById(long userId) {
-        String url = GO_SERVICE_URL + "/users/" + userId;
+        String url= GO_SERVICE_URL + "/users/" + userId ;;
+
         return restTemplate.getForEntity(url, String.class);
     }
 }

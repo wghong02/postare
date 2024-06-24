@@ -38,4 +38,19 @@ public class UserInfoController {
             throw new ResponseStatusException(response.getStatusCode(), "Post not found");
         }
     }
+
+    @GetMapping("/public/get/userinfo/{userId}")
+    public ResponseEntity<String> getUserPublicInfo( // call user details related if authed
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable long userId) {
+
+        ResponseEntity<String> response = userInfoService.getUserInfoById(userId);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("Post {} returned", userId);
+            return response;
+        } else {
+            throw new ResponseStatusException(response.getStatusCode(), "Post not found");
+        }
+    }
+
 }

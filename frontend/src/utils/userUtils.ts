@@ -8,15 +8,20 @@ const domain = "http://localhost:8080";
 const fetchAndTransformUserData = async (
   url: string,
   singleUser: boolean = false,
-  authToken: string | null
+  authToken: string | null = null
 ): Promise<UserInfo | UserInfo[]> => {
   // helper function to be called by all post functions
   try {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    });
+    let response;
+    if (authToken) {
+      response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+    } else {
+      response = await fetch(url);
+    }
     handleResponseStatus(response, "Failed to fetch data");
     const responseData: any = await response.json();
 
@@ -111,6 +116,23 @@ export const getUserInfo = async () => {
       url.toString(),
       true,
       authToken
+    )) as UserInfo;
+
+    return user;
+  } catch (error) {
+    console.error("Error fetching or parsing data:", error);
+    throw error;
+  }
+};
+
+export const getUserPublicInfo = async (userID: number) => {
+  // get a single user's info by user Id. response is json
+
+  const url = `${domain}/public/get/userinfo/${userID}`;
+  try {
+    const user: UserInfo = (await fetchAndTransformUserData(
+      url.toString(),
+      true
     )) as UserInfo;
 
     return user;

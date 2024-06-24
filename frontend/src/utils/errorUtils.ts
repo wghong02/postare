@@ -3,9 +3,10 @@ const handleResponseStatus = (response: Response, errMsg: string) => {
   // if other response that are not ok, throw the corresponding error
   const { status, ok } = response;
 
-  if (status === 401) {
+  if (status === 401 || status === 403) {
     localStorage.removeItem("authToken");
-    window.location.reload();
+    window.location.href = "/auth";
+    alert("Unauthorized. Please login again.");
     return;
   }
 

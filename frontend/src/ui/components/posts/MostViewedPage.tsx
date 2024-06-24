@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getMostInOneAttributePosts } from "@/utils/postUtils";
 import LoadingWrapper from "../web/LoadingWrapper";
-import { fetchPosts } from "@/utils/fetchFunctions";
 import { Box, Heading } from "@chakra-ui/react";
 import { Post } from "@/lib/model";
 import PostPreviewCard from "./PostPreviewCard";

@@ -44,11 +44,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 userId = jwtTokenUtil.getUserIdFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 System.out.println("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 System.out.println("JWT Token has expired");
             }
         } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.warn("JWT Token does not begin with Bearer String");
         }
 

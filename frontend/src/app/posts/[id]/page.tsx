@@ -11,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { getPost } from "@/utils/postUtils";
-import { getUserInfo } from "@/utils/userUtils";
+import { getUserPublicInfo } from "@/utils/userUtils";
 import { Post, UserInfo } from "@/lib/model";
 import { PostOwnerInfoCard } from "@/ui/components/users/userInfoComponents";
 import {
@@ -37,7 +37,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
       setPost(postData);
       if (postData && postData.postOwnerId) {
         try {
-          const userInfo = await getUserInfo(postData.postOwnerId);
+          const userInfo = await getUserPublicInfo(postData.postOwnerId);
           setUser(userInfo);
         } catch (error) {
           console.error("Error fetching posts:", error);
