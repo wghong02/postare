@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Box, Heading } from "@chakra-ui/react";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 import { searchPostsByDescription } from "@/utils/postUtils";
 import { Post } from "@/lib/model";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
@@ -8,7 +8,7 @@ import {
   BackToTopFooter,
   Masonry,
 } from "@/ui/components/basicComponents/productBasicComponents";
-import PostPreviewCard from "@/ui/components/posts/PostPreviewCard";
+import { PostPreviewCard } from "@/ui/components/posts/cards";
 
 const SearchPostsPage = () => {
   // show search results of post cards
@@ -33,7 +33,7 @@ const SearchPostsPage = () => {
         offset: posts.length,
       });
 
-      if (newPosts != null) {
+      if (newPosts != null && newPosts.length != 0) {
         if (currentPage == 1) {
           setPosts(newPosts);
         } else {
@@ -118,7 +118,7 @@ const SearchPostsPage = () => {
   };
 
   return (
-    <>
+    <Flex direction="column" align="center">
       <Box
         display="flex"
         width="100%"
@@ -143,7 +143,7 @@ const SearchPostsPage = () => {
           </Masonry>
         </LoadingWrapper>
       </Box>
-      {!loadingMore && currentPage > 3 && reachedEnd && (
+      {!loadingMore && reachedEnd && (
         <p>
           <Box justifyContent={"center"} paddingBottom={8}>
             You have reached the bottom of all posts.
@@ -151,7 +151,7 @@ const SearchPostsPage = () => {
         </p>
       )}
       <BackToTopFooter containerRef={null}></BackToTopFooter>
-    </>
+    </Flex>
   );
 };
 

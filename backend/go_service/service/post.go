@@ -18,6 +18,7 @@ func UploadPost(post *model.Post, userID int64) error {
 	post.Likes = 0
 	post.Views = 0
 	post.IsAvailable = true
+	post.CategoryID = 3
 
 	// Save post to the database
 	if err := sqlMethods.SavePostToSQL(post); err != nil {

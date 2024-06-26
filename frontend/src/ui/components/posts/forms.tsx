@@ -15,13 +15,11 @@ import {
   Text,
   useToast,
   FormErrorMessage,
-  Flex,
-  Box,
 } from "@chakra-ui/react";
 import { UploadFormData, TouchedUploadFields } from "@/lib/types";
 import { uploadPost } from "@/utils/postUtils";
 
-const UploadPostForm = ({
+export const UploadPostForm = ({
   isOpen,
   onClose,
 }: {
@@ -44,7 +42,9 @@ const UploadPostForm = ({
     imageUrl: false,
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
     setTouchedFields({ ...touchedFields, [name]: true });
@@ -72,9 +72,13 @@ const UploadPostForm = ({
           duration: 3000,
           isClosable: true,
         });
+        onClose();
+        clearForm();
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        window.location.href = "/user/posts";
       } catch (error: any) {
         toast({
-          description: "Registration failed, " + error.message,
+          description: error.message,
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -100,7 +104,8 @@ const UploadPostForm = ({
     label: string,
     name: keyof UploadFormData,
     type: string,
-    isRequired: boolean
+    isRequired: boolean,
+    isTextarea: boolean = false
   ) => (
     <FormControl
       isInvalid={touchedFields[name] && !formValues[name] && isRequired}
@@ -114,17 +119,40 @@ const UploadPostForm = ({
           </Text>
         )}
       </FormLabel>
-      <Input
-        type={type}
-        name={name}
-        value={formValues[name]}
-        onChange={handleChange}
-      />
+      {isTextarea ? (
+        <Textarea
+          name={name}
+          value={formValues[name]}
+          onChange={handleChange}
+        />
+      ) : (
+        <Input
+          type={type}
+          name={name}
+          value={formValues[name]}
+          onChange={handleChange}
+        />
+      )}
       {touchedFields[name] && !formValues[name] && isRequired && (
         <FormErrorMessage>{label} is required.</FormErrorMessage>
       )}
     </FormControl>
   );
+
+  const clearForm = () => {
+    setFormValues({
+      title: "",
+      description: "",
+      postDetails: "",
+      imageUrl: "",
+    });
+    setTouchedFields({
+      title: false,
+      description: false,
+      postDetails: false,
+      imageUrl: false,
+    });
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -135,8 +163,8 @@ const UploadPostForm = ({
         <ModalBody>
           {renderInputField("Title", "title", "text", true)}
           {renderInputField("Description", "description", "text", true)}
-          {renderInputField("PostDetails", "postDetails", "text", true)}
           {renderInputField("ImageUrl", "imageUrl", "text", true)}
+          {renderInputField("PostDetails", "postDetails", "text", true, true)}
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
@@ -148,5 +176,3 @@ const UploadPostForm = ({
     </Modal>
   );
 };
-
-export default UploadPostForm;

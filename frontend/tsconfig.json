@@ -33,7 +33,8 @@
     "src/ui/components/web/Header.tsx",
     "src/utils/userUtils.ts",
     "src/ui/components/users/userInfoComponents.tsx",
-    "src/ui/components/posts/UserPostCard.jsx"
-, "src/utils/postUtils.ts"  ],
+    "src/ui/components/posts/cards.tsx",
+    "src/utils/postUtils.ts"
+  ],
   "exclude": ["node_modules"]
 }

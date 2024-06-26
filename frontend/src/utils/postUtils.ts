@@ -136,7 +136,7 @@ export const uploadPost = (data: UploadFormData) => {
   });
 };
 
-export const deletePost = (postId: number) => {
+export const deletePost = (postId: string) => {
   // delete post using its id
   const authToken = localStorage.getItem("authToken");
   const url = `${domain}/user/posts/delete/${postId}`;

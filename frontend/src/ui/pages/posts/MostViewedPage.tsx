@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getMostInOneAttributePosts } from "@/utils/postUtils";
-import LoadingWrapper from "../web/LoadingWrapper";
+import LoadingWrapper from "../../components/web/LoadingWrapper";
 import { Box, Heading } from "@chakra-ui/react";
 import { Post } from "@/lib/model";
-import PostPreviewCard from "./PostPreviewCard";
+import { PostPreviewCard } from "../../components/posts/cards";
 import {
   BackToTopFooter,
   Masonry,
-} from "../basicComponents/productBasicComponents";
+} from "../../components/basicComponents/productBasicComponents";
 
 const MostViewedPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);

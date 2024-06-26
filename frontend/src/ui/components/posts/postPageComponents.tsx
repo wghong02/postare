@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Badge, Text, Input } from "@chakra-ui/react";
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
-import { Post, Comment } from "@/lib/model";
+import { Post } from "@/lib/model";
 
 export function PostPageSection({ post }: { post: Post }) {
   // card of post info

@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Flex, useDisclosure } from "@chakra-ui/react";
-import UserPostCard from "@/ui/components/posts/UserPostCard";
+import { UserPostCard } from "@/ui/components/posts/cards";
 import { getUserPosts } from "@/utils/postUtils";
-import UploadPostForm from "@/ui/components/posts/UploadPostForm";
+import { UploadPostForm } from "@/ui/components/posts/forms";
 import { Post } from "@/lib/model";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 import { BackToTopFooter } from "@/ui/components/basicComponents/productBasicComponents";

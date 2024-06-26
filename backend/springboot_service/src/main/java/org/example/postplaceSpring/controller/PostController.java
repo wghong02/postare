@@ -56,7 +56,10 @@
 
         @DeleteMapping("/user/posts/delete/{postId}")
         public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
-            postService.deletePostByPostId(postId);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            long userId = userDetails.getUserId();
+            postService.deletePostByPostId(postId, userId);
             return ResponseEntity.noContent().build();
         }
 

@@ -39,9 +39,12 @@ public class PostService {
         return restTemplate.postForEntity(url, request, String.class);
     }
 
-    public void deletePostByPostId(UUID postId) {
+    public void deletePostByPostId(UUID postId, long userId) {
         String url = GO_SERVICE_URL + "/user/posts/delete/" + postId;
-        restTemplate.delete(url);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-ID", String.valueOf(userId));
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
     }
 
     public ResponseEntity<String> findMostInOneAttributePosts(int limit, int offset, String attribute) {
