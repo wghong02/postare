@@ -1,10 +1,10 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 import { UserInfo, Post } from "@/lib/model";
-import { UploadFormData } from "@/lib/types";
+import dotenv from "dotenv";
 
-const domain = "http://localhost:8080"; // local test
-// const domain = "http://18.216.40.20:8080"; // aws container
+dotenv.config();
+const domain = process.env.DOMAIN;
 
 const fetchAndTransformPostData = async (
   url: string,
