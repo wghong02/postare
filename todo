@@ -1,6 +1,6 @@
 Ranked by priority
 
--   fix upload form
+-   use s3 and store all image files
 -   enable cookies to store token
 -   have users to re login if token expires
 -   add post owner's pfp to postOwnerInfo card

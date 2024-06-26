@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from "react";
+import React, { ChangeEvent, useState } from "react";
 import {
   Button,
   FormControl,
@@ -12,16 +12,120 @@ import {
   ModalHeader,
   ModalOverlay,
   Textarea,
+  Text,
+  useToast,
+  FormErrorMessage,
+  Flex,
+  Box,
 } from "@chakra-ui/react";
-import { UploadPostFormProps } from "@/lib/types";
+import { UploadFormData, TouchedUploadFields } from "@/lib/types";
+import { uploadPost } from "@/utils/postUtils";
 
-const UploadPostForm: React.FC<UploadPostFormProps> = ({
-  formData,
+const UploadPostForm = ({
   isOpen,
   onClose,
-  handleChange,
-  handleFormSubmit,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
 }) => {
+  const toast = useToast();
+
+  const [formValues, setFormValues] = useState<UploadFormData>({
+    title: "",
+    description: "",
+    postDetails: "",
+    imageUrl: "",
+  });
+
+  const [touchedFields, setTouchedFields] = useState<TouchedUploadFields>({
+    title: false,
+    description: false,
+    postDetails: false,
+    imageUrl: false,
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+    setTouchedFields({ ...touchedFields, [name]: true });
+  };
+
+  const handleSubmit = async () => {
+    const { title, description, postDetails, imageUrl } = formValues;
+
+    if (
+      touchedFields.title &&
+      touchedFields.description &&
+      touchedFields.postDetails &&
+      touchedFields.imageUrl
+    ) {
+      try {
+        await uploadPost({
+          title,
+          description,
+          postDetails,
+          imageUrl,
+        });
+        toast({
+          description: "Upload Successful.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } catch (error: any) {
+        toast({
+          description: "Registration failed, " + error.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } else {
+      setTouchedFields({
+        title: true,
+        description: true,
+        postDetails: true,
+        imageUrl: true,
+      });
+      toast({
+        description: "Please complete all required fields and try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const renderInputField = (
+    label: string,
+    name: keyof UploadFormData,
+    type: string,
+    isRequired: boolean
+  ) => (
+    <FormControl
+      isInvalid={touchedFields[name] && !formValues[name] && isRequired}
+      mt="4"
+    >
+      <FormLabel>
+        {label}
+        {isRequired && (
+          <Text as="span" color="red">
+            *
+          </Text>
+        )}
+      </FormLabel>
+      <Input
+        type={type}
+        name={name}
+        value={formValues[name]}
+        onChange={handleChange}
+      />
+      {touchedFields[name] && !formValues[name] && isRequired && (
+        <FormErrorMessage>{label} is required.</FormErrorMessage>
+      )}
+    </FormControl>
+  );
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -29,57 +133,16 @@ const UploadPostForm: React.FC<UploadPostFormProps> = ({
         <ModalHeader>Upload New Post</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl>
-            <FormLabel>Post Name</FormLabel>
-            <Input
-              type="text"
-              name="title"
-              placeholder="Enter post name"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
-          </FormControl>
-          <FormControl mt={4}>
-            <FormLabel>Post Description</FormLabel>
-            <Input
-              type="text"
-              name="description"
-              placeholder="Enter post description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-            />
-          </FormControl>
-          <FormControl mt={5}>
-            <FormLabel>Post Image</FormLabel>
-            <Input
-              type="text"
-              name="imageUrl"
-              placeholder="Image URL for the post"
-              value={formData.imageUrl}
-              onChange={handleChange}
-            />
-          </FormControl>
-
-          <FormControl mt={6}>
-            <FormLabel>Post Details</FormLabel>
-            <Textarea 
-            
-              type="text"
-              name="postDetails"
-              placeholder="A more detailed description of the post"
-              value={formData.postDetails}
-              onChange={handleChange}
-            />
-          </FormControl>
+          {renderInputField("Title", "title", "text", true)}
+          {renderInputField("Description", "description", "text", true)}
+          {renderInputField("PostDetails", "postDetails", "text", true)}
+          {renderInputField("ImageUrl", "imageUrl", "text", true)}
         </ModalBody>
-
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={handleFormSubmit}>
-            Submit
+          <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+            Upload
           </Button>
-          <Button variant="ghost">Cancel</Button>
+          <Button onClick={onClose}>Close</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

@@ -115,13 +115,11 @@ export const uploadPost = (data: UploadFormData) => {
   const authToken = localStorage.getItem("authToken");
   const url = `${domain}/user/posts/upload`;
 
-  const { title, description, price, condition, postDetails, imageUrl } = data;
+  const { title, description, postDetails, imageUrl } = data;
 
   const body = JSON.stringify({
     title,
     description,
-    price: Number(price),
-    condition,
     post_details: postDetails,
     image_url: imageUrl,
   });

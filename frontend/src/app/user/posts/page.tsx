@@ -1,10 +1,9 @@
 "use client";
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Flex, useDisclosure } from "@chakra-ui/react";
 import UserPostCard from "@/ui/components/posts/UserPostCard";
-import { getUserPosts, uploadPost } from "@/utils/postUtils";
+import { getUserPosts } from "@/utils/postUtils";
 import UploadPostForm from "@/ui/components/posts/UploadPostForm";
-import { UploadFormData } from "@/lib/types";
 import { Post } from "@/lib/model";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 import { BackToTopFooter } from "@/ui/components/basicComponents/productBasicComponents";
@@ -12,32 +11,15 @@ import { BackToTopFooter } from "@/ui/components/basicComponents/productBasicCom
 const UserPostPage = () => {
   // post page for the users to upload and delete and view posts they own
   const [posts, setPosts] = useState<Post[]>([]);
-  const [needsRefresh, setNeedsRefresh] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [initLoading, setInitLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
   const [reachedEnd, setReachedEnd] = useState(false);
 
-  // for the pop up chakra modal
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // to upload the post
-  const [formData, setFormData] = useState<UploadFormData>({
-    title: "",
-    description: "",
-    postDetails: "",
-    imageUrl: "",
-  });
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
   // fetch post from the user
   const fetchData = async () => {
@@ -94,21 +76,6 @@ const UserPostPage = () => {
     }
   }, [loadingMore]);
 
-  // default is not show delete
-  const handleFormSubmit = async (event: any) => {
-    event.preventDefault();
-    try {
-      await uploadPost(formData);
-      onClose(); // Close the modal after form submission
-      // Optionally refresh the post list
-      setNeedsRefresh(true);
-    } catch (error) {
-      console.error("Failed to upload post:", error);
-    }
-  };
-
-  useEffect(() => {}), [needsRefresh];
-
   return (
     <Box
       display="flex"
@@ -129,24 +96,22 @@ const UserPostPage = () => {
         </Button>
       </Flex>
 
-      <UploadPostForm
-        formData={formData}
-        isOpen={isOpen}
-        onClose={onClose}
-        handleChange={handleChange}
-        handleFormSubmit={handleFormSubmit}
-      />
+      <UploadPostForm isOpen={isOpen} onClose={onClose} />
 
       <LoadingWrapper
         loading={initLoading}
         hasFetched={hasFetched}
         hasData={posts.length > 0}
       >
-        <Flex justify="space-between" wrap="wrap" mb="2">
-          {posts.map((post, index) => (
-            <UserPostCard key={index} post={post} />
-          ))}
-        </Flex>
+        {posts.length > 0 && (
+          <Flex justify="space-between" wrap="wrap" mb="2">
+            {posts.map((post, index) => (
+              <UserPostCard key={index} post={post} />
+            ))}
+          </Flex>
+        )}
+        {loadingMore && <Box mb="20px">Loading More...</Box>}
+        {posts.length == 0 && <Box>You have no posts, upload to see more.</Box>}
       </LoadingWrapper>
       {!loadingMore && currentPage > 1 && reachedEnd && (
         <Box mb="20px">You have reached the bottom of all posts.</Box>

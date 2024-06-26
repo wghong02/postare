@@ -1,7 +1,5 @@
 "use client";
 import {
-  Alert,
-  AlertIcon,
   Box,
   Button,
   Flex,
@@ -30,7 +28,6 @@ type TouchedFields = {
 };
 
 const AuthForm = () => {
-  const router = useRouter();
   const toast = useToast();
 
   const [formValues, setFormValues] = useState<FormFields>({
@@ -197,7 +194,7 @@ const AuthForm = () => {
   return (
     <Flex direction="column" align="center" m="4">
       <Box w="300px" p="4" bg="white" borderRadius="md" boxShadow="lg">
-        <Box fontSize="xl" mb="4">
+        <Box fontSize="xl" mb="4" fontWeight={500}>
           {showRegister ? "Register" : "Log In"}
         </Box>
         {renderInputField("Username", "username", "text", true)}
