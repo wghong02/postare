@@ -11,6 +11,11 @@ require (
 )
 
 require (
+	github.com/aws/aws-sdk-go v1.54.8 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+)
+
+require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3

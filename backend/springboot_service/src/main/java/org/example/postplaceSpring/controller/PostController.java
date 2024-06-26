@@ -10,8 +10,10 @@
     import org.springframework.security.core.annotation.AuthenticationPrincipal;
     import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.multipart.MultipartFile;
     import org.springframework.web.server.ResponseStatusException;
 
+    import java.io.IOException;
     import java.util.UUID;
 
     @RestController
@@ -45,13 +47,16 @@
         }
 
         @PostMapping("/user/posts/upload")
-        public ResponseEntity<String> uploadPost(@RequestBody String postJson) {
+        public ResponseEntity<String> uploadPost( @RequestParam("title") String title,
+                                                  @RequestParam("description") String description,
+                                                  @RequestParam("postDetails") String postDetails,
+                                                  @RequestParam("imageFile") MultipartFile image) throws IOException {
             // Get the authenticated user's details
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             long userId = userDetails.getUserId();
-            // Pass the post JSON and userId to the service layer
-            return postService.createPost(postJson, userId);
+            // Pass the post file and userId to the service layer
+            return postService.createPost(title, description, postDetails, image, userId);
         }
 
         @DeleteMapping("/user/posts/delete/{postId}")

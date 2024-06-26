@@ -47,19 +47,26 @@ func CheckIfPostOwnedByUser(postID uuid.UUID, userID int64) (bool, error) {
     return true, nil
 }
 
-func DeletePostFromSQL(postID uuid.UUID) error {
+func DeletePostFromSQL(postID uuid.UUID) (string, error) {
+
+	// copy image url
+	var imageUrl string
+	err := dbPool.QueryRow(context.Background(), "SELECT ImageURL FROM Posts WHERE PostID=$1", postID).Scan(&imageUrl)
+	if err != nil {
+		return "", err
+	}
 
 	// delete from db
 	result, err := dbPool.Exec(context.Background(), "DELETE FROM Posts WHERE PostID=$1", postID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	// if post does not exist, the 0 row is affected
 	if result.RowsAffected() == 0 {
-        return customErrors.ErrPostNotFound
+        return "", customErrors.ErrPostNotFound
     }
 
-	return nil
+	return imageUrl, nil
 }
 
 func SearchPostsByDescription(keyword string, limit int, offset int) ([]model.Post, error) {

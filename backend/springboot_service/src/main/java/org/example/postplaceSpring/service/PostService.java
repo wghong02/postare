@@ -1,11 +1,16 @@
 package org.example.postplaceSpring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -30,14 +35,34 @@ public class PostService {
         return restTemplate.getForEntity(url, String.class);
     }
 
-    public ResponseEntity<String> createPost(String postJson, long userId) {
+    public ResponseEntity<String> createPost(String title,
+        String description, String postDetails, MultipartFile image, long userId) throws IOException {
         String url = GO_SERVICE_URL + "/user/posts/upload";
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.set("X-User-ID", String.valueOf(userId));
-        HttpEntity<String> request = new HttpEntity<>(postJson, headers);
-        return restTemplate.postForEntity(url, request, String.class);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("title", title);
+        body.add("description", description);
+        body.add("postDetails", postDetails);
+        body.add("image", new ByteArrayResource(image.getBytes()) {
+            @Override
+            public String getFilename() {
+                return image.getOriginalFilename();
+            }
+        });
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+        return new ResponseEntity<>(response.getBody(), response.getStatusCode());
     }
+
 
     public void deletePostByPostId(UUID postId, long userId) {
         String url = GO_SERVICE_URL + "/user/posts/delete/" + postId;

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,12 +20,6 @@ import (
 func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one upload request")
 
-	// Check data type
-	if r.Header.Get("Content-Type") != "application/json" {
-		http.Error(w, "Content-Type is not application/json", http.StatusUnsupportedMediaType)
-		return
-	}
-
 	// Read userID from request header or context passed from Spring Boot
 	userID := r.Header.Get("X-User-ID")
 	if userID == "" {
@@ -39,17 +34,38 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
+	title := r.FormValue("title")
+	description := r.FormValue("description")
+	postDetails := r.FormValue("postDetails")
+	file, fileHeader, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Unable to read body", http.StatusBadRequest)
+		http.Error(w, "Unable to read image", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+	
+	// Read file content into a buffer
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, file); err != nil {
+		http.Error(w, "Unable to read image", http.StatusBadRequest)
+		return
+	}	
+	
+	// Convert buffer to io.ReadSeeker
+	fileReader := bytes.NewReader(buf.Bytes())
+	
+	imageURL, err := uploadToS3(fileReader, fileHeader.Filename)
+
+	if err != nil {
+		http.Error(w, "Failed to upload image to S3", http.StatusInternalServerError)
 		return
 	}
 
-	// Decode the body into a Post struct
-	var post model.Post
-	if err := json.Unmarshal(body, &post); err != nil {
-		http.Error(w, "Unable to parse JSON", http.StatusBadRequest)
-		return
+	post := model.Post{
+		Title:       title,
+		Description: description,
+		ImageUrl:    imageURL,
+		PostDetails: postDetails,
 	}
 
 	// Call service to process and save the post
@@ -94,7 +110,8 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call service level to delete post
-	if err := service.DeletePost(postID, userIDInt); err != nil {
+	imageUrl, err := service.DeletePost(postID, userIDInt)
+	if err != nil {
 		// Check if the error is due to the post not being found
 		if errors.Is(err, customErrors.ErrPostNotFound) {
 			http.Error(w, "post not found", http.StatusNotFound)
@@ -105,6 +122,12 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to delete post from backend",
 				http.StatusInternalServerError)
 		}
+		return
+	}
+
+	err = deleteFileFromS3(imageUrl)
+	if err != nil {
+		http.Error(w, "Failed to delete file from S3", http.StatusInternalServerError)
 		return
 	}
 

@@ -110,27 +110,17 @@ export const searchPostsByDescription = async (query: any): Promise<Post[]> => {
   }
 };
 
-export const uploadPost = (data: UploadFormData) => {
+export const uploadPost = (data: FormData) => {
   // user post post with auth token
   const authToken = localStorage.getItem("authToken");
   const url = `${domain}/user/posts/upload`;
-
-  const { title, description, postDetails, imageUrl } = data;
-
-  const body = JSON.stringify({
-    title,
-    description,
-    post_details: postDetails,
-    image_url: imageUrl,
-  });
 
   return fetch(url, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json",
     },
-    body: body,
+    body: data,
   }).then((response) => {
     handleResponseStatus(response, "Fail to upload post");
   });

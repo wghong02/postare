@@ -28,21 +28,22 @@ func UploadPost(post *model.Post, userID int64) error {
 	return nil
 }
 
-func DeletePost(postID uuid.UUID, userID int64) error {
+func DeletePost(postID uuid.UUID, userID int64) (string, error) {
 	// verify that the post is owned by the user
 	postedByUser, err := sqlMethods.CheckIfPostOwnedByUser(postID, userID)
 	if err != nil {
-		return err
+		return "", err
 	}	
 	if !postedByUser {
-		return customErrors.ErrPostNotOwnedByUser
+		return "", customErrors.ErrPostNotOwnedByUser
 	}
 	// call backend to delete the post, return if there is error
-	if err = sqlMethods.DeletePostFromSQL(postID); err != nil {
+	imageUrl, err := sqlMethods.DeletePostFromSQL(postID)
+	if err != nil {
 		fmt.Printf("Failed to delete post from SQL %v\n", err)
-		return err
+		return "", err
 	}
-	return nil
+	return imageUrl, nil
 }
 
 func SearchPostsByDescription(description string, limit int, offset int) ([]model.Post, error) {

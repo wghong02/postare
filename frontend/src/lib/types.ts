@@ -4,7 +4,6 @@ export type UploadFormData = {
   title: string;
   description: string;
   postDetails: string;
-  imageUrl: string;
 };
 
 export type TouchedUploadFields = {

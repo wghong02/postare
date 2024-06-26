@@ -32,15 +32,15 @@ export const UploadPostForm = ({
     title: "",
     description: "",
     postDetails: "",
-    imageUrl: "",
   });
 
   const [touchedFields, setTouchedFields] = useState<TouchedUploadFields>({
     title: false,
     description: false,
     postDetails: false,
-    imageUrl: false,
   });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -50,22 +50,29 @@ export const UploadPostForm = ({
     setTouchedFields({ ...touchedFields, [name]: true });
   };
 
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async () => {
-    const { title, description, postDetails, imageUrl } = formValues;
+    const { title, description, postDetails } = formValues;
 
     if (
       touchedFields.title &&
       touchedFields.description &&
       touchedFields.postDetails &&
-      touchedFields.imageUrl
+      imageFile
     ) {
       try {
-        await uploadPost({
-          title,
-          description,
-          postDetails,
-          imageUrl,
-        });
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("postDetails", postDetails);
+        formData.append("imageFile", imageFile);
+
+        await uploadPost(formData);
         toast({
           description: "Upload Successful.",
           status: "success",
@@ -89,7 +96,6 @@ export const UploadPostForm = ({
         title: true,
         description: true,
         postDetails: true,
-        imageUrl: true,
       });
       toast({
         description: "Please complete all required fields and try again.",
@@ -144,13 +150,12 @@ export const UploadPostForm = ({
       title: "",
       description: "",
       postDetails: "",
-      imageUrl: "",
     });
+    setImageFile(null);
     setTouchedFields({
       title: false,
       description: false,
       postDetails: false,
-      imageUrl: false,
     });
   };
 
@@ -163,8 +168,16 @@ export const UploadPostForm = ({
         <ModalBody>
           {renderInputField("Title", "title", "text", true)}
           {renderInputField("Description", "description", "text", true)}
-          {renderInputField("ImageUrl", "imageUrl", "text", true)}
           {renderInputField("PostDetails", "postDetails", "text", true, true)}
+          <FormControl mt="4">
+            <FormLabel>
+              Image
+              <Text as="span" color="red">
+                *
+              </Text>
+            </FormLabel>
+            <Input type="file" accept="image/*" onChange={handleImageChange} />
+          </FormControl>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
