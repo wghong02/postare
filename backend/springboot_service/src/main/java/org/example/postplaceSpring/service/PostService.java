@@ -1,6 +1,7 @@
 package org.example.postplaceSpring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,26 +19,28 @@ public class PostService {
 
     // connect directly to go BE to get data from be using RESTAPI
     private final RestTemplate restTemplate;
-    private final String GO_SERVICE_URL = "http://localhost:8081"; // Replace with your Go service URL
+    private final String goServiceUrl; // Replace with your Go service URL
 
     @Autowired
-    public PostService(RestTemplate restTemplate) {
+    public PostService(RestTemplate restTemplate, Environment env) {
+
         this.restTemplate = restTemplate;
+        this.goServiceUrl = env.getProperty("GO_BACKEND_URL");
     }
 
     public ResponseEntity<String> findPostById(UUID postId) {
-        String url = GO_SERVICE_URL + "/posts/" + postId;
+        String url = goServiceUrl + "/posts/" + postId;
         return restTemplate.getForEntity(url, String.class);
     }
 
     public ResponseEntity<String> findPostsByDescription(String description, int limit, int offset) {
-        String url = GO_SERVICE_URL + "/search?description=" + description + "&limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/search?description=" + description + "&limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 
     public ResponseEntity<String> createPost(String title,
         String description, String postDetails, MultipartFile image, long userId) throws IOException {
-        String url = GO_SERVICE_URL + "/user/posts/upload";
+        String url = goServiceUrl + "/user/posts/upload";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.set("X-User-ID", String.valueOf(userId));
@@ -65,7 +68,7 @@ public class PostService {
 
 
     public void deletePostByPostId(UUID postId, long userId) {
-        String url = GO_SERVICE_URL + "/user/posts/delete/" + postId;
+        String url = goServiceUrl + "/user/posts/delete/" + postId;
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", String.valueOf(userId));
         HttpEntity<String> request = new HttpEntity<>(headers);
@@ -73,12 +76,12 @@ public class PostService {
     }
 
     public ResponseEntity<String> findMostInOneAttributePosts(int limit, int offset, String attribute) {
-        String url = GO_SERVICE_URL + "/posts/get/most/" + attribute + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/posts/get/most/" + attribute + "?limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 
     public ResponseEntity<String> findUserPostHistory(long userId, int limit, int offset) {
-        String url = GO_SERVICE_URL + "/postHistory/" + userId + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/postHistory/" + userId + "?limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 }

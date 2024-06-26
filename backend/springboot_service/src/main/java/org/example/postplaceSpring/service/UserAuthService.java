@@ -5,6 +5,7 @@ import org.example.postplaceSpring.model.GoSaveUserInfo;
 import org.example.postplaceSpring.model.UserRegistrationRequest;
 import org.example.postplaceSpring.repository.UserAuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,12 +19,14 @@ public class UserAuthService implements UserDetailsService {
     private final UserAuthRepository userAuthRepository;
     private final RestTemplate restTemplate;
     private final PasswordEncoder passwordEncoder;
+    private final String goServiceUrl;
 
     @Autowired
-    public UserAuthService(UserAuthRepository userAuthRepository, RestTemplate restTemplate, PasswordEncoder passwordEncoder) {
+    public UserAuthService(UserAuthRepository userAuthRepository, RestTemplate restTemplate, PasswordEncoder passwordEncoder, Environment env) {
         this.userAuthRepository = userAuthRepository;
         this.restTemplate = restTemplate;
         this.passwordEncoder = passwordEncoder;
+        this.goServiceUrl = env.getProperty("GO_BACKEND_URL");
     }
 
 
@@ -38,7 +41,7 @@ public class UserAuthService implements UserDetailsService {
     }
 
     private String getUsernameFromGoService(long userId) {
-        String url = "http://localhost:8081/users/getUsername/" + userId;  // Change URL to match db url
+        String url = goServiceUrl + "/users/getUsername/" + userId;  // Change URL to match db url
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
             throw new IllegalArgumentException("No response received from Go service");
@@ -60,7 +63,7 @@ public class UserAuthService implements UserDetailsService {
     }
 
     private Long getUserIdFromGoService(String username) {
-        String url = "http://localhost:8081/users/getUserID/" + username;  // Change URL to match db url
+        String url = goServiceUrl + "/users/getUserID/" + username;  // Change URL to match db url
         return restTemplate.getForObject(url, Long.class);
     }
 
@@ -82,7 +85,7 @@ public class UserAuthService implements UserDetailsService {
     }
 
     private void saveUserInfoInGoService(UserRegistrationRequest registrationRequest) {
-        String url = "http://localhost:8081/saveUserInfo";
+        String url = goServiceUrl +  "/saveUserInfo";
         GoSaveUserInfo goRequest = new GoSaveUserInfo(
                 registrationRequest.getUsername(),
                 registrationRequest.getUserEmail(),
