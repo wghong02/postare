@@ -22,8 +22,7 @@
       "@/lib": ["./src/app/lib/*"],
       "@/ui": ["./src/app/ui/*"],
       "@/utils": ["./src/app/utils/*"]
-    },
-    "types": ["node", "dotenv"]
+    }
   },
   "include": [
     "next-env.d.ts",

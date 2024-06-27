@@ -4,6 +4,7 @@ import {
   Badge,
   Text,
   VStack,
+  Image,
   FormControl,
   FormLabel,
   FormErrorMessage,
@@ -16,7 +17,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { timeAgo } from "@/utils/generalUtils";
+import { timeAgo, formatCounts } from "@/utils/generalUtils";
 import { UserInfo } from "@/lib/model";
 
 export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
@@ -86,26 +87,37 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 
 export function PostOwnerInfoCard({ user }: { user: UserInfo }) {
   // card of user info
+  const countString = formatCounts(
+    user.totalPosts,
+    user.totalLikes,
+    user.totalViews
+  );
   const registerTime = timeAgo(user.registerTime);
 
   // info of the seller to put on the post page
   return (
-    <Link as={NextLink} href={`/users/${user.userId}`} passHref>
-      <Box>
-        <HStack>
-          {/* add the user's profile picture */}
-          {/* <Image
-        src={user?.profilePicture}
-        objectFit="cover"
-        maxW="100%"
-        maxH="100%"
-      /> */}
-          <Text fontWeight="semibold">
-            {/* TODO: add a link to user's page */}
-            {user.username}
+    <Box>
+      <HStack>
+        <Box display="flex" mr="4">
+          <Image
+            borderRadius="full"
+            boxSize="50px"
+            width="50px"
+            src={user.profilePicture}
+            alt="User Profile Picture"
+          />
+        </Box>
+        <Box>
+          <Link as={NextLink} href={`/users/public/${user.userId}`} passHref>
+            <Text fontWeight="semibold" fontSize="lg">
+              {user.nickname}
+            </Text>
+          </Link>
+          <Text fontWeight="semibold" fontSize="sm">
+            {countString}
           </Text>
-        </HStack>
-      </Box>
-    </Link>
+        </Box>
+      </HStack>
+    </Box>
   );
 }

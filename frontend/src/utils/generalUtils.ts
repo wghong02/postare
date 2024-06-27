@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-
 export const timeAgo = (dateString: string) => {
   // use js Date to transform it to date
   const date = new Date(dateString);
@@ -43,3 +41,18 @@ export const isPostedWithin = (dateString: string, timeframe: string) => {
       return false;
   }
 };
+
+export function formatCounts(
+  totalPosts: number,
+  totalLikes: number,
+  totalViews: number
+) {
+  const formatCount = (count: number, label: string) =>
+    `${count} ${label}${count !== 1 ? "s" : ""}`;
+
+  const formattedPosts = formatCount(totalPosts, "post");
+  const formattedLikes = formatCount(totalLikes, "like");
+  const formattedViews = formatCount(totalViews, "view");
+
+  return `${formattedPosts}, ${formattedLikes}, ${formattedViews}`;
+}

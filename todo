@@ -1,9 +1,8 @@
 Ranked by priority
 
--   use s3 and store all image files
--   enable cookies to store token
--   have users to re login if token expires
--   add post owner's pfp to postOwnerInfo card
+-   Complete user public info page
+-   implement comments related APIs
 -   refine details on user home info page (allow adit)
 -   check if register info is valid
 -   make sure search bar's parameter does not disappear after search
+-   enable cookies to store token
