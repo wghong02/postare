@@ -6,6 +6,8 @@ import org.example.postplaceSpring.model.UserRegistrationRequest;
 import org.example.postplaceSpring.service.CustomUserDetails;
 import org.example.postplaceSpring.service.UserAuthService;
 import org.example.postplaceSpring.util.JwtTokenUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -35,6 +39,7 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     public JwtResponse createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+        logger.info("Received POST request for /auth/login");
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -54,6 +59,7 @@ public class AuthController {
 
     @PostMapping("/auth/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
+        logger.info("Received POST request for /auth/register");
         try {
             userDetailsService.registerNewUser(registrationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");

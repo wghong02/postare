@@ -18,6 +18,7 @@
 
     @RestController
     public class PostController {
+
         private final PostService postService;
 
         private static final Logger logger = LoggerFactory.getLogger(PostController.class);
@@ -29,6 +30,7 @@
 
         @GetMapping("/posts/{postId}")
         public ResponseEntity<String> getIdPost(@PathVariable UUID postId) {
+            logger.info("Received Get request for /post/{postId}");
             ResponseEntity<String> response = postService.findPostById(postId);
             if (response.getStatusCode().is2xxSuccessful()) {
                 logger.info("Post {} returned", postId);
@@ -43,6 +45,7 @@
                 @RequestParam(required = false) String description,
                 @RequestParam(defaultValue = "30") int limit,
                 @RequestParam(defaultValue = "0") int offset) {
+            logger.info("Received Get request for /search");
             return postService.findPostsByDescription(description, limit, offset);
         }
 
@@ -51,6 +54,7 @@
                                                   @RequestParam("description") String description,
                                                   @RequestParam("postDetails") String postDetails,
                                                   @RequestParam("imageFile") MultipartFile image) throws IOException {
+            logger.info("Received Post request for /user/posts/upload");
             // Get the authenticated user's details
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -61,6 +65,7 @@
 
         @DeleteMapping("/user/posts/delete/{postId}")
         public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
+            logger.info("Received Delete request for /user/posts/delete/{postId}");
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             long userId = userDetails.getUserId();
@@ -73,6 +78,7 @@
                 @PathVariable String attribute,
                 @RequestParam(defaultValue = "30") int limit,
                 @RequestParam(defaultValue = "0") int offset) {
+            logger.info("Received Get request for /posts/get/most/{attribute}");
             return postService.findMostInOneAttributePosts(limit, offset, attribute);
         }
 
@@ -81,6 +87,7 @@
                 @AuthenticationPrincipal CustomUserDetails userDetails,
                 @RequestParam(defaultValue = "30") int limit,
                 @RequestParam(defaultValue = "0") int offset) {
+            logger.info("Received Get request for /user/get/postHistory");
             if (userDetails == null) {
                 throw new IllegalStateException("User details not found in authentication context");
             }

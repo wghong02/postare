@@ -1,10 +1,8 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
-import { UserInfo, Post } from "@/lib/model";
-import dotenv from "dotenv";
+import { Post } from "@/lib/model";
 
-dotenv.config();
-const domain = process.env.DOMAIN;
+const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
 const fetchAndTransformPostData = async (
   url: string,

@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserInfoController {
     private final UserInfoService userInfoService;
 
-    private static final Logger logger = LoggerFactory.getLogger(PostController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserInfoController.class);
 
     @Autowired
     public UserInfoController(UserInfoService userInfoService) {
@@ -24,6 +24,7 @@ public class UserInfoController {
     @GetMapping("/user/get/userinfo")
     public ResponseEntity<String> getUserInfo( // call user details related if authed
             @AuthenticationPrincipal CustomUserDetails userDetails) {
+        logger.info("Received Get request for /user/get/userinfo");
         if (userDetails == null) {
             throw new IllegalStateException("User details not found in authentication context");
         }
@@ -43,7 +44,7 @@ public class UserInfoController {
     public ResponseEntity<String> getUserPublicInfo( // call user details related if authed
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable long userId) {
-
+        logger.info("Received Get request for /public/get/userinfo/{userId}");
         ResponseEntity<String> response = userInfoService.getUserInfoById(userId);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Post {} returned", userId);
