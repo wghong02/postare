@@ -5,7 +5,6 @@ import (
 	"appBE/model"
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
@@ -49,7 +48,6 @@ func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 
 	// Check if the query returned an error
 	if err != nil {
-		fmt.Printf("error here")
 		if errors.Is(err, pgx.ErrNoRows) {
             return model.UserInfo{}, customErrors.ErrUserNotFound
         }

@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -23,6 +25,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final UserAuthService userAuthService;
+    private final List<String> authenticatedPaths = List.of("/user/");
 
     @Autowired
     public JwtRequestFilter(JwtTokenUtil jwtTokenUtil, @Lazy UserAuthService userAuthService) {
@@ -46,12 +49,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (IllegalArgumentException e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 System.out.println("Unable to get JWT Token");
+                return;
             } catch (ExpiredJwtException e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 System.out.println("JWT Token has expired");
+                return;
             }
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.warn("JWT Token does not begin with Bearer String");
         }
 
@@ -73,6 +77,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // Skip the filter if the Authorization header is not present
-        return request.getHeader("Authorization") == null;
+        return request.getHeader("Authorization") == null || !requiresAuthentication(request);
+    }
+
+    private boolean requiresAuthentication(HttpServletRequest request) {
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        return authenticatedPaths.stream().anyMatch(path::startsWith);
     }
 }

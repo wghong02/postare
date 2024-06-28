@@ -1,9 +1,11 @@
 package org.example.postplaceSpring.service;
 
+import org.example.postplaceSpring.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -20,6 +22,10 @@ public class UserInfoService {
     public ResponseEntity<String> getUserInfoById(long userId) {
         String url= goServiceUrl + "/users/" + userId ;;
 
-        return restTemplate.getForEntity(url, String.class);
+        try {
+            return restTemplate.getForEntity(url, String.class);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceNotFoundException("User not found with id: " + userId, ex);
+        }
     }
 }

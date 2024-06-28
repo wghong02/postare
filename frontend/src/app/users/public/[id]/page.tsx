@@ -29,10 +29,10 @@ const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
     try {
       setLoading(true);
       const userInfo = await getUserPublicInfo(userId);
+      console.log(userInfo)
       setUser(userInfo);
     } catch (error) {
       console.error("Error fetching posts:", error);
-      throw error;
     } finally {
       setLoading(false);
       setHasFetched(true);

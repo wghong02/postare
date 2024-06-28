@@ -1,5 +1,7 @@
 package org.example.postplaceSpring.service;
 
+import org.example.postplaceSpring.exceptions.ResourceBadRequestException;
+import org.example.postplaceSpring.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
@@ -7,6 +9,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +33,11 @@ public class PostService {
 
     public ResponseEntity<String> findPostById(UUID postId) {
         String url = goServiceUrl + "/posts/" + postId;
-        return restTemplate.getForEntity(url, String.class);
+        try {
+            return restTemplate.getForEntity(url, String.class);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceNotFoundException("Post not found with id: " + postId, ex);
+        }
     }
 
     public ResponseEntity<String> findPostsByDescription(String description, int limit, int offset) {
@@ -72,7 +79,11 @@ public class PostService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", String.valueOf(userId));
         HttpEntity<String> request = new HttpEntity<>(headers);
-        restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
+        try {
+            restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
+        }catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceBadRequestException("User not found with id: " + userId, ex);
+        }
     }
 
     public ResponseEntity<String> findMostInOneAttributePosts(int limit, int offset, String attribute) {

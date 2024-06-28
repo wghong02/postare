@@ -44,6 +44,8 @@ export function UserPublicInfoComponent({ user }: { user: UserInfo }) {
           />
         </Box>
 
+        {/* add user's self intro here */}
+
         <Box mt="1" as="h4" lineHeight="tight" fontSize="lg">
           <Text as="span" fontWeight="semibold" fontSize="2xl">
             {user.nickname}
