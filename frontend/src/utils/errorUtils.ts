@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+
 const handleResponseStatus = (response: Response, errMsg: string) => {
   // handle http response, if 401, unauthorized so remove auth token;
   // if other response that are not ok, throw the corresponding error

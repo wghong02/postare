@@ -17,3 +17,9 @@ export interface UploadPostFormProps {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleFormSubmit: (event: FormEvent) => Promise<void>;
 }
+
+export type QueryProps = {
+  limit: number | null;
+  offset: number | null;
+  description: string | null ;
+}

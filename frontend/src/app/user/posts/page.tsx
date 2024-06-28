@@ -26,7 +26,7 @@ const UserPostPage = () => {
     try {
       setLoadingMore(true); // Start loading
       const newPosts = await getUserPosts({
-        query: { limit: 4, offset: posts.length }, // load 10 posts at a time
+        query: { limit: 4, offset: posts.length, description: null }, // load 10 posts at a time
       });
       if (newPosts != null && newPosts.length != 0) {
         if (currentPage == 1) {

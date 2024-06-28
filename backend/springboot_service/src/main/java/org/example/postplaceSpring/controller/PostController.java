@@ -102,4 +102,19 @@
                 throw new ResponseStatusException(response.getStatusCode(), "Post not found");
             }
         }
+
+        @GetMapping("/public/get/postHistory/{userId}")
+        public ResponseEntity<String> getUserPublicInfo( // call user details related if authed
+                                                         @RequestParam(defaultValue = "30") int limit,
+                                                         @RequestParam(defaultValue = "0") int offset,
+                                                         @PathVariable long userId) {
+            logger.info("Received Get request for /public/get/postHistory/{userId}");
+            ResponseEntity<String> response = postService.findUserPostHistory(userId, limit, offset);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                logger.info("Post {} returned", userId);
+                return response;
+            } else {
+                throw new ResponseStatusException(response.getStatusCode(), "Post not found");
+            }
+        }
     }

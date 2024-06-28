@@ -1,6 +1,7 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 import { Post } from "@/lib/model";
+import { QueryProps } from "@/lib/types";
 
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
@@ -85,7 +86,9 @@ export const getPost = async (postId: string): Promise<Post> => {
   }
 };
 
-export const searchPostsByDescription = async (query: any): Promise<Post[]> => {
+export const searchPostsByDescription = async (
+  query: QueryProps
+): Promise<Post[]> => {
   // use query parameters to search for posts. result are posts
   const description = query?.description ?? "";
   const limit = query?.limit ?? "";
@@ -93,8 +96,10 @@ export const searchPostsByDescription = async (query: any): Promise<Post[]> => {
 
   const url = new URL(`${domain}/search`);
   url.searchParams.append("description", description);
-  url.searchParams.append("limit", limit);
-  url.searchParams.append("offset", offset);
+  url.searchParams.append("limit", limit.toString());
+  url.searchParams.append("offset", offset.toString());
+
+  console.log(url.toString());
 
   try {
     const posts: Post[] = (await fetchAndTransformPostData(
@@ -146,17 +151,17 @@ export const getMostInOneAttributePosts = async ({
   query,
 }: {
   attribute: string;
-  query: any;
+  query: QueryProps;
 }) => {
   // get a most viewed posts for recommendation. response is json
 
   const url = new URL(`${domain}/posts/get/most/${attribute}`);
   if (query?.limit) {
-    url.searchParams.append("limit", query.limit);
+    url.searchParams.append("limit", query.limit.toString());
   }
 
   if (query?.offset) {
-    url.searchParams.append("offset", query.offset);
+    url.searchParams.append("offset", query.offset.toString());
   }
 
   try {
@@ -171,18 +176,18 @@ export const getMostInOneAttributePosts = async ({
   }
 };
 
-export const getUserPosts = async ({ query }: { query: any }) => {
+export const getUserPosts = async ({ query }: { query: QueryProps }) => {
   // get the upload history of a user with its id
 
   const authToken = localStorage.getItem("authToken");
   const url = new URL(`${domain}/user/get/postHistory`);
 
   if (query?.limit) {
-    url.searchParams.append("limit", query.limit);
+    url.searchParams.append("limit", query.limit.toString());
   }
 
   if (query?.offset) {
-    url.searchParams.append("offset", query.offset);
+    url.searchParams.append("offset", query.offset.toString());
   }
 
   try {
@@ -190,6 +195,37 @@ export const getUserPosts = async ({ query }: { query: any }) => {
       url.toString(),
       false,
       authToken
+    )) as Post[];
+
+    return posts;
+  } catch (error) {
+    console.error("Error fetching or parsing data:", error);
+    throw error;
+  }
+};
+
+export const getUserPublicPosts = async ({
+  query,
+  userId,
+}: {
+  query: QueryProps;
+  userId: number;
+}) => {
+  // get the upload history of a user with its id
+
+  const url = new URL(`${domain}/public/get/postHistory/${userId}`);
+
+  if (query?.limit) {
+    url.searchParams.append("limit", query.limit.toString());
+  }
+
+  if (query?.offset) {
+    url.searchParams.append("offset", query.offset.toString());
+  }
+
+  try {
+    const posts: Post[] = (await fetchAndTransformPostData(
+      url.toString()
     )) as Post[];
 
     return posts;

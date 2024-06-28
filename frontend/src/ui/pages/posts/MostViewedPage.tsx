@@ -27,7 +27,7 @@ const MostViewedPage = () => {
       setLoadingMore(true); // Start loading
       const newPosts = await getMostInOneAttributePosts({
         attribute: "viewed",
-        query: { limit: postsToLoad, offset: posts.length },
+        query: { limit: postsToLoad, offset: posts.length, description: null },
       });
 
       if (newPosts != null && newPosts.length != 0) {
