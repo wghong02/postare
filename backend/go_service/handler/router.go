@@ -23,10 +23,16 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/posts/get/most/{attribute}", getMostInOneAttributePostsHandler).Methods("GET")
 	router.HandleFunc("/search", searchPostsHandler).Methods("GET")
 	router.HandleFunc("/postHistory/{userID}", getUserPostsHandler).Methods("GET")
-	router.HandleFunc("/users/{userID}", getUserInfoByIDHandler).Methods("GET")
+	router.HandleFunc("/public/{userID}", getUserInfoByIDHandler).Methods("GET")
 	router.HandleFunc("/saveUserInfo", saveUserInfoHandler).Methods("POST")
-	router.HandleFunc("/users/getUserID/{username}", getUserIDByNameHandler).Methods("GET")
-	router.HandleFunc("/users/getUsername/{userID}", getUsernameByIDHandler).Methods("GET")
+	router.HandleFunc("/public/getUserID/{username}", getUserIDByNameHandler).Methods("GET")
+	router.HandleFunc("/public/getUsername/{userID}", getUsernameByIDHandler).Methods("GET")
+	router.HandleFunc("/user/comments/upload", uploadCommentHandler).Methods("POST")
+	router.HandleFunc("/user/comments/delete/{commentID}", deleteCommentHandler).Methods("DELETE")
+	router.HandleFunc("/user/subcomments/upload", uploadSubcommentHandler).Methods("POST")
+	router.HandleFunc("/user/subcomments/delete/{subcommentID}", deleteSubcommentHandler).Methods("DELETE")
+	router.HandleFunc("/public/getComments/{postID}", getCommentsByPostIDHandler).Methods("GET")
+	router.HandleFunc("/public/getSubcomments/{commentID}", getSubcommentsByCommentIDHandler).Methods("GET")
 
 	// Set up CORS middleware
 	corsMiddleware := handlers.CORS(

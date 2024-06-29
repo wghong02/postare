@@ -1,7 +1,8 @@
 Ranked by priority
 
--   handle more on 401 error and corresponding page
--   implement comments related APIs
+-   implement comments related APIs in Spring
+-   complete comments UI
+-   implement like related APIs
 -   refine details on user home info page (allow adit)
 -   check if register info is valid
 -   make sure search bar's parameter does not disappear after search

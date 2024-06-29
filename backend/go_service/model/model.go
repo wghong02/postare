@@ -47,6 +47,7 @@ type Comment struct {
 	PosterID   int64  `json:"poster_id"`
 	Comment   string `json:"comment"`
 	PostID uuid.UUID  `json:"post_id"`
+	CommentTime	time.Time `json:"comment_time"`
 }
 
 type SubComment struct {
@@ -54,6 +55,7 @@ type SubComment struct {
 	PosterID   int64  `json:"poster_id"`
 	Comment   string `json:"comment"`
 	CommentID int64  `json:"comment_id"`
+	CommentTime	time.Time `json:"comment_time"`
 }
 
 type Like struct {
@@ -94,14 +96,15 @@ var Users = []UserInfo{
 
 var uuid1 = uuid.New()
 var uuid2 = uuid.New()
+var time1 = time.Now()
 
 var Comments = []Comment{
-	{CommentID: 1, PosterID: 101, Comment: "not bad", PostID: uuid1},
-	{CommentID: 2, PosterID: 101, Comment: "pretty good", PostID: uuid1},
+	{CommentID: 1, PosterID: 101, Comment: "not bad", PostID: uuid1, CommentTime: time1},
+	{CommentID: 2, PosterID: 101, Comment: "pretty good", PostID: uuid1, CommentTime: time1},
 }
 
 var SubComments = []SubComment{
-	{SubCommentID: 1, PosterID: 101, Comment: "not bad", CommentID: 2},
+	{SubCommentID: 1, PosterID: 101, Comment: "not bad", CommentID: 2, CommentTime: time1},
 }
 
 var Posts = []Post{

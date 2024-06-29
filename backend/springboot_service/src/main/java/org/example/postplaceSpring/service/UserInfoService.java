@@ -20,7 +20,7 @@ public class UserInfoService {
         this.goServiceUrl = env.getProperty("GO_BACKEND_URL");
     }
     public ResponseEntity<String> getUserInfoById(long userId) {
-        String url= goServiceUrl + "/users/" + userId ;;
+        String url= goServiceUrl + "/public/" + userId ;;
 
         try {
             return restTemplate.getForEntity(url, String.class);

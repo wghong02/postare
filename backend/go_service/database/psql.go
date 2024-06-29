@@ -120,13 +120,15 @@ func createTables() {
             CommentID BIGSERIAL PRIMARY KEY NOT NULL,
             PosterID BIGINT REFERENCES UserInfo(UserID) NOT NULL,
             Comment VARCHAR(1000) NOT NULL,
-            PostID UUID REFERENCES Posts(PostID) NOT NULL
+            PostID UUID REFERENCES Posts(PostID) NOT NULL,
+            CommentTime TIMESTAMP WITH TIME ZONE NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS SubComments (
             SubCommentID BIGSERIAL PRIMARY KEY NOT NULL,
             PosterID BIGINT REFERENCES UserInfo(UserID) NOT NULL,
             Comment VARCHAR(1000) NOT NULL,
-            CommentID BIGINT REFERENCES Comments(CommentID) NOT NULL
+            CommentID BIGINT REFERENCES Comments(CommentID) NOT NULL,
+            CommentTime TIMESTAMP WITH TIME ZONE NOT NULL
         )`,
 		`CREATE TABLE IF NOT EXISTS Likes (
             LikeID BIGSERIAL PRIMARY KEY NOT NULL,

@@ -18,7 +18,7 @@ import (
 )
 
 func saveUserInfoHandler (w http.ResponseWriter, r *http.Request) {
-fmt.Println("Received one save user info request")
+	fmt.Println("Received one save user info request")
 
 	// Check data type
 	if r.Header.Get("Content-Type") != "application/json" {
@@ -32,7 +32,7 @@ fmt.Println("Received one save user info request")
 		return
 	}
 
-	// Decode the body into a Post struct
+	// Decode the body into a User struct
 	var user model.UserInfo
 	if err := json.Unmarshal(body, &user); err != nil {
 		http.Error(w, "Unable to parse JSON", http.StatusBadRequest)

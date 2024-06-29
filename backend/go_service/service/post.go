@@ -83,7 +83,7 @@ func GetMostInOneAttributePosts(limit int, offset int, attribute string) ([]mode
 func GetPostsByUserID(userID int64, limit int, offset int) ([]model.Post, error) {
 
 	// Call backend to get the posts information, return the post info and if there is error
-	posts, err := sqlMethods.SearchRecentPostsByUserID(userID, limit, offset)
+	posts, err := sqlMethods.SearchPostsByUserID(userID, limit, offset)
 	if err != nil {
 		fmt.Printf("Failed to search user posts from SQL, %v\n", err)
 		return []model.Post{}, err

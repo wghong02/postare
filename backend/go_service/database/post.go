@@ -231,3 +231,12 @@ func SearchPostsByUserID(userID int64, limit int, offset int) ([]model.Post, err
 
 	return posts, nil
 }
+
+func checkIfPostExistsByID(postID uuid.UUID) (bool, error) {
+    var exists bool
+    err := dbPool.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM Posts WHERE PostID=$1)", postID).Scan(&exists)
+    if err != nil {
+        return false, err
+    }
+    return exists, nil
+}
