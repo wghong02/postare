@@ -1,10 +1,11 @@
 Ranked by priority
 
--   implement comments related APIs in Spring
--   complete comments UI
--   implement like related APIs
--   refine details on user home info page (allow adit)
--   check if register info is valid
--   make sure search bar's parameter does not disappear after search
--   Add more rows to user public page
--   enable cookies to store token
+- implement comments related APIs in Spring
+- complete comments UI
+- implement like related APIs
+- homepage with tailwind
+- refine details on user home info page (allow adit)
+- check if register info is valid
+- make sure search bar's parameter does not disappear after search
+- Add more rows to user public page
+- enable cookies to store token

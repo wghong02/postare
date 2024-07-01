@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Postare
+
+Postare is a full stack web app project that allows creative minds to post their thoughts and lifestyles in a shared space. It allows users to inspire each other to create, share and build their unique posts on the website. The website if deployed here [http://3.133.130.137:3000/].
+
+## Technologies Used
+
+- Frontend: Next.js, React, Chakra UI
+- Backend: Spring Boot, Go
+- Database: PostgreSQL
+- Deployment: AWS (EC2, ECR, RDS)
+
+## Features
+
+- Secured user signup, login, and logout functionalities with Spring Security.
+- Enable users to create, edit, and delete their posts.
+- Implement a search functionality to find posts by keywords.
+- Offer personalized recommendations based on user activity and preferences.
+- Allow users to like, comment, and share posts.
+- Enable users to customize their profiles with profile pictures, bios, and other personal details.
+- Ensure the application is responsive and works well on various devices and screen sizes.
 
 ## Getting Started
 
-First, run the development server:
+To get a local copy up and running follow these simple steps.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Node.js
+- npm or yarn
+- Java Development Kit (JDK)
+- Go
+- Docker
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Clone the repository
 
-## Learn More
+   ```sh
+   git clone https://github.com/wghong02/postare
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. Install npm packages
+   npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Install Java dependencies using Gradle
+   ./gradlew build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+4. Start the development server
 
-## Deploy on Vercel
+   backend:
+   cd backend/springboot_service
+   ./gradlew bootRun
+   cd backend/go_service
+   go run main.go
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   frontend:
+   cd frontend
+   npm run dev
