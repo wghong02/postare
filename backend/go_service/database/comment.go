@@ -28,15 +28,15 @@ func SaveCommentToSQL(comment *model.Comment) error {
 	return err
 }
 
-func SaveSubcommentToSQL(subcomment *model.SubComment) error {
+func SaveSubCommentToSQL(subComment *model.SubComment) error {
 
-	// save subcomment
-	query := `INSERT INTO Subcomments (PosterID, 
+	// save subComment
+	query := `INSERT INTO SubComments (PosterID, 
         Comment, CommentID, CommentTime) VALUES ($1, $2, $3, $4)`
 
 	_, err := dbPool.Exec(context.Background(),
-		query, subcomment.PosterID, subcomment.Comment,
-		subcomment.CommentID, subcomment.CommentTime)
+		query, subComment.PosterID, subComment.Comment,
+		subComment.CommentID, subComment.CommentTime)
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
 		// 23505 is the foreign key violation error code in PostgreSQL
 		return customErrors.ErrUserOrCommentNotFound
@@ -60,16 +60,16 @@ func DeleteCommentFromSQL(commentID int64)  error {
 	return nil
 }
 
-func DeleteSubcommentFromSQL(subcommentID int64)  error {
+func DeleteSubCommentFromSQL(subCommentID int64)  error {
 
 	// delete from db
-	result, err := dbPool.Exec(context.Background(), "DELETE FROM Subcomments WHERE SubCommentID=$1", subcommentID)
+	result, err := dbPool.Exec(context.Background(), "DELETE FROM SubComments WHERE SubCommentID=$1", subCommentID)
 	if err != nil {
 		return err
 	}
 	// if post does not exist, the 0 row is affected
 	if result.RowsAffected() == 0 {
-        return customErrors.ErrSubcommentNotFound
+        return customErrors.ErrSubCommentNotFound
     }
 
 	return nil
@@ -90,17 +90,17 @@ func CheckIfCommentOwnedByUser(commentID int64, userID int64) (bool, error) {
     return true, nil
 }
 
-func CheckIfSubcommentOwnedByUser(subcommentID int64, userID int64) (bool, error) {
+func CheckIfSubCommentOwnedByUser(subCommentID int64, userID int64) (bool, error) {
 	var commentOwnerID int64
-    err := dbPool.QueryRow(context.Background(), "SELECT posterID FROM Subcomments WHERE SubcommentID=$1", subcommentID).Scan(&commentOwnerID)
+    err := dbPool.QueryRow(context.Background(), "SELECT posterID FROM SubComments WHERE SubCommentID=$1", subCommentID).Scan(&commentOwnerID)
     if err != nil {
         if errors.Is (err, pgx.ErrNoRows) {
-            return false, customErrors.ErrSubcommentNotFound
+            return false, customErrors.ErrSubCommentNotFound
         }
         return false, err
     }
     if commentOwnerID != userID {
-        return false, customErrors.ErrSubcommentNotOwnedByUser
+        return false, customErrors.ErrSubCommentNotOwnedByUser
     }
     return true, nil
 }
@@ -159,7 +159,7 @@ func checkIfCommentExistsByID(commentID int64) (bool, error) {
     return exists, nil
 }
 
-func GetSubcommentsByCommentID(commentID int64, limit int, offset int) ([]model.SubComment, error) {
+func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([]model.SubComment, error) {
 
 	// Check if user exists
     exists, err := checkIfCommentExistsByID(commentID)
@@ -170,12 +170,12 @@ func GetSubcommentsByCommentID(commentID int64, limit int, offset int) ([]model.
         return nil, customErrors.ErrCommentNotFound
     }
 
-	var subcomments []model.SubComment
+	var subComments []model.SubComment
 	var query string
 	var args []interface{}
 
 	// use args to avoid sql injection
-	query = `SELECT * FROM Subcomments WHERE CommentID = $1 ORDER BY CommentTime DESC LIMIT $2 OFFSET $3`
+	query = `SELECT * FROM SubComments WHERE CommentID = $1 ORDER BY CommentTime DESC LIMIT $2 OFFSET $3`
 	args = append(args, commentID, limit, offset)
 
 	// search with sql statement
@@ -187,19 +187,19 @@ func GetSubcommentsByCommentID(commentID int64, limit int, offset int) ([]model.
 
 	// add to result
 	for rows.Next() {
-		var subcomment model.SubComment
-		err := rows.Scan(&subcomment.SubCommentID, &subcomment.PosterID, &subcomment.Comment,
-			&subcomment.CommentID, &subcomment.CommentTime, 
+		var subComment model.SubComment
+		err := rows.Scan(&subComment.SubCommentID, &subComment.PosterID, &subComment.Comment,
+			&subComment.CommentID, &subComment.CommentTime, 
 		)
 		if err != nil {
 			return nil, err
 		}
-		subcomments = append(subcomments, subcomment)
+		subComments = append(subComments, subComment)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return subcomments, nil
+	return subComments, nil
 }

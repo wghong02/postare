@@ -13,10 +13,10 @@ var (
     ErrUserOrPostNotFound = errors.New("user or post not found")
     ErrUserOrCommentNotFound = errors.New("user or comment not found")
     ErrCommentNotFound = errors.New("comment not found")
-    ErrSubcommentNotFound = errors.New("subcomment not found")
+    ErrSubCommentNotFound = errors.New("subComment not found")
     ErrPostNotOwnedByUser = errors.New("post not owned by user")
     ErrCommentNotOwnedByUser = errors.New("comment not owned by user")
-    ErrSubcommentNotOwnedByUser = errors.New("subcomment not owned by user")
+    ErrSubCommentNotOwnedByUser = errors.New("subComment not owned by user")
     ErrUsernameAlreadyExists = errors.New("username already exists")
 )
 

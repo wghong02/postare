@@ -61,9 +61,9 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/public/getSubcomments/{commentId}")
+    @GetMapping("/public/getSubComments/{commentId}")
     public ResponseEntity<String> getSubCommentsByPostId(@PathVariable long commentId) {
-        logger.info("Received Get request for /public/getSubcomments/{commentId}");
+        logger.info("Received Get request for /public/getSubComments/{commentId}");
         ResponseEntity<String> response = commentService.findSubCommentsByCommentId(commentId);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Sub comment {} returned", commentId);
@@ -73,9 +73,9 @@ public class CommentController {
         }
     }
     
-    @PostMapping("/user/subcomments/upload")
+    @PostMapping("/user/subComments/upload")
     public ResponseEntity<String> uploadSubComment( @RequestBody String subCommentJson) {
-        logger.info("Received Post request for /user/subcomments/upload");
+        logger.info("Received Post request for /user/subComments/upload");
         // Get the authenticated user's details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -84,9 +84,9 @@ public class CommentController {
         return commentService.createSubComment(subCommentJson, userId);
     }
 
-    @DeleteMapping("/user/subcomments/delete/{subCommentId}")
+    @DeleteMapping("/user/subComments/delete/{subCommentId}")
     public ResponseEntity<Void> deleteSubComment(@PathVariable long subCommentId) {
-        logger.info("Received Delete request for /user/subcomments/delete/{subCommentId}");
+        logger.info("Received Delete request for /user/subComments/delete/{subCommentId}");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         long userId = userDetails.getUserId();

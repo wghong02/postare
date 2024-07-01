@@ -22,13 +22,13 @@ func UploadComment(comment *model.Comment, userID int64) error {
 	return nil
 }
 
-func UploadSubcomment(subcomment *model.SubComment, userID int64) error {
+func UploadSubComment(subComment *model.SubComment, userID int64) error {
 	// process additional data
-	subcomment.PosterID = userID
-	subcomment.CommentTime = time.Now()
+	subComment.PosterID = userID
+	subComment.CommentTime = time.Now()
 
-	if err := sqlMethods.SaveSubcommentToSQL(subcomment); err != nil {
-		fmt.Printf("Failed to save subcomment to SQL %v\n", err)
+	if err := sqlMethods.SaveSubCommentToSQL(subComment); err != nil {
+		fmt.Printf("Failed to save subComment to SQL %v\n", err)
 		return err
 	}
 	return nil
@@ -53,18 +53,18 @@ func DeleteComment(commmetID int64, userID int64) error {
 	return nil
 }
 
-func DeleteSubcomment(subcommmetID int64, userID int64) error {
+func DeleteSubComment(subcommmetID int64, userID int64) error {
 	// check if posted by the user
-	postedByUser, err := sqlMethods.CheckIfSubcommentOwnedByUser(subcommmetID, userID)
+	postedByUser, err := sqlMethods.CheckIfSubCommentOwnedByUser(subcommmetID, userID)
 	if err != nil {
 		return err
 	}	
 	if !postedByUser {
-		return customErrors.ErrSubcommentNotOwnedByUser
+		return customErrors.ErrSubCommentNotOwnedByUser
 	}
 
 	// delete
-	err = sqlMethods.DeleteSubcommentFromSQL(subcommmetID)
+	err = sqlMethods.DeleteSubCommentFromSQL(subcommmetID)
 	if err != nil {
 		fmt.Printf("Failed to delete comment from SQL %v\n", err)
 		return err
@@ -83,13 +83,13 @@ func GetCommentsByPostID(postID uuid.UUID, limit int, offset int) ([] model.Comm
 	return comments, err
 }
 
-func GetSubcommentsByCommentID(commentID int64, limit int, offset int) ([] model.SubComment, error) {
+func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([] model.SubComment, error) {
 	// call backend to get the post information, return the post info and if there is error
 
-	subcomments, err := sqlMethods.GetSubcommentsByCommentID(commentID, limit, offset)
+	subComments, err := sqlMethods.GetSubCommentsByCommentID(commentID, limit, offset)
 	if err != nil {
 		fmt.Printf("Failed to search post from SQL, %v\n", err)
 		return []model.SubComment{}, err
 	}
-	return subcomments, err
+	return subComments, err
 }

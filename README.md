@@ -40,19 +40,34 @@ To get a local copy up and running follow these simple steps.
    ```
 
 2. Install npm packages
+
+   ```sh
    npm install
+   ```
 
 3. Install Java dependencies using Gradle
+
+   ```sh
    ./gradlew build
+   ```
 
 4. Start the development server
 
    backend:
+
+   ```sh
    cd backend/springboot_service
    ./gradlew bootRun
+   ```
+
+   ```sh
    cd backend/go_service
    go run main.go
+   ```
 
    frontend:
+
+   ```sh
    cd frontend
    npm run dev
+   ```

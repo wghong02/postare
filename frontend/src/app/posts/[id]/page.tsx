@@ -33,6 +33,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const [liked, setLiked] = useState(false);
 	const toast = useToast();
 	const [totalLikes, setTotalLikes] = useState<number>(0);
+	const [authed, setAuthed] = useState<boolean>(false);
 
 	const fetchData = async () => {
 		try {
@@ -60,6 +61,8 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 
 	useEffect(() => {
 		fetchData();
+		const authToken = localStorage.getItem("authToken");
+		setAuthed(authToken !== null);
 	}, []);
 
 	const handleLike = () => {
@@ -147,7 +150,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 									</Flex>
 								)}
 								<Flex height="calc(100% - 50px)" overflowY="auto">
-									<CommentSection></CommentSection>
+									<CommentSection authed={authed}></CommentSection>
 								</Flex>
 							</VStack>
 						</HStack>

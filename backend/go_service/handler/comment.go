@@ -65,7 +65,7 @@ func uploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Uploaded by %d \n", userIDInt)
 }
 
-func uploadSubcommentHandler(w http.ResponseWriter, r *http.Request) {
+func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one upload sub comment request")
 
 	if r.Header.Get("Content-Type") != "application/json" {
@@ -92,14 +92,14 @@ func uploadSubcommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var subcomment model.SubComment
-	if err := json.Unmarshal(body, &subcomment); err != nil {
+	var subComment model.SubComment
+	if err := json.Unmarshal(body, &subComment); err != nil {
 		http.Error(w, "Unable to parse JSON", http.StatusBadRequest)
 		return
 	}
 
-	// Call service to process and save the subcomment
-	if err := service.UploadSubcomment(&subcomment, userIDInt); err != nil {
+	// Call service to process and save the subComment
+	if err := service.UploadSubComment(&subComment, userIDInt); err != nil {
 		if errors.Is(err, customErrors.ErrUserNotFound) {
 			http.Error(w, "sub comment owner does not exist", http.StatusBadRequest)
 		} else {
@@ -159,7 +159,7 @@ func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Comment deleted successfully\n")
 }
 
-func deleteSubcommentHandler(w http.ResponseWriter, r *http.Request) {
+func deleteSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one delete comment request")
 	// Read userID from request header or context passed from Spring Boot
 	userID := r.Header.Get("X-User-ID")
@@ -176,15 +176,15 @@ func deleteSubcommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get commentID from URL parameters
-	subcommentIDStr := mux.Vars(r)["subcommentID"]
-	subcommentID, err := strconv.ParseInt(subcommentIDStr, 10, 64)
+	subCommentIDStr := mux.Vars(r)["subCommentID"]
+	subCommentID, err := strconv.ParseInt(subCommentIDStr, 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid subcomment ID provided", http.StatusBadRequest)
+		http.Error(w, "Invalid subComment ID provided", http.StatusBadRequest)
 		return
 	}
 
 	// Call service level to delete comment
-	err = service.DeleteSubcomment(subcommentID, userIDInt)
+	err = service.DeleteSubComment(subCommentID, userIDInt)
 	if err != nil {
 		// Check if the error is due to the comment not being found
 		if errors.Is(err, customErrors.ErrCommentNotFound) {
@@ -252,8 +252,8 @@ func getCommentsByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func getSubcommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one get subcomments by postID request")
+func getSubCommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get subComments by postID request")
 
 	// response is json
 	w.Header().Set("Content-Type", "application/json")
@@ -278,23 +278,23 @@ func getSubcommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2. call service level to get post info
-	subcomments, err := service.GetSubcommentsByCommentID(commentID, limit, offset)
+	subComments, err := service.GetSubCommentsByCommentID(commentID, limit, offset)
 	if err != nil {
 		// Check if the error is due to the comments not being found
 		if errors.Is (err, customErrors.ErrCommentNotFound) {
 			http.Error(w, "comment not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search subcomments by comment ID from backend",
+			http.Error(w, "Failed to search subComments by comment ID from backend",
 				http.StatusInternalServerError)
 		}
 		return
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(subcomments)
+	js, err := json.Marshal(subComments)
 	if err != nil {
-		http.Error(w, "Failed to parse subcomments into JSON format",
+		http.Error(w, "Failed to parse subComments into JSON format",
 			http.StatusInternalServerError)
 		return
 	}

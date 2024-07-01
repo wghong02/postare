@@ -62,7 +62,7 @@ public class CommentService {
     }
 
     public ResponseEntity<String> findSubCommentsByCommentId(long commentId) {
-        String url = goServiceUrl + "/public/getSubcomments/" + commentId;
+        String url = goServiceUrl + "/public/getSubComments/" + commentId;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {
@@ -71,7 +71,7 @@ public class CommentService {
     }
 
     public ResponseEntity<String> createSubComment(String subCommentJson, long userId) {
-        String url = goServiceUrl + "/user/subcomments/upload";
+        String url = goServiceUrl + "/user/subComments/upload";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-User-ID", String.valueOf(userId));
@@ -82,7 +82,7 @@ public class CommentService {
 
 
     public void deleteSubCommentBySubCommentId(long subCommentId, long userId) {
-        String url = goServiceUrl + "/user/subcomments/delete/" + subCommentId;
+        String url = goServiceUrl + "/user/subComments/delete/" + subCommentId;
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", String.valueOf(userId));
         HttpEntity<String> request = new HttpEntity<>(headers);
