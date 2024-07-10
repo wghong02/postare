@@ -112,3 +112,139 @@ const fetchAndTransformSubCommentData = async (
 		throw error;
 	}
 };
+
+export const getCommentsByPostId = async ({
+	postId,
+	query,
+}: {
+	postId: string;
+	query: QueryProps;
+}): Promise<Comment[]> => {
+	// get a single post by post Id. response is json
+	const url = new URL(`${domain}/public/getComments/${postId}`);
+
+	if (query?.limit) {
+		url.searchParams.append("limit", query.limit.toString());
+	}
+	if (query?.offset) {
+		url.searchParams.append("offset", query.offset.toString());
+	}
+
+	try {
+		const comments: Comment[] = (await fetchAndTransformCommentData(
+			url.toString()
+		)) as Comment[];
+
+		return comments;
+	} catch (error) {
+		console.error("Error fetching or parsing comment:", error);
+		throw error;
+	}
+};
+
+export const getSubCommentsByPostId = async ({
+	commentId,
+	query,
+}: {
+	commentId: string;
+	query: QueryProps;
+}): Promise<SubComment[]> => {
+	// get a single post by post Id. response is json
+	const url = new URL(`${domain}/public/getSubComments/${commentId}`);
+
+	if (query?.limit) {
+		url.searchParams.append("limit", query.limit.toString());
+	}
+	if (query?.offset) {
+		url.searchParams.append("offset", query.offset.toString());
+	}
+
+	try {
+		const subComments: SubComment[] = (await fetchAndTransformSubCommentData(
+			url.toString()
+		)) as SubComment[];
+
+		return subComments;
+	} catch (error) {
+		console.error("Error fetching or parsing comment:", error);
+		throw error;
+	}
+};
+
+export const uploadComment = (comment: string, postId: string) => {
+	// user post post with auth token
+	const authToken = localStorage.getItem("authToken");
+	const url = `${domain}/user/comments/upload`;
+
+	const body = JSON.stringify({
+		comment,
+		post_id: postId,
+	});
+
+	return fetch(url, {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${authToken}`,
+			"Content-Type": "application/json",
+		},
+		body: body,
+	}).then((response) => {
+		handleResponseStatus(response, "Fail to upload comment");
+	});
+};
+
+export const uploadSubComment = (comment: string, commentId: number) => {
+	// user post post with auth token
+	const authToken = localStorage.getItem("authToken");
+	const url = `${domain}/user/subComments/upload`;
+
+	const body = JSON.stringify({
+		comment,
+		comment_id: commentId,
+	});
+
+	return fetch(url, {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${authToken}`,
+			"Content-Type": "application/json",
+		},
+		body: body,
+	}).then((response) => {
+		handleResponseStatus(response, "Fail to upload sub comment");
+	});
+};
+
+export const deleteComment = (commentId: string) => {
+	// delete post using its id
+	const authToken = localStorage.getItem("authToken");
+	const url = `${domain}/user/comments/delete/${commentId}`;
+
+	return fetch(url, {
+		method: "DELETE",
+		headers: {
+			Authorization: `Bearer ${authToken}`,
+		},
+	})
+		.then((response) => {
+			handleResponseStatus(response, "Fail to delete comment");
+		})
+		.then((data) => camelizeKeys(data));
+};
+
+export const deleteSubComment = (subCommentId: string) => {
+	// delete post using its id
+	const authToken = localStorage.getItem("authToken");
+	const url = `${domain}/user/subComments/delete/${subCommentId}`;
+
+	return fetch(url, {
+		method: "DELETE",
+		headers: {
+			Authorization: `Bearer ${authToken}`,
+		},
+	})
+		.then((response) => {
+			handleResponseStatus(response, "Fail to delete comment");
+		})
+		.then((data) => camelizeKeys(data));
+};

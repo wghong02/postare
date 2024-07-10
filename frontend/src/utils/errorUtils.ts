@@ -19,6 +19,13 @@ const handleResponseStatus = (response: Response, errMsg: string) => {
 		return;
 	}
 
+	if (status === 500) {
+		localStorage.removeItem("authToken");
+		window.location.href = "/";
+		alert("Internal Server Error. Please try again.");
+		return;
+	}
+
 	if (!ok) {
 		throw Error(errMsg);
 	}

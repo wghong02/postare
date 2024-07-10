@@ -1,10 +1,8 @@
 Ranked by priority
 
-- implement comments related APIs in Spring
-- complete comments UI
+- complete subcomments UI
 - implement like related APIs
-- homepage with tailwind
-- refine details on user home info page (allow adit)
+- refine details on user home info page (allow edit)
 - check if register info is valid
 - make sure search bar's parameter does not disappear after search
 - Add more rows to user public page

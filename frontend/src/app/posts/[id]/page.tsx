@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {
 	Box,
 	Flex,
@@ -24,6 +24,9 @@ import { CiHeart } from "react-icons/ci";
 import { VscFlame } from "react-icons/vsc";
 import { TiMessages } from "react-icons/ti";
 
+import notFound from "@/app/not-found";
+import { Comment } from "@/lib/model";
+
 const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	// post page for the users to upload and delete and view posts they own
 	const [post, setPost] = useState<Post | null>(null);
@@ -31,9 +34,9 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const [loading, setLoading] = useState(true);
 	const [hasFetched, setHasFetched] = useState(false);
 	const [liked, setLiked] = useState(false);
-	const toast = useToast();
 	const [totalLikes, setTotalLikes] = useState<number>(0);
 	const [authed, setAuthed] = useState<boolean>(false);
+	const toast = useToast();
 
 	const fetchData = async () => {
 		try {
@@ -41,29 +44,18 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 			const postData = await getPost(params.id);
 			setPost(postData);
 			if (postData && postData.postOwnerId) {
-				try {
-					setTotalLikes(postData.likes);
-					const userInfo = await getUserPublicInfo(postData.postOwnerId);
-					setUser(userInfo);
-				} catch (error) {
-					console.error("Error fetching posts:", error);
-					throw error;
-				} finally {
-					setLoading(false);
-					setHasFetched(true);
-				}
+				const userInfo = await getUserPublicInfo(postData.postOwnerId);
+				setUser(userInfo);
 			}
+			setTotalLikes(postData.likes);
 		} catch (error) {
 			console.error("Error fetching posts:", error);
-			throw error;
+			notFound();
+		} finally {
+			setLoading(false);
+			setHasFetched(true);
 		}
 	};
-
-	useEffect(() => {
-		fetchData();
-		const authToken = localStorage.getItem("authToken");
-		setAuthed(authToken !== null);
-	}, []);
 
 	const handleLike = () => {
 		if (!liked) {
@@ -87,6 +79,12 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 		}
 	};
 
+	useEffect(() => {
+		fetchData();
+		const authToken = localStorage.getItem("authToken");
+		setAuthed(authToken !== null);
+	}, []);
+
 	return (
 		<>
 			<Box display="flex" justifyContent="center" mt="30" ml="50" mr="50">
@@ -100,7 +98,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 						align="stretch"
 					>
 						{/* Hstacks to organize the details of the post */}
-						<HStack spacing={4}>
+						<HStack spacing={4} maxH="400px">
 							<Flex maxH="400px" align="center" justify="center">
 								<Image
 									src={post?.imageUrl}
@@ -125,7 +123,8 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 									align="center"
 									cursor="pointer"
 									onClick={handleLike}
-									color={liked ? "red.500" : "gray.400"}
+									color={liked ? "red.500" : "gray.500"}
+									_hover={{ color: "pink.300" }}
 								>
 									<Icon as={CiHeart} boxSize="30px" />
 									<Text fontSize="sm">{totalLikes}</Text>
@@ -143,15 +142,20 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 							</VStack>
 
 							{/* column of comments */}
-							<VStack minW="35%" height="100%" spacing="5" align={"left"}>
+							<VStack minW="35%" maxH="400px" spacing="5" align={"left"}>
 								{user && (
 									<Flex height="50px">
 										<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
 									</Flex>
 								)}
-								<Flex height="calc(100% - 50px)" overflowY="auto">
-									<CommentSection authed={authed}></CommentSection>
-								</Flex>
+								{post && (
+									<Box maxH="calc(100% - 50px)">
+										<CommentSection
+											authed={authed}
+											postId={post.postId}
+										></CommentSection>
+									</Box>
+								)}
 							</VStack>
 						</HStack>
 
@@ -161,9 +165,9 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 							</Flex>
 						)}
 
-						<Box h="200px" bg="pink.100">
+						{/* <Box h="200px" bg="pink.100">
 							For future recommendations
-						</Box>
+						</Box> */}
 					</VStack>
 				</LoadingWrapper>
 			</Box>
