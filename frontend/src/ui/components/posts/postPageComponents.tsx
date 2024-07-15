@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import { Post, Comment } from "@/lib/model";
-import { IoIosSend } from "react-icons/io";
+import { IoIosSend, IoMdCloseCircleOutline } from "react-icons/io";
 import { CommentCard } from "../commets/cards";
 import { getCommentsByPostId, uploadComment } from "@/utils/commentUtils";
 import LoadingWrapper from "../web/LoadingWrapper";
@@ -74,37 +74,46 @@ export function CommentSection({
 }) {
 	const [comments, setComments] = useState<Comment[]>([]);
 	const [newComment, setNewComment] = useState<string>("");
-	const [loading, setLoading] = useState(true);
+	const [initLoading, setInitLoading] = useState(true);
+	const [loadingMore, setLoadingMore] = useState(false);
 	const [hasFetched, setHasFetched] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [reachedEnd, setReachedEnd] = useState(false);
+	const [onReply, setOnReply] = useState(false);
+	const [replyName, setReplyName] = useState<String>("");
 	const toast = useToast();
+	const commentsToLoad = 6;
 
 	const sendComment = async () => {
-		if (postId) {
-			if (newComment == "") {
-				toast({
-					title: "Comment cannot be empty.",
-					status: "error",
-					duration: 2000,
-					isClosable: true,
-				});
-			} else {
-				try {
-					await uploadComment(newComment, postId);
+		if (onReply) {
+		} else {
+			if (postId) {
+				if (newComment == "") {
 					toast({
-						title: "Comment sent!",
-						status: "success",
-						duration: 2000,
-						isClosable: true,
-					});
-					fetchComments();
-				} catch (error) {
-					console.error("Error sending comment:", error);
-					toast({
-						title: "Failed to send comment.",
+						title: "Comment cannot be empty.",
 						status: "error",
 						duration: 2000,
 						isClosable: true,
 					});
+				} else {
+					try {
+						await uploadComment(newComment, postId);
+						toast({
+							title: "Comment sent!",
+							status: "success",
+							duration: 2000,
+							isClosable: true,
+						});
+						fetchComments();
+					} catch (error) {
+						console.error("Error sending comment:", error);
+						toast({
+							title: "Failed to send comment.",
+							status: "error",
+							duration: 2000,
+							isClosable: true,
+						});
+					}
 				}
 			}
 		}
@@ -112,23 +121,32 @@ export function CommentSection({
 
 	const fetchComments = async () => {
 		try {
-			setLoading(true);
+			setLoadingMore(true);
 			const commentsData = await getCommentsByPostId({
 				postId: postId,
-				query: { limit: 10, offset: 0, description: null },
+				query: {
+					limit: commentsToLoad,
+					offset: comments.length,
+					description: null,
+				},
 			});
-			setComments(commentsData);
+			if (commentsData.length == 0) {
+				setReachedEnd(true);
+			} else {
+				setComments([...comments, ...commentsData]);
+			}
 		} catch (error) {
 			console.error("Error fetching comments:", error);
 		} finally {
-			setLoading(false);
+			setInitLoading(false);
 			setHasFetched(true);
+			setLoadingMore(false);
 		}
 	};
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === "Enter") {
-			sendComment(); // Trigger onCommentClick when Enter key is pressed
+			sendComment(); // Trigger send when Enter key is pressed
 		}
 	};
 
@@ -138,21 +156,87 @@ export function CommentSection({
 
 	useEffect(() => {
 		fetchComments();
-	}, []);
+	}, [currentPage]);
+
+	// to handle if ha reached the bottom of the page
+	useEffect(() => {
+		const handleScroll = () => {
+			const box = document.getElementById("commentBox");
+
+			if (
+				box &&
+				box.scrollHeight - box.scrollTop <= box.clientHeight &&
+				!loadingMore &&
+				!reachedEnd
+			) {
+				setCurrentPage(currentPage + 1);
+			}
+		};
+		setHasFetched(false);
+		const box = document.getElementById("commentBox");
+		if (box) {
+			box.addEventListener("scroll", handleScroll);
+		}
+		return () => {
+			if (box) {
+				box.removeEventListener("scroll", handleScroll);
+			}
+		};
+	}, [loadingMore]);
+
+	const handleCloseReply = () => {
+		setOnReply(false);
+	};
 
 	return (
-		<LoadingWrapper loading={loading} hasFetched={hasFetched}>
-			<Box width="100%" height="320px">
+		<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
+			<Box width="100%" height={onReply ? "290px" : "320px"}>
 				{/* add to display comments related to this post */}
 				<Text fontSize="large" fontWeight="bold" height="30px">
 					{" "}
 					Comments{" "}
 				</Text>
-				<Box height="calc(100% - 62px)" overflowY="scroll">
+				<Box
+					height={onReply ? "calc(100% - 82px)" : "calc(100% - 62px)"}
+					overflowY="scroll"
+					id="commentBox"
+					mb="2"
+				>
 					{comments.map((comment, index) => (
-						<CommentCard key={index} comment={comment} />
+						<Box>
+							<CommentCard
+								key={index}
+								comment={comment}
+								setReplyName={setReplyName}
+								setOnReply={setOnReply}
+								authed={authed}
+							/>
+						</Box>
 					))}
 				</Box>
+				{onReply && (
+					<Flex direction="row" align="center" justify="space-between">
+						<Flex
+							borderWidth="1px"
+							borderRadius="md"
+							fontSize="sm"
+							mt={2}
+							width="100%"
+						>
+							Replying to{" "}
+							<Text fontWeight={500} ml="1">
+								{" " + replyName}
+							</Text>
+						</Flex>
+						<Icon
+							as={IoMdCloseCircleOutline}
+							boxSize="20px"
+							ml="2"
+							onClick={handleCloseReply}
+							_hover={{ color: "blue.300", cursor: "pointer" }}
+						/>
+					</Flex>
+				)}
 				{authed ? (
 					<Flex direction="row" align="center" height="32px">
 						<Input
@@ -170,12 +254,7 @@ export function CommentSection({
 						/>
 					</Flex>
 				) : (
-					<Input
-						isDisabled
-						mt="20px"
-						size="sm"
-						placeholder="Log in to comment"
-					></Input>
+					<Input isDisabled size="sm" placeholder="Log in to comment"></Input>
 				)}
 			</Box>
 		</LoadingWrapper>

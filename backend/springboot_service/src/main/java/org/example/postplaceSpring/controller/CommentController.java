@@ -2,19 +2,15 @@ package org.example.postplaceSpring.controller;
 
 import org.example.postplaceSpring.service.CommentService;
 import org.example.postplaceSpring.service.CustomUserDetails;
-import org.example.postplaceSpring.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -29,9 +25,11 @@ public class CommentController {
     }
 
     @GetMapping("/public/getComments/{postId}")
-    public ResponseEntity<String> getCommentsByPostId(@PathVariable UUID postId) {
+    public ResponseEntity<String> getCommentsByPostId(@PathVariable UUID postId,
+                                                      @RequestParam(defaultValue = "10") int limit,
+                                                      @RequestParam(defaultValue = "0") int offset) {
         logger.info("Received Get request for /public/getComments/{commentId}");
-        ResponseEntity<String> response = commentService.findCommentsByPostId(postId);
+        ResponseEntity<String> response = commentService.findCommentsByPostId(postId, limit, offset);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Comment {} returned", postId);
             return response;
@@ -62,9 +60,11 @@ public class CommentController {
     }
 
     @GetMapping("/public/getSubComments/{commentId}")
-    public ResponseEntity<String> getSubCommentsByPostId(@PathVariable long commentId) {
+    public ResponseEntity<String> getSubCommentsByPostId(@PathVariable long commentId,
+                                                         @RequestParam(defaultValue = "10") int limit,
+                                                         @RequestParam(defaultValue = "0") int offset) {
         logger.info("Received Get request for /public/getSubComments/{commentId}");
-        ResponseEntity<String> response = commentService.findSubCommentsByCommentId(commentId);
+        ResponseEntity<String> response = commentService.findSubCommentsByCommentId(commentId, limit, offset);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Sub comment {} returned", commentId);
             return response;

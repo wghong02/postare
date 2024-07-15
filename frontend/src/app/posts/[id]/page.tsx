@@ -25,7 +25,6 @@ import { VscFlame } from "react-icons/vsc";
 import { TiMessages } from "react-icons/ti";
 
 import notFound from "@/app/not-found";
-import { Comment } from "@/lib/model";
 
 const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	// post page for the users to upload and delete and view posts they own
@@ -35,6 +34,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const [hasFetched, setHasFetched] = useState(false);
 	const [liked, setLiked] = useState(false);
 	const [totalLikes, setTotalLikes] = useState<number>(0);
+	const [totalComments, setTotalComments] = useState<number>(0);
 	const [authed, setAuthed] = useState<boolean>(false);
 	const toast = useToast();
 
@@ -137,7 +137,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 
 								<Flex flexDirection="column" align="center">
 									<Icon as={TiMessages} boxSize="30px" color="blue" />
-									<Text fontSize="sm">#1</Text>
+									<Text fontSize="sm">{totalComments}</Text>
 								</Flex>
 							</VStack>
 

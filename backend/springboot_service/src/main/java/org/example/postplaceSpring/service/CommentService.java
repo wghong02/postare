@@ -29,8 +29,8 @@ public class CommentService {
         this.goServiceUrl = env.getProperty("GO_BACKEND_URL");
     }
 
-    public ResponseEntity<String> findCommentsByPostId(UUID postId) {
-        String url = goServiceUrl + "/public/getComments/" + postId;
+    public ResponseEntity<String> findCommentsByPostId(UUID postId, int limit, int offset) {
+        String url = goServiceUrl + "/public/getComments/" + postId + "?limit=" + limit + "&offset=" + offset;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {
@@ -50,7 +50,7 @@ public class CommentService {
 
 
     public void deleteCommentByCommentId(long commentId, long userId) {
-        String url = goServiceUrl + "/user/comments/delete/" + commentId;
+        String url = goServiceUrl + "/user/comments/delete/" + commentId ;
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", String.valueOf(userId));
         HttpEntity<String> request = new HttpEntity<>(headers);
@@ -61,8 +61,8 @@ public class CommentService {
         }
     }
 
-    public ResponseEntity<String> findSubCommentsByCommentId(long commentId) {
-        String url = goServiceUrl + "/public/getSubComments/" + commentId;
+    public ResponseEntity<String> findSubCommentsByCommentId(long commentId, int limit, int offset) {
+        String url = goServiceUrl + "/public/getSubComments/" + commentId + "?limit=" + limit + "&offset=" + offset;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {
