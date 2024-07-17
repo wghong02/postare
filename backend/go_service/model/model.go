@@ -70,6 +70,10 @@ type Category struct {
 	CategoryName string `json:"seller_id"`
 }
 
+type CountModel struct {
+	Count int64 `json:"count"`
+}
+
 var Auths = []UserAuth{
 	{
 		Username: "antique_seller", EncodedPassword: "encrypted_password",

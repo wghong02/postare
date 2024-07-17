@@ -273,7 +273,7 @@ func getSubCommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. process data
 	commentID, err := strconv.ParseInt(commentIDStr, 10, 64)
 	if err != nil {
-		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
+		http.Error(w, "Invalid commentID provided", http.StatusBadRequest)
 		return
 	}
 
@@ -293,6 +293,82 @@ func getSubCommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 3. format json response
 	js, err := json.Marshal(subComments)
+	if err != nil {
+		http.Error(w, "Failed to parse subComments into JSON format",
+			http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
+}
+
+func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get comment count request")
+
+	// response is json
+	w.Header().Set("Content-Type", "application/json")
+	postIDStr := mux.Vars(r)["postID"]
+
+	// 1. process data
+	postID, err := uuid.Parse(postIDStr)
+	if err != nil {
+		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
+		return
+	}
+
+	// 2. call service level to get comment count
+	count, err := service.GetCommentCountByPostID(postID)
+	if err != nil {
+		// Check if the error is due to the comments not being found
+		if errors.Is (err, customErrors.ErrPostNotFound) {
+			http.Error(w, "post not found", http.StatusNotFound)
+		} else {
+			// For all other errors, return internal server error
+			http.Error(w, "Failed to search subComments by post ID from backend",
+				http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// 3. format json response
+	js, err := json.Marshal(count)
+	if err != nil {
+		http.Error(w, "Failed to parse subComments into JSON format",
+			http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
+}
+
+func getSubCommentCountByCommentID(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get comment count request")
+
+	// response is json
+	w.Header().Set("Content-Type", "application/json")
+	commentIDStr := mux.Vars(r)["commentID"]
+
+	// 1. process data
+	commentID, err := strconv.ParseInt(commentIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
+		return
+	}
+
+	// 2. call service level to get subcomment count
+	count, err := service.GetSubCommentCountByCommentID(commentID)
+	if err != nil {
+		// Check if the error is due to the comments not being found
+		if errors.Is (err, customErrors.ErrCommentNotFound) {
+			http.Error(w, "post not found", http.StatusNotFound)
+		} else {
+			// For all other errors, return internal server error
+			http.Error(w, "Failed to search subComments by post ID from backend",
+				http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// 3. format json response
+	js, err := json.Marshal(count)
 	if err != nil {
 		http.Error(w, "Failed to parse subComments into JSON format",
 			http.StatusInternalServerError)

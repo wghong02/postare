@@ -94,5 +94,27 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/public/getCommentCount/{postId}")
+    public ResponseEntity<String> getCommentCountByPostId(@PathVariable UUID postId) {
+        logger.info("Received Get request for /public/getCommentCount/{commentId}");
+        ResponseEntity<String> response = commentService.getCommentCountByPostId(postId);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("Comment count with post {} returned", postId);
+            return response;
+        } else {
+            throw new ResponseStatusException(response.getStatusCode(), "Comment not found");
+        }
+    }
 
+    @GetMapping("/public/getSubCommentCount/{commentId}")
+    public ResponseEntity<String> getSubCommentCountByPostId(@PathVariable long commentId) {
+        logger.info("Received Get request for /public/getSubCommentCount/{commentId}");
+        ResponseEntity<String> response = commentService.getSubCommentCountByCommentId(commentId);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("Sub comment count with comment {} returned", commentId);
+            return response;
+        } else {
+            throw new ResponseStatusException(response.getStatusCode(), "Sub comment not found");
+        }
+    }
 }

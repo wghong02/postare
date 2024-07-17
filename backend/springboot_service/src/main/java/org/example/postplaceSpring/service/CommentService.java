@@ -92,4 +92,22 @@ public class CommentService {
             throw new ResourceBadRequestException("User not found with id: " + userId, ex);
         }
     }
+
+    public ResponseEntity<String> getCommentCountByPostId(UUID postId) {
+        String url = goServiceUrl + "/public/getCommentCount/" + postId;
+        try {
+            return restTemplate.getForEntity(url, String.class);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceNotFoundException("Comments not found with PostId: " + postId, ex);
+        }
+    }
+
+    public ResponseEntity<String> getSubCommentCountByCommentId(long commentId) {
+        String url = goServiceUrl + "/public/getSubCommentCount/" + commentId;
+        try {
+            return restTemplate.getForEntity(url, String.class);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceNotFoundException("Sub comments not found with CommentId: " + commentId, ex);
+        }
+    }
 }

@@ -93,3 +93,27 @@ func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([] model
 	}
 	return subComments, err
 }
+
+func GetCommentCountByPostID(postID uuid.UUID) (model.CountModel, error){
+
+	count, err := sqlMethods.GetCommentCountByPostID(postID)
+	result := model.CountModel{}
+	if err != nil {
+		fmt.Printf("Failed to search post from SQL, %v\n", err)
+		return result, err
+	}
+	result.Count = count
+	return result, err
+}
+
+func GetSubCommentCountByCommentID(commentID int64) (model.CountModel, error){
+
+	count, err := sqlMethods.GetSubCommentCountByCommentID(commentID)
+	result := model.CountModel{}
+	if err != nil {
+		fmt.Printf("Failed to search post from SQL, %v\n", err)
+		return result, err
+	}
+	result.Count = count
+	return result, err
+}

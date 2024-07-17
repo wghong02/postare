@@ -203,3 +203,38 @@ func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([]model.
 
 	return subComments, nil
 }
+
+func GetCommentCountByPostID(postID uuid.UUID) (int64, error) {
+
+	exists, err := checkIfPostExistsByID(postID)
+    if err != nil {
+        return 0, err
+    }
+    if !exists {
+        return 0, customErrors.ErrPostNotFound
+    }
+
+    var count int64
+    err = dbPool.QueryRow(context.Background(), "SELECT COUNT(*) FROM Comments WHERE PostID = $1", postID).Scan(&count)
+    if err != nil {
+        return 0, err
+    }
+    return count, nil
+}
+
+func GetSubCommentCountByCommentID(commentID int64) (int64, error) {
+	exists, err := checkIfCommentExistsByID(commentID)
+    if err != nil {
+        return 0, err
+    }
+    if !exists {
+        return 0, customErrors.ErrCommentNotFound
+    }
+
+    var count int64
+    err = dbPool.QueryRow(context.Background(), "SELECT COUNT(*) FROM SubComments WHERE commentID = $1", commentID).Scan(&count)
+    if err != nil {
+        return 0, err
+    }
+    return count, nil
+}

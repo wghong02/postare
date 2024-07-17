@@ -84,3 +84,7 @@ export interface RatingData {
 	rating: number;
 	comment: string;
 }
+
+export interface CountData {
+	count: number;
+}

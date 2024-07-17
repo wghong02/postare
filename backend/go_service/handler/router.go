@@ -33,6 +33,8 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/user/subComments/delete/{subCommentID}", deleteSubCommentHandler).Methods("DELETE")
 	router.HandleFunc("/public/getComments/{postID}", getCommentsByPostIDHandler).Methods("GET")
 	router.HandleFunc("/public/getSubComments/{commentID}", getSubCommentsByCommentIDHandler).Methods("GET")
+	router.HandleFunc("/public/getCommentCount/{postID}", getCommentCountByPostID).Methods("GET")
+	router.HandleFunc("/public/getSubCommentCount/{commentID}", getSubCommentCountByCommentID).Methods("GET")
 
 	// Set up CORS middleware
 	corsMiddleware := handlers.CORS(

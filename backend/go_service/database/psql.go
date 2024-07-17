@@ -151,15 +151,40 @@ func createTables() {
 		END;
 		$$ LANGUAGE plpgsql;
 		`,
-		`CREATE TRIGGER post_insert_trigger
-		AFTER INSERT ON Posts
+		`CREATE OR REPLACE FUNCTION update_total_comments() RETURNS TRIGGER AS $$
+		BEGIN
+			IF TG_OP = 'INSERT' THEN
+				UPDATE UserInfo
+				SET TotalComments = TotalComments + 1
+				WHERE UserID = NEW.PosterID;
+			ELSIF TG_OP = 'DELETE' THEN
+				UPDATE UserInfo
+				SET TotalComments = TotalComments - 1
+				WHERE UserID = OLD.PosterID;
+			END IF;
+			RETURN NULL;
+		END;
+		$$ LANGUAGE plpgsql;
+		`,
+		`CREATE TRIGGER comment_insert_trigger
+		AFTER INSERT ON Comments
 		FOR EACH ROW
-		EXECUTE FUNCTION update_total_posts();
+		EXECUTE FUNCTION update_total_comments();
 
-		CREATE TRIGGER post_delete_trigger
-		AFTER DELETE ON Posts
+		CREATE TRIGGER comment_delete_trigger
+		AFTER DELETE ON Comments
 		FOR EACH ROW
-		EXECUTE FUNCTION update_total_posts();
+		EXECUTE FUNCTION update_total_comments();
+
+		CREATE TRIGGER subcomment_insert_trigger
+		AFTER INSERT ON SubComments
+		FOR EACH ROW
+		EXECUTE FUNCTION update_total_comments();
+
+		CREATE TRIGGER subcomment_delete_trigger
+		AFTER DELETE ON SubComments
+		FOR EACH ROW
+		EXECUTE FUNCTION update_total_comments();
 		`,
 	}
 

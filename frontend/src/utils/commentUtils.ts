@@ -1,6 +1,6 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
-import { Comment, SubComment } from "@/lib/model";
+import { Comment, SubComment, CountData } from "@/lib/model";
 import { QueryProps } from "@/lib/types";
 
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
@@ -142,11 +142,34 @@ export const getCommentsByPostId = async ({
 	}
 };
 
-export const getSubCommentsByPostId = async ({
+export const getCommentCountByPostId = async ({
+	postId,
+}: {
+	postId: string;
+}): Promise<number> => {
+	// get a single post by post Id. response is json
+	const url = new URL(`${domain}/public/getCommentCount/${postId}`);
+
+	try {
+		let response;
+		response = await fetch(url);
+
+		handleResponseStatus(response, "Failed to fetch data");
+
+		const responseData: CountData = await response.json();
+
+		return responseData.count;
+	} catch (error) {
+		console.error("Error fetching or parsing data:", error);
+		throw error;
+	}
+};
+
+export const getSubCommentsByCommentId = async ({
 	commentId,
 	query,
 }: {
-	commentId: string;
+	commentId: number;
 	query: QueryProps;
 }): Promise<SubComment[]> => {
 	// get a single post by post Id. response is json
@@ -167,6 +190,29 @@ export const getSubCommentsByPostId = async ({
 		return subComments;
 	} catch (error) {
 		console.error("Error fetching or parsing comment:", error);
+		throw error;
+	}
+};
+
+export const getSubCommentCountByCommentId = async ({
+	commentId,
+}: {
+	commentId: number;
+}): Promise<number> => {
+	// get a single post by post Id. response is json
+	const url = new URL(`${domain}/public/getSubCommentCount/${commentId}`);
+
+	try {
+		let response;
+		response = await fetch(url);
+
+		handleResponseStatus(response, "Failed to fetch data");
+
+		const responseData: CountData = await response.json();
+
+		return responseData.count;
+	} catch (error) {
+		console.error("Error fetching or parsing data:", error);
 		throw error;
 	}
 };
@@ -198,6 +244,7 @@ export const uploadSubComment = (comment: string, commentId: number) => {
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/subComments/upload`;
 
+	console.log(url, comment, commentId)
 	const body = JSON.stringify({
 		comment,
 		comment_id: commentId,

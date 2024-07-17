@@ -25,6 +25,7 @@ import { VscFlame } from "react-icons/vsc";
 import { TiMessages } from "react-icons/ti";
 
 import notFound from "@/app/not-found";
+import { getCommentCountByPostId } from "@/utils/commentUtils";
 
 const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	// post page for the users to upload and delete and view posts they own
@@ -57,6 +58,15 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 		}
 	};
 
+	const fetchCommentCount = async () => {
+		try {
+			const countResult = await getCommentCountByPostId({ postId: params.id });
+			setTotalComments(countResult);
+		} catch (error) {
+			console.error("Error fetching comments:", error);
+		}
+	};
+
 	const handleLike = () => {
 		if (!liked) {
 			setTotalLikes((likes) => likes + 1);
@@ -81,6 +91,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 
 	useEffect(() => {
 		fetchData();
+		fetchCommentCount();
 		const authToken = localStorage.getItem("authToken");
 		setAuthed(authToken !== null);
 	}, []);
@@ -89,86 +100,93 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 		<>
 			<Box display="flex" justifyContent="center" mt="30" ml="50" mr="50">
 				<LoadingWrapper loading={loading} hasFetched={hasFetched}>
-					<VStack
-						maxW="1500px"
-						minW="60%"
-						maxH="100%"
-						divider={<StackDivider borderColor="gray.200" />}
-						spacing="5"
-						align="stretch"
-					>
-						{/* Hstacks to organize the details of the post */}
-						<HStack spacing={4} maxH="400px">
-							<Flex maxH="400px" align="center" justify="center">
-								<Image
-									src={post?.imageUrl}
-									alt="Post Image"
-									objectFit="cover"
-									maxW="100%"
-									height="400px"
-								/>
-							</Flex>
+					<HStack>
+						<VStack
+							maxW="1500px"
+							minW="60%"
+							maxH="100%"
+							divider={<StackDivider borderColor="gray.200" />}
+							spacing="5"
+							align="stretch"
+						>
+							{/* Hstacks to organize the details of the post */}
+							<HStack spacing={4} maxH="400px">
+								<Flex maxH="400px" align="center" justify="center">
+									<Image
+										src={post?.imageUrl}
+										alt="Post Image"
+										objectFit="cover"
+										maxW="100%"
+										height="400px"
+									/>
+								</Flex>
 
-							{/* column of icons */}
-							<VStack
-								height="100%"
-								minW="50px"
-								maxH="400px"
-								align="center"
-								justify="space-between"
-								direction="column"
-							>
-								<Flex
-									flexDirection="column"
+								{/* column of icons */}
+								<VStack
+									height="100%"
+									minW="50px"
+									maxH="400px"
 									align="center"
-									cursor="pointer"
-									onClick={handleLike}
-									color={liked ? "red.500" : "gray.500"}
-									_hover={{ color: "pink.300" }}
+									justify="space-between"
+									direction="column"
 								>
-									<Icon as={CiHeart} boxSize="30px" />
-									<Text fontSize="sm">{totalLikes}</Text>
-								</Flex>
-
-								<Flex flexDirection="column" align="center">
-									<Icon as={VscFlame} boxSize="30px" />
-									<Text fontSize="sm">{post?.views}</Text>
-								</Flex>
-
-								<Flex flexDirection="column" align="center">
-									<Icon as={TiMessages} boxSize="30px" color="blue" />
-									<Text fontSize="sm">{totalComments}</Text>
-								</Flex>
-							</VStack>
-
-							{/* column of comments */}
-							<VStack minW="35%" maxH="400px" spacing="5" align={"left"}>
-								{user && (
-									<Flex height="50px">
-										<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
+									<Flex
+										flexDirection="column"
+										align="center"
+										cursor="pointer"
+										onClick={handleLike}
+										color={liked ? "red.500" : "gray.500"}
+										_hover={{ color: "pink.300" }}
+									>
+										<Icon as={CiHeart} boxSize="30px" />
+										<Text fontSize="sm">{totalLikes}</Text>
 									</Flex>
-								)}
-								{post && (
-									<Box maxH="calc(100% - 50px)">
-										<CommentSection
-											authed={authed}
-											postId={post.postId}
-										></CommentSection>
-									</Box>
-								)}
-							</VStack>
-						</HStack>
 
-						{post && (
-							<Flex width="100%" minH="100px">
-								<PostPageSection post={post}></PostPageSection>
-							</Flex>
-						)}
+									<Flex
+										flexDirection="column"
+										align="center"
+										mt="80px"
+										mb="80px"
+									>
+										<Icon as={VscFlame} boxSize="30px" />
+										<Text fontSize="sm">{post?.views}</Text>
+									</Flex>
 
-						{/* <Box h="200px" bg="pink.100">
+									<Flex flexDirection="column" align="center">
+										<Icon as={TiMessages} boxSize="30px" color="blue" />
+										<Text fontSize="sm">{totalComments}</Text>
+									</Flex>
+								</VStack>
+
+								{/* column of comments */}
+							</HStack>
+
+							{post && (
+								<Flex width="100%" minH="100px">
+									<PostPageSection post={post}></PostPageSection>
+								</Flex>
+							)}
+
+							{/* <Box h="200px" bg="pink.100">
 							For future recommendations
 						</Box> */}
-					</VStack>
+						</VStack>
+						<VStack ml="3" minW="35%" maxH="600px" spacing="5" align={"left"}>
+							{user && (
+								<Flex height="50px">
+									<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
+								</Flex>
+							)}
+							{post && (
+								<Box maxH="calc(100% - 50px)">
+									<CommentSection
+										authed={authed}
+										postId={post.postId}
+									></CommentSection>
+								</Box>
+							)}
+						</VStack>
+					</HStack>
 				</LoadingWrapper>
 			</Box>
 		</>

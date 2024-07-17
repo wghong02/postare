@@ -12,7 +12,11 @@ import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import { Post, Comment } from "@/lib/model";
 import { IoIosSend, IoMdCloseCircleOutline } from "react-icons/io";
 import { CommentCard } from "../commets/cards";
-import { getCommentsByPostId, uploadComment } from "@/utils/commentUtils";
+import {
+	getCommentsByPostId,
+	uploadComment,
+	uploadSubComment,
+} from "@/utils/commentUtils";
 import LoadingWrapper from "../web/LoadingWrapper";
 
 export function PostPageSection({ post }: { post: Post }) {
@@ -81,11 +85,39 @@ export function CommentSection({
 	const [reachedEnd, setReachedEnd] = useState(false);
 	const [onReply, setOnReply] = useState(false);
 	const [replyName, setReplyName] = useState<String>("");
+	const [replyCommentId, setReplyCommentId] = useState<number>(0);
 	const toast = useToast();
-	const commentsToLoad = 6;
+	const commentsToLoad = 10;
 
 	const sendComment = async () => {
 		if (onReply) {
+			if (newComment == "") {
+				toast({
+					title: "Reply cannot be empty.",
+					status: "error",
+					duration: 2000,
+					isClosable: true,
+				});
+			} else {
+				try {
+					await uploadSubComment(newComment, replyCommentId);
+					toast({
+						title: "Reply sent!",
+						status: "success",
+						duration: 2000,
+						isClosable: true,
+					});
+					setNewComment("");
+				} catch (error) {
+					console.error("Error sending reply:", error);
+					toast({
+						title: "Failed to send reply.",
+						status: "error",
+						duration: 2000,
+						isClosable: true,
+					});
+				}
+			}
 		} else {
 			if (postId) {
 				if (newComment == "") {
@@ -104,7 +136,8 @@ export function CommentSection({
 							duration: 2000,
 							isClosable: true,
 						});
-						fetchComments();
+						fetchComments(true);
+						setNewComment("");
 					} catch (error) {
 						console.error("Error sending comment:", error);
 						toast({
@@ -119,21 +152,34 @@ export function CommentSection({
 		}
 	};
 
-	const fetchComments = async () => {
+	const fetchComments = async (toLoadRecentReply = false) => {
 		try {
 			setLoadingMore(true);
-			const commentsData = await getCommentsByPostId({
-				postId: postId,
-				query: {
-					limit: commentsToLoad,
-					offset: comments.length,
-					description: null,
-				},
-			});
-			if (commentsData.length == 0) {
-				setReachedEnd(true);
+			if (toLoadRecentReply) {
+				const commentsData = await getCommentsByPostId({
+					postId: postId,
+					query: {
+						limit: 1,
+						offset: 0,
+						description: null,
+					},
+				});
+
+				setComments([...commentsData, ...comments]);
 			} else {
-				setComments([...comments, ...commentsData]);
+				const commentsData = await getCommentsByPostId({
+					postId: postId,
+					query: {
+						limit: commentsToLoad,
+						offset: comments.length,
+						description: null,
+					},
+				});
+				if (commentsData.length == 0) {
+					setReachedEnd(true);
+				} else {
+					setComments([...comments, ...commentsData]);
+				}
 			}
 		} catch (error) {
 			console.error("Error fetching comments:", error);
@@ -190,7 +236,7 @@ export function CommentSection({
 
 	return (
 		<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
-			<Box width="100%" height={onReply ? "290px" : "320px"}>
+			<Box width="100%" height={onReply ? "400px" : "430px"}>
 				{/* add to display comments related to this post */}
 				<Text fontSize="large" fontWeight="bold" height="30px">
 					{" "}
@@ -208,6 +254,7 @@ export function CommentSection({
 								key={index}
 								comment={comment}
 								setReplyName={setReplyName}
+								setReplyCommentId={setReplyCommentId}
 								setOnReply={setOnReply}
 								authed={authed}
 							/>
@@ -249,6 +296,7 @@ export function CommentSection({
 						<Icon
 							as={IoIosSend}
 							boxSize="20px"
+							ml="2"
 							onClick={sendComment}
 							_hover={{ color: "blue.300", cursor: "pointer" }}
 						/>
