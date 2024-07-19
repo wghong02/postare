@@ -18,6 +18,9 @@ var (
     ErrCommentNotOwnedByUser = errors.New("comment not owned by user")
     ErrSubCommentNotOwnedByUser = errors.New("subComment not owned by user")
     ErrUsernameAlreadyExists = errors.New("username already exists")
+    
+    ErrLikeNotFound = errors.New("like not found")
+    ErrNotLikedByUser = errors.New("post not owned by user")
 )
 
 func CheckUserError (err error) error {

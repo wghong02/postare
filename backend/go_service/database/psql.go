@@ -284,9 +284,9 @@ func insertSampleData() {
 	// Insert likes
 	for _, like := range model.Likes {
 		_, err := dbPool.Exec(context.Background(), `INSERT INTO Likes (LikeID, 
-            PostID, LikerID, DateTime) VALUES 
+            PostID, Liker, DateTime) VALUES 
             ($1, $2, $3, $4) ON CONFLICT (LikeID) DO NOTHING`,
-			like.LikeID, like.PostID, like.LikerID, like.DateTime)
+			like.LikeID, like.PostID, like.Liker, like.DateTime)
 		if err != nil {
 			log.Fatalf("Failed to insert like data: %v", err)
 		}

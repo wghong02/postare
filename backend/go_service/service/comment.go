@@ -34,9 +34,9 @@ func UploadSubComment(subComment *model.SubComment, userID int64) error {
 	return nil
 }
 
-func DeleteComment(commmetID int64, userID int64) error {
+func DeleteComment(commentID int64, userID int64) error {
 	// check if posted by the user
-	postedByUser, err := sqlMethods.CheckIfCommentOwnedByUser(commmetID, userID)
+	postedByUser, err := sqlMethods.CheckIfCommentOwnedByUser(commentID, userID)
 	if err != nil {
 		return err
 	}	
@@ -45,7 +45,7 @@ func DeleteComment(commmetID int64, userID int64) error {
 	}
 	
 	// delete
-	err = sqlMethods.DeleteCommentFromSQL(commmetID)
+	err = sqlMethods.DeleteCommentFromSQL(commentID)
 	if err != nil {
 		fmt.Printf("Failed to delete comment from SQL %v\n", err)
 		return err
@@ -53,9 +53,9 @@ func DeleteComment(commmetID int64, userID int64) error {
 	return nil
 }
 
-func DeleteSubComment(subcommmetID int64, userID int64) error {
+func DeleteSubComment(subcommentID int64, userID int64) error {
 	// check if posted by the user
-	postedByUser, err := sqlMethods.CheckIfSubCommentOwnedByUser(subcommmetID, userID)
+	postedByUser, err := sqlMethods.CheckIfSubCommentOwnedByUser(subcommentID, userID)
 	if err != nil {
 		return err
 	}	
@@ -64,7 +64,7 @@ func DeleteSubComment(subcommmetID int64, userID int64) error {
 	}
 
 	// delete
-	err = sqlMethods.DeleteSubCommentFromSQL(subcommmetID)
+	err = sqlMethods.DeleteSubCommentFromSQL(subcommentID)
 	if err != nil {
 		fmt.Printf("Failed to delete comment from SQL %v\n", err)
 		return err
@@ -73,7 +73,7 @@ func DeleteSubComment(subcommmetID int64, userID int64) error {
 }
 
 func GetCommentsByPostID(postID uuid.UUID, limit int, offset int) ([] model.Comment, error) {
-	// call backend to get the post information, return the post info and if there is error
+	// call backend to get the post information, return the comment info and if there is error
 
 	comments, err := sqlMethods.GetCommentsByPostID(postID, limit, offset)
 	if err != nil {
@@ -84,7 +84,7 @@ func GetCommentsByPostID(postID uuid.UUID, limit int, offset int) ([] model.Comm
 }
 
 func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([] model.SubComment, error) {
-	// call backend to get the post information, return the post info and if there is error
+	// call backend to get the post information, return the sub comment info and if there is error
 
 	subComments, err := sqlMethods.GetSubCommentsByCommentID(commentID, limit, offset)
 	if err != nil {

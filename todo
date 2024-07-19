@@ -1,6 +1,7 @@
 Ranked by priority
 
 - implement like related APIs
+- implement view APIs
 - refine details on user home info page (allow edit)
 - check if register info is valid
 - make sure search bar's parameter does not disappear after search

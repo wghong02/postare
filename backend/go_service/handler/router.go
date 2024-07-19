@@ -27,6 +27,7 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/saveUserInfo", saveUserInfoHandler).Methods("POST")
 	router.HandleFunc("/public/getUserID/{username}", getUserIDByNameHandler).Methods("GET")
 	router.HandleFunc("/public/getUsername/{userID}", getUsernameByIDHandler).Methods("GET")
+	
 	router.HandleFunc("/user/comments/upload", uploadCommentHandler).Methods("POST")
 	router.HandleFunc("/user/comments/delete/{commentID}", deleteCommentHandler).Methods("DELETE")
 	router.HandleFunc("/user/subComments/upload", uploadSubCommentHandler).Methods("POST")
@@ -35,6 +36,12 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/public/getSubComments/{commentID}", getSubCommentsByCommentIDHandler).Methods("GET")
 	router.HandleFunc("/public/getCommentCount/{postID}", getCommentCountByPostID).Methods("GET")
 	router.HandleFunc("/public/getSubCommentCount/{commentID}", getSubCommentCountByCommentID).Methods("GET")
+
+	
+	router.HandleFunc("/user/likes/upload", saveLikeHandler).Methods("POST")
+	router.HandleFunc("/user/likes/delete/{likeID}", unLikeHandler).Methods("DELETE")
+	router.HandleFunc("/public/getLikes/{postID}", getLikesByPostIDHandler).Methods("GET")
+	router.HandleFunc("/public/getLikesCount/{postID}", getLikeCountByPostID).Methods("GET")
 
 	// Set up CORS middleware
 	corsMiddleware := handlers.CORS(

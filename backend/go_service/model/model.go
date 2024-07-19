@@ -62,7 +62,7 @@ type SubComment struct {
 type Like struct {
 	LikeID    int64     `json:"like_id"`
 	PostID   uuid.UUID `json:"post_owner_id"`
-	LikerID    int64 `json:"Liker_id"`
+	Liker    int64 `json:"liker"`
 	DateTime   time.Time `json:"date_time"`
 }
 

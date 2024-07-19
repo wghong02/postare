@@ -48,13 +48,13 @@ func uploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Call service to process and save the post
+	// Call service to process and save the comment
 	if err := service.UploadComment(&comment, userIDInt); err != nil {
 		if errors.Is(err, customErrors.ErrUserNotFound) {
 			http.Error(w, "comment owner does not exist", http.StatusBadRequest)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to comment post from backend",
+			http.Error(w, "Failed to save comment from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -337,7 +337,7 @@ func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "post not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search subComments by post ID from backend",
+			http.Error(w, "Failed to search comment count by post ID from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -346,7 +346,7 @@ func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
 	// 3. format json response
 	js, err := json.Marshal(count)
 	if err != nil {
-		http.Error(w, "Failed to parse subComments into JSON format",
+		http.Error(w, "Failed to parse count into JSON format",
 			http.StatusInternalServerError)
 		return
 	}
@@ -375,7 +375,7 @@ func getSubCommentCountByCommentID(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "post not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search subComments by post ID from backend",
+			http.Error(w, "Failed to search subComment count by post ID from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -384,7 +384,7 @@ func getSubCommentCountByCommentID(w http.ResponseWriter, r *http.Request) {
 	// 3. format json response
 	js, err := json.Marshal(count)
 	if err != nil {
-		http.Error(w, "Failed to parse subComments into JSON format",
+		http.Error(w, "Failed to parse count into JSON format",
 			http.StatusInternalServerError)
 		return
 	}

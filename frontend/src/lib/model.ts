@@ -60,7 +60,7 @@ export interface SubComment {
 export interface Like {
 	likeId: number;
 	postId: string;
-	likerId: number;
+	liker: number;
 	dateTime: DateString;
 }
 
