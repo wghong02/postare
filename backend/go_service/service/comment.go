@@ -94,9 +94,15 @@ func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([] model
 	return subComments, err
 }
 
-func GetCommentCountByPostID(postID uuid.UUID) (model.CountModel, error){
+func GetCommentCountByPostID(postID uuid.UUID, isTotal bool) (model.CountModel, error){
 
-	count, err := sqlMethods.GetCommentCountByPostID(postID)
+	var count int64
+	var err error
+	if isTotal { // to track the total of comments and subcomments
+		count, err = sqlMethods.GetTotalCommentCountByPostID(postID)
+	} else {
+		count, err = sqlMethods.GetCommentCountByPostID(postID)
+	}
 	result := model.CountModel{}
 	if err != nil {
 		fmt.Printf("Failed to search post from SQL, %v\n", err)

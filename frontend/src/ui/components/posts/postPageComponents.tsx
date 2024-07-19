@@ -70,25 +70,28 @@ export function PostPageSection({ post }: { post: Post }) {
 }
 
 export function CommentSection({
+	// the entire comment section of each post
 	authed,
 	postId,
 }: {
 	authed: boolean;
 	postId: string;
 }) {
-	const [comments, setComments] = useState<Comment[]>([]);
-	const [newComment, setNewComment] = useState<string>("");
-	const [initLoading, setInitLoading] = useState(true);
-	const [loadingMore, setLoadingMore] = useState(false);
-	const [hasFetched, setHasFetched] = useState(false);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [reachedEnd, setReachedEnd] = useState(false);
-	const [onReply, setOnReply] = useState(false);
-	const [replyName, setReplyName] = useState<String>("");
-	const [replyCommentId, setReplyCommentId] = useState<number>(0);
+	const [comments, setComments] = useState<Comment[]>([]); // the array of all comments that are to be loaded
+	const [newComment, setNewComment] = useState<string>(""); // the input comment of the user
+	const [initLoading, setInitLoading] = useState(true); // if the page has loaded initially
+	const [loadingMore, setLoadingMore] = useState(false); // if it is loading more comments
+	const [hasFetched, setHasFetched] = useState(false); // if the page has completed fetched all inital data
+	const [currentPage, setCurrentPage] = useState(1); // the current page of comments that are in
+	const [reachedEnd, setReachedEnd] = useState(false); // if it is the end of all comments
+	const [onReply, setOnReply] = useState(false); // if the input comment is a reply
+	const [replyName, setReplyName] = useState<String>(""); // the name of the person replying to, if on reply. else the name is empty string
+	const [replyCommentId, setReplyCommentId] = useState<number>(0); // the comment Id replying to
+	const [fetchRecentReply, setFetchRecentReply] = useState(false); // to fetch the most recent reply by the user after sending a reply
 	const toast = useToast();
-	const commentsToLoad = 10;
+	const commentsToLoad = 10; // the set number of comments to load when scrolling to the bottom
 
+	// If it is onReply then to send a subcomment(reply), else send a normal comment.
 	const sendComment = async () => {
 		if (onReply) {
 			if (newComment == "") {
@@ -107,6 +110,7 @@ export function CommentSection({
 						duration: 2000,
 						isClosable: true,
 					});
+					setFetchRecentReply(true);
 					setNewComment("");
 				} catch (error) {
 					console.error("Error sending reply:", error);
@@ -152,10 +156,12 @@ export function CommentSection({
 		}
 	};
 
+	// util function to fetch more comments
 	const fetchComments = async (toLoadRecentReply = false) => {
 		try {
 			setLoadingMore(true);
 			if (toLoadRecentReply) {
+				// only fetch one (the most recent one) when submitting a new comment
 				const commentsData = await getCommentsByPostId({
 					postId: postId,
 					query: {
@@ -190,21 +196,24 @@ export function CommentSection({
 		}
 	};
 
+	// also to send the comment/reply when press the enter key
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === "Enter") {
-			sendComment(); // Trigger send when Enter key is pressed
+			sendComment();
 		}
 	};
 
+	// to track the comment entered by the user.
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setNewComment(e.target.value);
 	};
 
+	// fetch more comments when the current page number changes
 	useEffect(() => {
 		fetchComments();
 	}, [currentPage]);
 
-	// to handle if ha reached the bottom of the page
+	// to handle if ha reached the bottom of the page. the current page number would change when reach the bottom
 	useEffect(() => {
 		const handleScroll = () => {
 			const box = document.getElementById("commentBox");
@@ -230,6 +239,7 @@ export function CommentSection({
 		};
 	}, [loadingMore]);
 
+	// util function to close the reply bar.
 	const handleCloseReply = () => {
 		setOnReply(false);
 	};
@@ -257,9 +267,18 @@ export function CommentSection({
 								setReplyCommentId={setReplyCommentId}
 								setOnReply={setOnReply}
 								authed={authed}
+								fetchRecentReply={
+									fetchRecentReply && replyCommentId == comment.commentId
+								}
+								setFetchRecentReply={setFetchRecentReply}
 							/>
 						</Box>
 					))}
+					{comments.length == 0 && (
+						<Box fontWeight={300}>
+							No comment yet. Leave the first comment below.
+						</Box>
+					)}
 				</Box>
 				{onReply && (
 					<Flex direction="row" align="center" justify="space-between">

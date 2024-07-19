@@ -93,8 +93,8 @@ public class CommentService {
         }
     }
 
-    public ResponseEntity<String> getCommentCountByPostId(UUID postId) {
-        String url = goServiceUrl + "/public/getCommentCount/" + postId;
+    public ResponseEntity<String> getCommentCountByPostId(UUID postId, boolean isTotal) {
+        String url = goServiceUrl + "/public/getCommentCount/" + postId + "?isTotal=" + isTotal;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {

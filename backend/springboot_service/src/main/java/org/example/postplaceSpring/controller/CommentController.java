@@ -95,9 +95,10 @@ public class CommentController {
     }
 
     @GetMapping("/public/getCommentCount/{postId}")
-    public ResponseEntity<String> getCommentCountByPostId(@PathVariable UUID postId) {
+    public ResponseEntity<String> getCommentCountByPostId(@PathVariable UUID postId,
+                                                          @RequestParam boolean isTotal) {
         logger.info("Received Get request for /public/getCommentCount/{commentId}");
-        ResponseEntity<String> response = commentService.getCommentCountByPostId(postId);
+        ResponseEntity<String> response = commentService.getCommentCountByPostId(postId, isTotal);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Comment count with post {} returned", postId);
             return response;

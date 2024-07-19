@@ -64,7 +64,7 @@ const fetchAndTransformSubCommentData = async (
 	singleSubComment: boolean = false,
 	authToken: string | null = null
 ): Promise<SubComment | SubComment[]> => {
-	// helper function to be called by all comment functions
+	// helper function to be called by all sub comment functions
 	try {
 		let response;
 		if (authToken) {
@@ -89,6 +89,7 @@ const fetchAndTransformSubCommentData = async (
 				comment: camelizedData.comment,
 				commentId: camelizedData.postId,
 				commentTime: camelizedData.commentTime,
+				postId: camelizedData.postId,
 			};
 			return subComment;
 		} else {
@@ -102,6 +103,7 @@ const fetchAndTransformSubCommentData = async (
 							comment: camelizedData.comment,
 							commentId: camelizedData.commentId,
 							commentTime: camelizedData.commentTime,
+							postId: camelizedData.postId,
 						};
 				  })
 				: [];
@@ -144,12 +146,16 @@ export const getCommentsByPostId = async ({
 
 export const getCommentCountByPostId = async ({
 	postId,
+	isTotal = false, // isTotal represents if to get the number of counts that includes the total number of subcomments
 }: {
 	postId: string;
+	isTotal: boolean;
 }): Promise<number> => {
 	// get a single post by post Id. response is json
 	const url = new URL(`${domain}/public/getCommentCount/${postId}`);
-
+	if (isTotal) {
+		url.searchParams.append("isTotal", isTotal.toString());
+	}
 	try {
 		let response;
 		response = await fetch(url);
@@ -244,7 +250,7 @@ export const uploadSubComment = (comment: string, commentId: number) => {
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/subComments/upload`;
 
-	console.log(url, comment, commentId)
+	console.log(url, comment, commentId);
 	const body = JSON.stringify({
 		comment,
 		comment_id: commentId,

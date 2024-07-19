@@ -15,12 +15,16 @@ export function CommentCard({
 	setOnReply,
 	setReplyCommentId,
 	authed,
+	fetchRecentReply,
+	setFetchRecentReply,
 }: {
 	comment: Comment | SubComment;
 	setReplyName: React.Dispatch<React.SetStateAction<String>>;
 	setOnReply: React.Dispatch<React.SetStateAction<boolean>>;
 	setReplyCommentId: React.Dispatch<React.SetStateAction<number>>;
 	authed: boolean;
+	fetchRecentReply: boolean;
+	setFetchRecentReply: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
 	const commentTime = timeAgo(comment.commentTime);
 	const [poster, setPoster] = useState<UserInfo | null>(null);
@@ -61,18 +65,31 @@ export function CommentCard({
 		fetchSubComments();
 	};
 
-	const fetchSubComments = async () => {
+	const fetchSubComments = async (fetchRecent = false) => {
 		try {
-			const commentsData = await getSubCommentsByCommentId({
-				commentId: comment.commentId,
-				query: {
-					limit: subCommentsToLoad,
-					offset: subComments.length,
-					description: null,
-				},
-			});
+			if (fetchRecent) {
+				const commentsData = await getSubCommentsByCommentId({
+					commentId: comment.commentId,
+					query: {
+						limit: 1,
+						offset: 0,
+						description: null,
+					},
+				});
 
-			setSubComments([...commentsData, ...subComments]);
+				setSubComments([...commentsData, ...subComments]);
+			} else {
+				const commentsData = await getSubCommentsByCommentId({
+					commentId: comment.commentId,
+					query: {
+						limit: subCommentsToLoad,
+						offset: subComments.length,
+						description: null,
+					},
+				});
+
+				setSubComments([...subComments, ...commentsData]);
+			}
 		} catch (error) {
 			console.error("Error fetching comments:", error);
 		}
@@ -89,14 +106,25 @@ export function CommentCard({
 		}
 	};
 
+	const hideReply = () => {
+		setSubComments([]);
+	};
+
 	useEffect(() => {
 		fetchData();
 		fetchSubCommentCount();
 	}, []);
 
+	useEffect(() => {
+		if (fetchRecentReply == true) {
+			fetchSubComments(true);
+			setFetchRecentReply(false);
+		}
+	}, [fetchRecentReply]);
+
 	if (poster) {
 		return (
-			<Box mb="2">
+			<Box>
 				<HStack spacing="4">
 					<Image
 						borderRadius="full"
@@ -133,6 +161,8 @@ export function CommentCard({
 							setReplyCommentId={setReplyCommentId}
 							setOnReply={setOnReply}
 							authed={authed}
+							fetchRecentReply={false}
+							setFetchRecentReply={setFetchRecentReply}
 						/>
 					))}
 				</Box>
@@ -146,6 +176,7 @@ export function CommentCard({
 								_hover={{ color: "blue.500", cursor: "pointer" }}
 								alignContent="initial"
 								mr="4"
+								mb="2"
 							>
 								Reply
 							</Box>
@@ -158,12 +189,24 @@ export function CommentCard({
 								onClick={handleShowReplies}
 								_hover={{ color: "blue.500", cursor: "pointer" }}
 								alignContent="initial"
+								mr="4"
 							>
-								{showReplyClicked
-									? "Show More Replies"
-									: "View " +
-									  subCommentCount +
-									  (subCommentCount == 1 ? " reply" : " replies")}
+								{"View " +
+									(subCommentCount - subComments.length) +
+									" more " +
+									(subCommentCount == 1 ? " reply" : " replies")}
+							</Box>
+						)}
+						{subComments.length > 0 && (
+							<Box
+								fontSize="small"
+								fontWeight="300"
+								onClick={hideReply}
+								_hover={{ color: "blue.500", cursor: "pointer" }}
+								alignContent="initial"
+								mr="4"
+							>
+								{"Hide all replies"}
 							</Box>
 						)}
 					</Flex>

@@ -20,25 +20,25 @@ import {
 	CommentSection,
 } from "@/ui/components/posts/postPageComponents";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
-import { CiHeart } from "react-icons/ci";
+import { CiHeart, CiChat1 } from "react-icons/ci";
 import { VscFlame } from "react-icons/vsc";
-import { TiMessages } from "react-icons/ti";
 
 import notFound from "@/app/not-found";
 import { getCommentCountByPostId } from "@/utils/commentUtils";
 
 const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	// post page for the users to upload and delete and view posts they own
-	const [post, setPost] = useState<Post | null>(null);
-	const [user, setUser] = useState<UserInfo | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [hasFetched, setHasFetched] = useState(false);
-	const [liked, setLiked] = useState(false);
-	const [totalLikes, setTotalLikes] = useState<number>(0);
-	const [totalComments, setTotalComments] = useState<number>(0);
-	const [authed, setAuthed] = useState<boolean>(false);
+	const [post, setPost] = useState<Post | null>(null); // to track the current post
+	const [user, setUser] = useState<UserInfo | null>(null); // to track the user associated with the post
+	const [loading, setLoading] = useState(true); // to track if the page is loading
+	const [hasFetched, setHasFetched] = useState(false); // to track if the main components of the page is already fetched in full
+	const [liked, setLiked] = useState(false); // the track if the user currently likes this post
+	const [totalLikes, setTotalLikes] = useState<number>(0); // to adjust the total likes of the post
+	const [totalComments, setTotalComments] = useState<number>(0); // to track the total comments of the post
+	const [authed, setAuthed] = useState<boolean>(false); // to track if the user is currently authed to comment
 	const toast = useToast();
 
+	// fetch the post and corresponding user's info
 	const fetchData = async () => {
 		try {
 			setLoading(true);
@@ -58,15 +58,22 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 		}
 	};
 
+	// fetch the number of comments of this post
 	const fetchCommentCount = async () => {
 		try {
-			const countResult = await getCommentCountByPostId({ postId: params.id });
+			const countResult = await getCommentCountByPostId({
+				postId: params.id,
+				isTotal: true,
+			});
 			setTotalComments(countResult);
 		} catch (error) {
 			console.error("Error fetching comments:", error);
 		}
 	};
 
+	// fetch the number of likes of this post
+
+	// handle when user likes. put it here since the user can only like or unlike the post.
 	const handleLike = () => {
 		if (!liked) {
 			setTotalLikes((likes) => likes + 1);
@@ -89,6 +96,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 		}
 	};
 
+	// fetch the data, number of comments and number of likes each load of the website
 	useEffect(() => {
 		fetchData();
 		fetchCommentCount();
@@ -148,12 +156,12 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 										mt="80px"
 										mb="80px"
 									>
-										<Icon as={VscFlame} boxSize="30px" />
+										<Icon as={VscFlame} boxSize="30px" color="#F56565" />
 										<Text fontSize="sm">{post?.views}</Text>
 									</Flex>
 
 									<Flex flexDirection="column" align="center">
-										<Icon as={TiMessages} boxSize="30px" color="blue" />
+										<Icon as={CiChat1} boxSize="30px" color="#4299E2" />
 										<Text fontSize="sm">{totalComments}</Text>
 									</Flex>
 								</VStack>

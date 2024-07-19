@@ -56,6 +56,7 @@ type SubComment struct {
 	Comment   string `json:"comment"`
 	CommentID int64  `json:"comment_id"`
 	CommentTime	time.Time `json:"comment_time"`
+	PostID uuid.UUID `json:"post_id"`
 }
 
 type Like struct {
@@ -108,7 +109,7 @@ var Comments = []Comment{
 }
 
 var SubComments = []SubComment{
-	{SubCommentID: 1, PosterID: 101, Comment: "not bad", CommentID: 2, CommentTime: time1},
+	{SubCommentID: 1, PosterID: 101, Comment: "not bad", CommentID: 2, CommentTime: time1, PostID: uuid1},
 }
 
 var Posts = []Post{

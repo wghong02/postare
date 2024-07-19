@@ -53,6 +53,7 @@ export interface SubComment {
 	comment: string;
 	commentId: number;
 	commentTime: DateString;
+	postId: string;
 }
 
 // Like Model

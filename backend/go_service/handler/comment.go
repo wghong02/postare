@@ -306,9 +306,23 @@ func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
 
 	// response is json
 	w.Header().Set("Content-Type", "application/json")
+	isTotalStr := r.URL.Query().Get("isTotal")
 	postIDStr := mux.Vars(r)["postID"]
 
 	// 1. process data
+	isTotal := false
+
+    // Check if the parameter has a value
+    if isTotalStr != "" {
+        // Parse the string to a boolean
+        var err error
+        isTotal, err = strconv.ParseBool(isTotalStr)
+        if err != nil {
+            http.Error(w, "Invalid value for isTotal", http.StatusBadRequest)
+            return
+        }
+    }
+
 	postID, err := uuid.Parse(postIDStr)
 	if err != nil {
 		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
@@ -316,7 +330,7 @@ func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2. call service level to get comment count
-	count, err := service.GetCommentCountByPostID(postID)
+	count, err := service.GetCommentCountByPostID(postID, isTotal)
 	if err != nil {
 		// Check if the error is due to the comments not being found
 		if errors.Is (err, customErrors.ErrPostNotFound) {

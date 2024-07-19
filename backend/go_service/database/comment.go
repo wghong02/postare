@@ -32,11 +32,11 @@ func SaveSubCommentToSQL(subComment *model.SubComment) error {
 
 	// save subComment
 	query := `INSERT INTO SubComments (PosterID, 
-        Comment, CommentID, CommentTime) VALUES ($1, $2, $3, $4)`
+        Comment, CommentID, CommentTime, PostID) VALUES ($1, $2, $3, $4, $5)`
 
 	_, err := dbPool.Exec(context.Background(),
 		query, subComment.PosterID, subComment.Comment,
-		subComment.CommentID, subComment.CommentTime)
+		subComment.CommentID, subComment.CommentTime, subComment.PostID)
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
 		// 23505 is the foreign key violation error code in PostgreSQL
 		return customErrors.ErrUserOrCommentNotFound
@@ -189,7 +189,7 @@ func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([]model.
 	for rows.Next() {
 		var subComment model.SubComment
 		err := rows.Scan(&subComment.SubCommentID, &subComment.PosterID, &subComment.Comment,
-			&subComment.CommentID, &subComment.CommentTime, 
+			&subComment.CommentID, &subComment.CommentTime, &subComment.PostID,
 		)
 		if err != nil {
 			return nil, err
@@ -237,4 +237,27 @@ func GetSubCommentCountByCommentID(commentID int64) (int64, error) {
         return 0, err
     }
     return count, nil
+}
+
+func GetTotalCommentCountByPostID(postID uuid.UUID) (int64, error) { // this includes comments and subComments
+	exists, err := checkIfPostExistsByID(postID)
+    if err != nil {
+        return 0, err
+    }
+    if !exists {
+        return 0, customErrors.ErrPostNotFound
+    }
+
+    query := `
+    SELECT
+        (SELECT COUNT(*) FROM Comments WHERE postID = $1) +
+        (SELECT COUNT(*) FROM SubComments WHERE postID = $1) AS total_count;
+    `
+    var totalCount int64
+    err = dbPool.QueryRow(context.Background(), query, postID).Scan(&totalCount)
+    if err != nil {
+        return 0, err
+    }
+
+    return totalCount, nil
 }

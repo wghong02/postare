@@ -121,14 +121,19 @@ func createTables() {
             PosterID BIGINT REFERENCES UserInfo(UserID) NOT NULL,
             Comment VARCHAR(1000) NOT NULL,
             PostID UUID REFERENCES Posts(PostID) NOT NULL,
-            CommentTime TIMESTAMP WITH TIME ZONE NOT NULL
+            CommentTime TIMESTAMP WITH TIME ZONE NOT NULL,
+			UNIQUE (CommentID, PostID)
         )`,
 		`CREATE TABLE IF NOT EXISTS SubComments (
             SubCommentID BIGSERIAL PRIMARY KEY NOT NULL,
             PosterID BIGINT REFERENCES UserInfo(UserID) NOT NULL,
             Comment VARCHAR(1000) NOT NULL,
             CommentID BIGINT REFERENCES Comments(CommentID) NOT NULL,
-            CommentTime TIMESTAMP WITH TIME ZONE NOT NULL
+            CommentTime TIMESTAMP WITH TIME ZONE NOT NULL,
+			PostID UUID NOT NULL
+			FOREIGN KEY (CommentID, PostID)
+			REFERENCES Comments (CommentID, PostID)
+			ON DELETE CASCADE
         )`,
 		`CREATE TABLE IF NOT EXISTS Likes (
             LikeID BIGSERIAL PRIMARY KEY NOT NULL,
@@ -267,9 +272,9 @@ func insertSampleData() {
 	// Insert sub-comments
 	for _, subComment := range model.SubComments {
 		_, err := dbPool.Exec(context.Background(), `INSERT INTO SubComments (SubCommentID, 
-            PosterID, Comment, CommentID) VALUES 
-            ($1, $2, $3, $4) ON CONFLICT (SubCommentID) DO NOTHING`,
-			subComment.SubCommentID, subComment.PosterID, subComment.Comment, subComment.CommentID)
+            PosterID, Comment, CommentID, PostID) VALUES 
+            ($1, $2, $3, $4, $5) ON CONFLICT (SubCommentID) DO NOTHING`,
+			subComment.SubCommentID, subComment.PosterID, subComment.Comment, subComment.CommentID, subComment.PostID)
 		if err != nil {
 			log.Fatalf("Failed to insert sub-comment data: %v", err)
 		}
