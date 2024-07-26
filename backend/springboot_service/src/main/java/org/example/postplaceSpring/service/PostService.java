@@ -12,6 +12,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.io.IOException;
@@ -83,6 +84,20 @@ public class PostService {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
         }catch (HttpClientErrorException.NotFound ex) {
             throw new ResourceBadRequestException("User not found with id: " + userId, ex);
+        }
+    }
+
+    public void increaseViewsByPostId(UUID postId) {
+        String url = goServiceUrl + "/posts/increasePostView/" + postId;
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        try {
+            restTemplate.exchange(url, HttpMethod.POST, request, Void.class);
+        }catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceBadRequestException("Post not found with id: " + postId, ex);
+        }catch (Exception ex) {
+            // Handle any other exceptions
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error", ex);
         }
     }
 

@@ -53,23 +53,35 @@
         public ResponseEntity<String> uploadPost( @RequestParam("title") String title,
                                                   @RequestParam("description") String description,
                                                   @RequestParam("postDetails") String postDetails,
-                                                  @RequestParam("imageFile") MultipartFile image) throws IOException {
+                                                  @RequestParam("imageFile") MultipartFile image,
+                                                  @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
             logger.info("Received Post request for /user/posts/upload");
             // Get the authenticated user's details
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            if (userDetails == null) {
+                throw new IllegalStateException("User details not found in authentication context");
+            }
             long userId = userDetails.getUserId();
             // Pass the post file and userId to the service layer
             return postService.createPost(title, description, postDetails, image, userId);
         }
 
         @DeleteMapping("/user/posts/delete/{postId}")
-        public ResponseEntity<Void> deletePost(@PathVariable UUID postId) {
+        public ResponseEntity<Void> deletePost(@PathVariable UUID postId,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
             logger.info("Received Delete request for /user/posts/delete/{postId}");
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            if (userDetails == null) {
+                throw new IllegalStateException("User details not found in authentication context");
+            }
             long userId = userDetails.getUserId();
             postService.deletePostByPostId(postId, userId);
+            return ResponseEntity.noContent().build();
+        }
+
+        @PostMapping("/posts/increasePostView/{postId}")
+        public ResponseEntity<Void> increaseViewsByPostId(@PathVariable UUID postId) {
+            logger.info("Received Delete request for /user/posts/delete/{postId}");
+
+            postService.increaseViewsByPostId(postId);
             return ResponseEntity.noContent().build();
         }
 

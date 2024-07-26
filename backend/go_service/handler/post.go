@@ -269,7 +269,7 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 	// 2. call service level to get post info
 	posts, err := service.GetPostsByUserID(userID, limit, offset)
 	if err != nil {
-		// Check if the error is due to the posts not being found
+		// Check if the error is due to the user not being found
 		if errors.Is (err, customErrors.ErrUserNotFound) {
 			http.Error(w, "user not found", http.StatusNotFound)
 		} else {
@@ -288,4 +288,35 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(js)
+}
+
+func increaseViewByPostIDHandler(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Received one increase view request")
+
+	// no response
+	postIDStr := mux.Vars(r)["postID"]
+
+	// 1. process data
+	postID, err := uuid.Parse(postIDStr)
+	if err != nil {
+		http.Error(w, "Invalid post ID provided", http.StatusBadRequest)
+		return
+	}
+
+	// 2. call service level to get post info
+	err = service.IncreaseViewByPostID(postID)
+	if err != nil {
+		// Check if the error is due to the posts not being found
+		if errors.Is (err, customErrors.ErrPostNotFound) {
+			http.Error(w, "post not found", http.StatusNotFound)
+		} else {
+			// For all other errors, return internal server error
+			http.Error(w, "Failed to search user posts by ID from backend",
+				http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// 3. format response
+	fmt.Fprintf(w, "View increased successfully\n")
 }

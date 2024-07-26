@@ -4,11 +4,9 @@ import (
 	customErrors "appBE/errors"
 	"appBE/model"
 	"context"
-	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
-	"github.com/jackc/pgx/v4"
 )
 
 func SaveLikeToSQL(like *model.Like) error {
@@ -21,37 +19,36 @@ func SaveLikeToSQL(like *model.Like) error {
 		query, like.PostID, like.Liker,
 		like.DateTime)
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
-		// 23505 is the foreign key violation error code in PostgreSQL
+		// 23503 means not found
 		return customErrors.ErrUserOrPostNotFound
+	}
+
+	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23505" {
+		// means already has the like, so its ok
+		return nil
 	}
 
 	return err
 }
 
-func CheckIfLikedByUser(likeID int64, userID int64) (bool, error) {
-	var likerID int64
-    err := dbPool.QueryRow(context.Background(), "SELECT Liker FROM Likes WHERE LikeID=$1", likeID).Scan(&likerID)
-    if err != nil {
-        if errors.Is (err, pgx.ErrNoRows) {
-            return false, customErrors.ErrLikeNotFound
-        }
-        return false, err
-    }
-    if likerID != userID {
-        return false, customErrors.ErrNotLikedByUser
-    }
-    return true, nil
-}
-
-func DeleteLikeFromSQL(likeID int64)  error {
+func DeleteLikeFromSQL(userID int64, postID uuid.UUID)  error {
 
 	// delete from db
-	_, err := dbPool.Exec(context.Background(), "DELETE FROM Likes WHERE LikeID=$1", likeID)
+	_, err := dbPool.Exec(context.Background(), "DELETE FROM Likes WHERE liker=$1 AND postID=$2", userID, postID)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func CheckIfLikeExistsBy(userID int64, postID uuid.UUID) (bool, error) {
+    var exists bool
+    err := dbPool.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM Likes WHERE Liker=$1 AND PostID=$2)", userID, postID).Scan(&exists)
+    if err != nil {
+        return false, err
+    }
+    return exists, nil
 }
 
 func GetLikesByPostID(postID uuid.UUID, limit int, offset int) ([]model.Like, error) {
@@ -83,7 +80,52 @@ func GetLikesByPostID(postID uuid.UUID, limit int, offset int) ([]model.Like, er
 	// add to result
 	for rows.Next() {
 		var like model.Like
-		err := rows.Scan(&like.LikeID, &like.PostID, &like.Liker,
+		err := rows.Scan(&like.PostID, &like.Liker,
+			&like.DateTime,
+		)
+		if err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return likes, nil
+}
+
+func GetLikesByUserID(userID int64, limit int, offset int) ([]model.Like, error) {
+
+	// Check if user exists
+    exists, err := checkIfUserExistsByID(userID)
+    if err != nil {
+        return nil, err
+    }
+    if !exists {
+        return nil, customErrors.ErrUserNotFound
+    }
+
+	var likes []model.Like
+	var query string
+	var args []interface{}
+
+	// use args to avoid sql injection
+	query = `SELECT * FROM Likes WHERE Liker = $1 ORDER BY DateTime DESC LIMIT $2 OFFSET $3`
+	args = append(args, userID, limit, offset)
+
+	// search with sql statement
+	rows, err := dbPool.Query(context.Background(), query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// add to result
+	for rows.Next() {
+		var like model.Like
+		err := rows.Scan(&like.PostID, &like.Liker,
 			&like.DateTime,
 		)
 		if err != nil {

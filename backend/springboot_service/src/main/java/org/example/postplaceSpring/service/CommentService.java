@@ -57,7 +57,7 @@ public class CommentService {
         try {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
         }catch (HttpClientErrorException.NotFound ex) {
-            throw new ResourceBadRequestException("User not found with id: " + userId, ex);
+            throw new ResourceBadRequestException("Comment not found with id: " + commentId, ex);
         }
     }
 
@@ -89,7 +89,7 @@ public class CommentService {
         try {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
         }catch (HttpClientErrorException.NotFound ex) {
-            throw new ResourceBadRequestException("User not found with id: " + userId, ex);
+            throw new ResourceBadRequestException("Sub Comment not found with id: " + subCommentId, ex);
         }
     }
 

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -39,21 +40,23 @@ public class CommentController {
     }
 
     @PostMapping("/user/comments/upload")
-    public ResponseEntity<String> uploadComment( @RequestBody String commentJson) {
+    public ResponseEntity<String> uploadComment(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody String commentJson) {
         logger.info("Received Post request for /user/comments/upload");
         // Get the authenticated user's details
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (userDetails == null) {
+            throw new IllegalStateException("User details not found in authentication context");
+        }
         long userId = userDetails.getUserId();
         // Pass the post file and userId to the service layer
         return commentService.createComment(commentJson, userId);
     }
 
     @DeleteMapping("/user/comments/delete/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable long commentId) {
+    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long commentId) {
         logger.info("Received Delete request for /user/comments/delete/{commentId}");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (userDetails == null) {
+            throw new IllegalStateException("User details not found in authentication context");
+        }
         long userId = userDetails.getUserId();
         commentService.deleteCommentByCommentId(commentId, userId);
         return ResponseEntity.noContent().build();
@@ -74,21 +77,23 @@ public class CommentController {
     }
     
     @PostMapping("/user/subComments/upload")
-    public ResponseEntity<String> uploadSubComment( @RequestBody String subCommentJson) {
+    public ResponseEntity<String> uploadSubComment(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody String subCommentJson) {
         logger.info("Received Post request for /user/subComments/upload");
         // Get the authenticated user's details
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (userDetails == null) {
+            throw new IllegalStateException("User details not found in authentication context");
+        }
         long userId = userDetails.getUserId();
         // Pass the post file and userId to the service layer
         return commentService.createSubComment(subCommentJson, userId);
     }
 
     @DeleteMapping("/user/subComments/delete/{subCommentId}")
-    public ResponseEntity<Void> deleteSubComment(@PathVariable long subCommentId) {
+    public ResponseEntity<Void> deleteSubComment(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable long subCommentId) {
         logger.info("Received Delete request for /user/subComments/delete/{subCommentId}");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (userDetails == null) {
+            throw new IllegalStateException("User details not found in authentication context");
+        }
         long userId = userDetails.getUserId();
         commentService.deleteSubCommentBySubCommentId(subCommentId, userId);
         return ResponseEntity.noContent().build();

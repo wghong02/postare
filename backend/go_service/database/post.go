@@ -240,3 +240,25 @@ func checkIfPostExistsByID(postID uuid.UUID) (bool, error) {
     }
     return exists, nil
 }
+
+func IncreaseViewByPostID(postID uuid.UUID) error {
+	// increase view by 1
+
+	query := `
+		UPDATE Posts
+		SET Views = Views + 1
+		WHERE PostID = $1
+	`
+
+	_, err := dbPool.Exec(context.Background(), query, postID)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			// This condition should generally not occur with UPDATE, but for safety
+			return customErrors.ErrPostNotFound
+		}
+		return err
+	}
+
+	return nil
+}

@@ -90,3 +90,14 @@ func GetPostsByUserID(userID int64, limit int, offset int) ([]model.Post, error)
 	}
 	return posts, err
 }
+
+func IncreaseViewByPostID(postID uuid.UUID) error {
+	
+	// call backedn
+	err := sqlMethods.IncreaseViewByPostID(postID)
+	if err != nil {
+		fmt.Printf("Failed to search post from SQL, %v\n", err)
+		return err
+	}
+	return err
+}

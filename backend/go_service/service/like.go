@@ -2,7 +2,6 @@ package service
 
 import (
 	sqlMethods "appBE/database"
-	customErrors "appBE/errors"
 	"appBE/model"
 	"fmt"
 	"time"
@@ -22,18 +21,10 @@ func LikePost(like *model.Like, userID int64) error {
 	return nil
 }
 
-func UnlikePost(likeID int64, userID int64) error {
-	// check if posted by the user
-	postedByUser, err := sqlMethods.CheckIfLikedByUser(likeID, userID)
-	if err != nil {
-		return err
-	}	
-	if !postedByUser {
-		return customErrors.ErrNotLikedByUser
-	}
+func UnlikePost(userID int64, postID uuid.UUID) error {
 	
 	// delete
-	err = sqlMethods.DeleteLikeFromSQL(likeID)
+	err := sqlMethods.DeleteLikeFromSQL(userID, postID)
 	if err != nil {
 		fmt.Printf("Failed to delete comment from SQL %v\n", err)
 		return err
@@ -46,7 +37,27 @@ func GetLikesByPostID(postID uuid.UUID, limit int, offset int) ([] model.Like, e
 
 	likes, err := sqlMethods.GetLikesByPostID(postID, limit, offset)
 	if err != nil {
-		fmt.Printf("Failed to search post from SQL, %v\n", err)
+		fmt.Printf("Failed to search likes by postID from SQL, %v\n", err)
+		return []model.Like{}, err
+	}
+	return likes, err
+}
+
+func CheckIfLikeExists(userID int64, postID uuid.UUID) (bool, error){
+	var exists bool
+	exists, err := sqlMethods.CheckIfLikeExistsBy(userID, postID)
+	if err != nil {
+        return false, err
+    }
+    return exists, nil
+}
+
+func GetLikesByUserID(userID int64, limit int, offset int) ([] model.Like, error) {
+	// call backend to get the post information, return the like info and if there is error
+
+	likes, err := sqlMethods.GetLikesByUserID(userID, limit, offset)
+	if err != nil {
+		fmt.Printf("Failed to search likes by userID from SQL, %v\n", err)
 		return []model.Like{}, err
 	}
 	return likes, err

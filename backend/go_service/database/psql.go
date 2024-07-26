@@ -136,11 +136,13 @@ func createTables() {
 			ON DELETE CASCADE
         )`,
 		`CREATE TABLE IF NOT EXISTS Likes (
-            LikeID BIGSERIAL PRIMARY KEY NOT NULL,
-            PostID UUID REFERENCES Posts(PostID) NOT NULL,
-            Liker BIGINT REFERENCES UserInfo(UserID) NOT NULL,
-            DateTime TIMESTAMP WITH TIME ZONE NOT NULL
-        )`,
+			PostID UUID NOT NULL,
+			Liker BIGINT NOT NULL,
+			DateTime TIMESTAMP WITH TIME ZONE NOT NULL,
+			PRIMARY KEY (PostID, Liker),
+			FOREIGN KEY (PostID) REFERENCES Posts(PostID),
+			FOREIGN KEY (Liker) REFERENCES UserInfo(UserID)
+		)`,
 		`CREATE OR REPLACE FUNCTION update_total_posts() RETURNS TRIGGER AS $$
 		BEGIN
 			IF TG_OP = 'INSERT' THEN
@@ -171,6 +173,33 @@ func createTables() {
 		END;
 		$$ LANGUAGE plpgsql;
 		`,
+		`CREATE OR REPLACE FUNCTION update_total_likes() RETURNS TRIGGER AS $$
+		BEGIN
+			IF TG_OP = 'INSERT' THEN
+				UPDATE UserInfo
+				SET TotalLikes = TotalLikes + 1
+				WHERE UserID = NEW.Liker;
+			ELSIF TG_OP = 'DELETE' THEN
+				UPDATE UserInfo
+				SET TotalLikes = TotalLikes - 1
+				WHERE UserID = OLD.Liker;
+			END IF;
+			RETURN NULL;
+		END;
+		$$ LANGUAGE plpgsql;
+		`,
+		`CREATE OR REPLACE FUNCTION update_user_total_views()
+		RETURNS TRIGGER AS $$
+		BEGIN
+			-- Increment the totalviews in UserInfo for the user who owns the post
+			UPDATE UserInfo
+			SET totalviews = totalviews + 1
+			WHERE UserID = NEW.PostOwnerID;
+			
+			-- Return the updated row
+			RETURN NEW;
+		END;
+		$$ LANGUAGE plpgsql`,
 		`CREATE TRIGGER comment_insert_trigger
 		AFTER INSERT ON Comments
 		FOR EACH ROW
@@ -190,6 +219,21 @@ func createTables() {
 		AFTER DELETE ON SubComments
 		FOR EACH ROW
 		EXECUTE FUNCTION update_total_comments();
+
+		CREATE TRIGGER like_insert_trigger
+		AFTER INSERT ON Likes
+		FOR EACH ROW
+		EXECUTE FUNCTION update_total_likes();
+
+		CREATE TRIGGER like_delete_trigger
+		AFTER DELETE ON Likes
+		FOR EACH ROW
+		EXECUTE FUNCTION update_total_likes();
+
+		CREATE TRIGGER after_post_update
+		AFTER UPDATE OF Views ON Posts
+		FOR EACH ROW
+		EXECUTE FUNCTION update_user_total_views();
 		`,
 	}
 
@@ -283,10 +327,10 @@ func insertSampleData() {
 
 	// Insert likes
 	for _, like := range model.Likes {
-		_, err := dbPool.Exec(context.Background(), `INSERT INTO Likes (LikeID, 
+		_, err := dbPool.Exec(context.Background(), `INSERT INTO Likes (
             PostID, Liker, DateTime) VALUES 
-            ($1, $2, $3, $4) ON CONFLICT (LikeID) DO NOTHING`,
-			like.LikeID, like.PostID, like.Liker, like.DateTime)
+            ($1, $2, $3) ON CONFLICT (PostID, Liker) DO NOTHING`,
+			like.PostID, like.Liker, like.DateTime)
 		if err != nil {
 			log.Fatalf("Failed to insert like data: %v", err)
 		}

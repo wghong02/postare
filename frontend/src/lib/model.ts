@@ -58,7 +58,6 @@ export interface SubComment {
 
 // Like Model
 export interface Like {
-	likeId: number;
 	postId: string;
 	liker: number;
 	dateTime: DateString;
