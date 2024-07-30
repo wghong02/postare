@@ -1,6 +1,6 @@
 # Postare
 
-Postare is a full stack web app project that allows creative minds to post their thoughts and lifestyles in a shared space. It allows users to inspire each other to create, share and build their unique posts on the website. The website if deployed [here](http://3.133.130.137:3000).
+Postare is a full stack web app project that allows creative minds to post their thoughts and lifestyles in a shared space. It allows users to inspire each other to create, share and build their unique posts on the website. The website is deployed [here](http://3.133.130.137:3000).
 
 ## Technologies Used
 
