@@ -28,19 +28,12 @@ export function CommentCard({
 }) {
 	const commentTime = timeAgo(comment.commentTime);
 	const [poster, setPoster] = useState<UserInfo | null>(null);
-	const [showReplyClicked, setShowReplyClicked] = useState(false);
 	const [subComments, setSubComments] = useState<SubComment[]>([]);
 	const [subCommentCount, setSubCommentCount] = useState<number>(0);
 	const subCommentsToLoad = 5;
 
-	function isComment(comment: Comment | SubComment): comment is Comment {
-		return (
-			"commentId" in comment &&
-			"posterId" in comment &&
-			"comment" in comment &&
-			"postId" in comment &&
-			"commentTime" in comment
-		);
+	function isSubComment(comment: Comment | SubComment): comment is SubComment {
+		return "subCommentId" in comment;
 	}
 
 	const fetchData = async () => {
@@ -61,7 +54,6 @@ export function CommentCard({
 	};
 
 	const handleShowReplies = () => {
-		setShowReplyClicked(true);
 		fetchSubComments();
 	};
 
@@ -122,10 +114,10 @@ export function CommentCard({
 		}
 	}, [fetchRecentReply]);
 
-	if (poster) {
-		return (
-			<Box>
-				<HStack spacing="4">
+	return (
+		<Box>
+			{poster && (
+				<HStack spacing="3">
 					<Image
 						borderRadius="full"
 						boxSize="35px"
@@ -152,44 +144,48 @@ export function CommentCard({
 						<Text>{comment.comment}</Text>
 					</VStack>
 				</HStack>
-				<Box ml="40px">
-					{subComments.map((subComment, index) => (
-						<CommentCard
-							key={index}
-							comment={subComment}
-							setReplyName={setReplyName}
-							setReplyCommentId={setReplyCommentId}
-							setOnReply={setOnReply}
-							authed={authed}
-							fetchRecentReply={false}
-							setFetchRecentReply={setFetchRecentReply}
-						/>
-					))}
-				</Box>
-				{isComment(comment) && (
-					<Flex ml="50px">
-						{authed && (
-							<Box
-								fontSize="small"
-								fontWeight="300"
-								onClick={handleSetReply}
-								_hover={{ color: "blue.500", cursor: "pointer" }}
-								alignContent="initial"
-								mr="4"
-								mb="2"
-							>
-								Reply
-							</Box>
-						)}
+			)}
+			<Box ml="30px">
+				{subComments.map((subComment, index) => (
+					<CommentCard
+						key={index}
+						comment={subComment}
+						setReplyName={setReplyName}
+						setReplyCommentId={setReplyCommentId}
+						setOnReply={setOnReply}
+						authed={authed}
+						fetchRecentReply={false}
+						setFetchRecentReply={setFetchRecentReply}
+					/>
+				))}
+			</Box>
+			{!isSubComment(comment) && (
+				<Flex ml="50px">
+					{authed && (
+						<Box
+							fontSize="small"
+							fontWeight="300"
+							onClick={handleSetReply}
+							_hover={{ color: "blue.500", cursor: "pointer" }}
+							alignContent="initial"
+							mr="4"
+							mb="2"
+						>
+							Reply
+						</Box>
+					)}
 
-						{subCommentCount - subComments.length != 0 && (
+					<Box
+						fontSize="small"
+						fontWeight="300"
+						alignContent="initial"
+						mr="4"
+						maxW="270px"
+					>
+						{subCommentCount - subComments.length > 0 && (
 							<Box
-								fontSize="small"
-								fontWeight="300"
 								onClick={handleShowReplies}
 								_hover={{ color: "blue.500", cursor: "pointer" }}
-								alignContent="initial"
-								mr="4"
 							>
 								{"View " +
 									(subCommentCount - subComments.length) +
@@ -197,21 +193,21 @@ export function CommentCard({
 									(subCommentCount == 1 ? " reply" : " replies")}
 							</Box>
 						)}
-						{subComments.length > 0 && (
-							<Box
-								fontSize="small"
-								fontWeight="300"
-								onClick={hideReply}
-								_hover={{ color: "blue.500", cursor: "pointer" }}
-								alignContent="initial"
-								mr="4"
-							>
-								{"Hide all replies"}
-							</Box>
-						)}
-					</Flex>
-				)}
-			</Box>
-		);
-	}
+					</Box>
+
+					{subComments.length > 0 && (
+						<Box
+							fontSize="small"
+							fontWeight="300"
+							onClick={hideReply}
+							_hover={{ color: "blue.500", cursor: "pointer" }}
+							alignContent="initial"
+						>
+							{"Hide all replies"}
+						</Box>
+					)}
+				</Flex>
+			)}
+		</Box>
+	);
 }

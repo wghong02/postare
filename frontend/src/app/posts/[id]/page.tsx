@@ -20,7 +20,8 @@ import {
 	CommentSection,
 } from "@/ui/components/posts/postPageComponents";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
-import { CiHeart, CiChat1 } from "react-icons/ci";
+import { CiChat1 } from "react-icons/ci";
+import { IoIosHeartEmpty, IoMdHeart } from "react-icons/io";
 import { VscFlame } from "react-icons/vsc";
 
 import notFound from "@/app/not-found";
@@ -105,13 +106,20 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	}, []);
 
 	return (
-		<>
-			<Box display="flex" justifyContent="center" mt="30" ml="50" mr="50">
-				<LoadingWrapper loading={loading} hasFetched={hasFetched}>
+		<Box
+			display="flex"
+			justifyContent="center"
+			mt="30"
+			ml="50"
+			mr="50"
+			minW="735px"
+		>
+			<LoadingWrapper loading={loading} hasFetched={hasFetched}>
+				{post && (
 					<HStack>
 						<VStack
 							maxW="1500px"
-							minW="60%"
+							width="60%"
 							maxH="100%"
 							divider={<StackDivider borderColor="gray.200" />}
 							spacing="5"
@@ -121,10 +129,10 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 							<HStack spacing={4} maxH="400px">
 								<Flex maxH="400px" align="center" justify="center">
 									<Image
-										src={post?.imageUrl}
+										src={post.imageUrl}
 										alt="Post Image"
 										objectFit="cover"
-										maxW="100%"
+										width="100%"
 										height="400px"
 									/>
 								</Flex>
@@ -146,7 +154,11 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 										color={liked ? "red.500" : "gray.500"}
 										_hover={{ color: "pink.300" }}
 									>
-										<Icon as={CiHeart} boxSize="30px" />
+										{liked ? (
+											<Icon as={IoMdHeart} boxSize="30px" />
+										) : (
+											<Icon as={IoIosHeartEmpty} boxSize="30px" />
+										)}
 										<Text fontSize="sm">{totalLikes}</Text>
 									</Flex>
 
@@ -155,12 +167,17 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 										align="center"
 										mt="80px"
 										mb="80px"
+										color={"gray.500"}
 									>
 										<Icon as={VscFlame} boxSize="30px" color="#F56565" />
-										<Text fontSize="sm">{post?.views}</Text>
+										<Text fontSize="sm">{post.views}</Text>
 									</Flex>
 
-									<Flex flexDirection="column" align="center">
+									<Flex
+										flexDirection="column"
+										align="center"
+										color={"gray.500"}
+									>
 										<Icon as={CiChat1} boxSize="30px" color="#4299E2" />
 										<Text fontSize="sm">{totalComments}</Text>
 									</Flex>
@@ -179,9 +196,9 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 							For future recommendations
 						</Box> */}
 						</VStack>
-						<VStack ml="3" minW="35%" maxH="600px" spacing="5" align={"left"}>
+						<VStack ml="3" width="35%" maxH="500px" spacing="5" align={"left"}>
 							{user && (
-								<Flex height="50px">
+								<Flex height="50px" width="100%">
 									<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
 								</Flex>
 							)}
@@ -190,14 +207,15 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 									<CommentSection
 										authed={authed}
 										postId={post.postId}
+										setTotalComments={setTotalComments}
 									></CommentSection>
 								</Box>
 							)}
 						</VStack>
 					</HStack>
-				</LoadingWrapper>
-			</Box>
-		</>
+				)}
+			</LoadingWrapper>
+		</Box>
 	);
 };
 export default PostInfoPage;

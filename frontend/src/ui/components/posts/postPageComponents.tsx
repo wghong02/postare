@@ -73,15 +73,15 @@ export function CommentSection({
 	// the entire comment section of each post
 	authed,
 	postId,
+	setTotalComments,
 }: {
 	authed: boolean;
 	postId: string;
+	setTotalComments: React.Dispatch<React.SetStateAction<number>>;
 }) {
 	const [comments, setComments] = useState<Comment[]>([]); // the array of all comments that are to be loaded
 	const [newComment, setNewComment] = useState<string>(""); // the input comment of the user
-	const [initLoading, setInitLoading] = useState(true); // if the page has loaded initially
-	const [loadingMore, setLoadingMore] = useState(false); // if it is loading more comments
-	const [hasFetched, setHasFetched] = useState(false); // if the page has completed fetched all inital data
+	const [loadingMore, setLoadingMore] = useState(true); // if it is loading comments
 	const [currentPage, setCurrentPage] = useState(1); // the current page of comments that are in
 	const [reachedEnd, setReachedEnd] = useState(false); // if it is the end of all comments
 	const [onReply, setOnReply] = useState(false); // if the input comment is a reply
@@ -93,7 +93,7 @@ export function CommentSection({
 
 	// If it is onReply then to send a subcomment(reply), else send a normal comment.
 	const sendComment = async () => {
-		if (onReply) {
+		if (onReply && postId) {
 			if (newComment == "") {
 				toast({
 					title: "Reply cannot be empty.",
@@ -103,7 +103,7 @@ export function CommentSection({
 				});
 			} else {
 				try {
-					await uploadSubComment(newComment, replyCommentId);
+					await uploadSubComment(newComment, replyCommentId, postId);
 					toast({
 						title: "Reply sent!",
 						status: "success",
@@ -120,6 +120,8 @@ export function CommentSection({
 						duration: 2000,
 						isClosable: true,
 					});
+				} finally {
+					setTotalComments((comments) => comments + 1);
 				}
 			}
 		} else {
@@ -150,6 +152,8 @@ export function CommentSection({
 							duration: 2000,
 							isClosable: true,
 						});
+					} finally {
+						setTotalComments((comments) => comments + 1);
 					}
 				}
 			}
@@ -190,8 +194,6 @@ export function CommentSection({
 		} catch (error) {
 			console.error("Error fetching comments:", error);
 		} finally {
-			setInitLoading(false);
-			setHasFetched(true);
 			setLoadingMore(false);
 		}
 	};
@@ -227,7 +229,6 @@ export function CommentSection({
 				setCurrentPage(currentPage + 1);
 			}
 		};
-		setHasFetched(false);
 		const box = document.getElementById("commentBox");
 		if (box) {
 			box.addEventListener("scroll", handleScroll);
@@ -245,85 +246,83 @@ export function CommentSection({
 	};
 
 	return (
-		<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
-			<Box width="100%" height={onReply ? "400px" : "430px"}>
-				{/* add to display comments related to this post */}
-				<Text fontSize="large" fontWeight="bold" height="30px">
-					{" "}
-					Comments{" "}
-				</Text>
-				<Box
-					height={onReply ? "calc(100% - 82px)" : "calc(100% - 62px)"}
-					overflowY="scroll"
-					id="commentBox"
-					mb="2"
-				>
-					{comments.map((comment, index) => (
-						<Box>
-							<CommentCard
-								key={index}
-								comment={comment}
-								setReplyName={setReplyName}
-								setReplyCommentId={setReplyCommentId}
-								setOnReply={setOnReply}
-								authed={authed}
-								fetchRecentReply={
-									fetchRecentReply && replyCommentId == comment.commentId
-								}
-								setFetchRecentReply={setFetchRecentReply}
-							/>
-						</Box>
-					))}
-					{comments.length == 0 && (
-						<Box fontWeight={300}>
-							No comment yet. Leave the first comment below.
-						</Box>
-					)}
-				</Box>
-				{onReply && (
-					<Flex direction="row" align="center" justify="space-between">
-						<Flex
-							borderWidth="1px"
-							borderRadius="md"
-							fontSize="sm"
-							mt={2}
-							width="100%"
-						>
-							Replying to{" "}
-							<Text fontWeight={500} ml="1">
-								{" " + replyName}
-							</Text>
-						</Flex>
-						<Icon
-							as={IoMdCloseCircleOutline}
-							boxSize="20px"
-							ml="2"
-							onClick={handleCloseReply}
-							_hover={{ color: "blue.300", cursor: "pointer" }}
+		<Box width="100%" height={onReply ? "400px" : "430px"}>
+			{/* add to display comments related to this post */}
+			<Text fontSize="large" fontWeight="bold" height="30px">
+				{" "}
+				Comments{" "}
+			</Text>
+			<Box
+				height={onReply ? "calc(100% - 82px)" : "calc(100% - 62px)"}
+				overflowY="scroll"
+				id="commentBox"
+				mb="2"
+			>
+				{comments.map((comment, index) => (
+					<Box>
+						<CommentCard
+							key={index}
+							comment={comment}
+							setReplyName={setReplyName}
+							setReplyCommentId={setReplyCommentId}
+							setOnReply={setOnReply}
+							authed={authed}
+							fetchRecentReply={
+								fetchRecentReply && replyCommentId == comment.commentId
+							}
+							setFetchRecentReply={setFetchRecentReply}
 						/>
-					</Flex>
-				)}
-				{authed ? (
-					<Flex direction="row" align="center" height="32px">
-						<Input
-							size="sm"
-							placeholder="Add a comment"
-							value={newComment}
-							onKeyDown={handleKeyDown}
-							onChange={handleChange}
-						></Input>
-						<Icon
-							as={IoIosSend}
-							boxSize="20px"
-							ml="2"
-							onClick={sendComment}
-							_hover={{ color: "blue.300", cursor: "pointer" }}
-						/>
-					</Flex>
-				) : (
-					<Input isDisabled size="sm" placeholder="Log in to comment"></Input>
+					</Box>
+				))}
+				{!loadingMore && comments.length == 0 && (
+					<Box fontWeight={300}>
+						No comment yet. Leave the first comment below.
+					</Box>
 				)}
 			</Box>
-		</LoadingWrapper>
+			{onReply && (
+				<Flex direction="row" align="center" justify="space-between">
+					<Flex
+						borderWidth="1px"
+						borderRadius="md"
+						fontSize="sm"
+						mt={2}
+						width="100%"
+					>
+						Replying to{" "}
+						<Text fontWeight={500} ml="1">
+							{" " + replyName}
+						</Text>
+					</Flex>
+					<Icon
+						as={IoMdCloseCircleOutline}
+						boxSize="20px"
+						ml="2"
+						onClick={handleCloseReply}
+						_hover={{ color: "blue.300", cursor: "pointer" }}
+					/>
+				</Flex>
+			)}
+			{authed ? (
+				<Flex direction="row" align="center" height="32px">
+					<Input
+						size="sm"
+						placeholder="Add a comment"
+						value={newComment}
+						onKeyDown={handleKeyDown}
+						onChange={handleChange}
+					></Input>
+					<Icon
+						as={IoIosSend}
+						boxSize="20px"
+						ml="2"
+						onClick={sendComment}
+						_hover={{ color: "blue.300", cursor: "pointer" }}
+					/>
+				</Flex>
+			) : (
+				<Input isDisabled size="sm" placeholder="Log in to comment"></Input>
+			)}
+		</Box>
 	);
 }

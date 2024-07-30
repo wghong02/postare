@@ -130,7 +130,7 @@ func createTables() {
             Comment VARCHAR(1000) NOT NULL,
             CommentID BIGINT REFERENCES Comments(CommentID) NOT NULL,
             CommentTime TIMESTAMP WITH TIME ZONE NOT NULL,
-			PostID UUID NOT NULL
+			PostID UUID NOT NULL,
 			FOREIGN KEY (CommentID, PostID)
 			REFERENCES Comments (CommentID, PostID)
 			ON DELETE CASCADE
@@ -173,64 +173,99 @@ func createTables() {
 		END;
 		$$ LANGUAGE plpgsql;
 		`,
-		`CREATE OR REPLACE FUNCTION update_total_likes() RETURNS TRIGGER AS $$
+		`CREATE OR REPLACE FUNCTION update_total_likes() 
+		RETURNS TRIGGER AS $$
+		DECLARE
+			postOwnerID BIGINT;
 		BEGIN
+			-- Determine the post owner based on the trigger operation
 			IF TG_OP = 'INSERT' THEN
+				-- Retrieve PostOwnerID for the new post ID
+				SELECT p.PostOwnerID
+				INTO postOwnerID
+				FROM Posts p
+				WHERE p.PostID = NEW.PostID;
+				
+				-- Update UserInfo for the post owner
 				UPDATE UserInfo
 				SET TotalLikes = TotalLikes + 1
-				WHERE UserID = NEW.Liker;
+				WHERE UserID = postOwnerID;
+
+				-- Update Posts for the liked post
+				UPDATE Posts
+				SET Likes = Likes + 1
+				WHERE PostID = NEW.PostID;
+
 			ELSIF TG_OP = 'DELETE' THEN
+				-- Retrieve PostOwnerID for the old post ID
+				SELECT p.PostOwnerID
+				INTO postOwnerID
+				FROM Posts p
+				WHERE p.PostID = OLD.PostID;
+				
+				-- Update UserInfo for the post owner
 				UPDATE UserInfo
 				SET TotalLikes = TotalLikes - 1
-				WHERE UserID = OLD.Liker;
+				WHERE UserID = postOwnerID;
+
+				-- Update Posts for the unliked post
+				UPDATE Posts
+				SET Likes = Likes - 1
+				WHERE PostID = OLD.PostID;
 			END IF;
-			RETURN NULL;
+
+			RETURN NULL;  -- No need to return the row
 		END;
 		$$ LANGUAGE plpgsql;
 		`,
 		`CREATE OR REPLACE FUNCTION update_user_total_views()
 		RETURNS TRIGGER AS $$
 		BEGIN
-			-- Increment the totalviews in UserInfo for the user who owns the post
-			UPDATE UserInfo
-			SET totalviews = totalviews + 1
-			WHERE UserID = NEW.PostOwnerID;
-			
-			-- Return the updated row
-			RETURN NEW;
+			-- Calculate the number of new views
+			DECLARE
+				new_views INT;
+				old_views INT;
+				view_difference INT;
+			BEGIN
+				-- Set the old and new view counts
+				old_views := OLD.Views;
+				new_views := NEW.Views;
+				
+				-- Calculate the difference in views
+				view_difference := new_views - old_views;
+				
+				-- Update the UserInfo table with the view difference
+				IF view_difference > 0 THEN
+					UPDATE UserInfo
+					SET totalviews = totalviews + view_difference
+					WHERE UserID = NEW.PostOwnerID;
+				END IF;
+				
+				RETURN NEW;
+			END;
 		END;
 		$$ LANGUAGE plpgsql`,
-		`CREATE TRIGGER comment_insert_trigger
-		AFTER INSERT ON Comments
+		`CREATE TRIGGER post_update_trigger
+		AFTER INSERT OR DELETE ON Posts
+		FOR EACH ROW
+		EXECUTE FUNCTION update_total_posts();
+		
+		CREATE TRIGGER comment_update_trigger
+		AFTER INSERT OR DELETE ON Comments
 		FOR EACH ROW
 		EXECUTE FUNCTION update_total_comments();
 
-		CREATE TRIGGER comment_delete_trigger
-		AFTER DELETE ON Comments
+		CREATE TRIGGER subcomment_update_trigger
+		AFTER INSERT OR DELETE ON SubComments
 		FOR EACH ROW
 		EXECUTE FUNCTION update_total_comments();
 
-		CREATE TRIGGER subcomment_insert_trigger
-		AFTER INSERT ON SubComments
-		FOR EACH ROW
-		EXECUTE FUNCTION update_total_comments();
-
-		CREATE TRIGGER subcomment_delete_trigger
-		AFTER DELETE ON SubComments
-		FOR EACH ROW
-		EXECUTE FUNCTION update_total_comments();
-
-		CREATE TRIGGER like_insert_trigger
-		AFTER INSERT ON Likes
+		CREATE TRIGGER like_update_trigger
+		AFTER INSERT OR DELETE ON Likes
 		FOR EACH ROW
 		EXECUTE FUNCTION update_total_likes();
 
-		CREATE TRIGGER like_delete_trigger
-		AFTER DELETE ON Likes
-		FOR EACH ROW
-		EXECUTE FUNCTION update_total_likes();
-
-		CREATE TRIGGER after_post_update
+		CREATE TRIGGER view_post_update
 		AFTER UPDATE OF Views ON Posts
 		FOR EACH ROW
 		EXECUTE FUNCTION update_user_total_views();
@@ -304,9 +339,9 @@ func insertSampleData() {
 	// Insert comments
 	for _, comment := range model.Comments {
 		_, err := dbPool.Exec(context.Background(), `INSERT INTO Comments (CommentID, 
-            PosterID, Comment, PostID) VALUES 
-            ($1, $2, $3, $4) ON CONFLICT (CommentID) DO NOTHING`,
-			comment.CommentID, comment.PosterID, comment.Comment, comment.PostID)
+            PosterID, Comment, PostID, CommentTime) VALUES 
+            ($1, $2, $3, $4, $5) ON CONFLICT (CommentID) DO NOTHING`,
+			comment.CommentID, comment.PosterID, comment.Comment, comment.CommentTime,comment.PostID)
 		if err != nil {
 			log.Fatalf("Failed to insert comment data: %v", err)
 		}
@@ -316,9 +351,9 @@ func insertSampleData() {
 	// Insert sub-comments
 	for _, subComment := range model.SubComments {
 		_, err := dbPool.Exec(context.Background(), `INSERT INTO SubComments (SubCommentID, 
-            PosterID, Comment, CommentID, PostID) VALUES 
+            PosterID, Comment, CommentID, CommentTime, PostID) VALUES 
             ($1, $2, $3, $4, $5) ON CONFLICT (SubCommentID) DO NOTHING`,
-			subComment.SubCommentID, subComment.PosterID, subComment.Comment, subComment.CommentID, subComment.PostID)
+			subComment.SubCommentID, subComment.PosterID, subComment.Comment, subComment.CommentID, subComment.CommentTime, subComment.PostID)
 		if err != nil {
 			log.Fatalf("Failed to insert sub-comment data: %v", err)
 		}

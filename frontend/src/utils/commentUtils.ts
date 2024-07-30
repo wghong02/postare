@@ -245,15 +245,15 @@ export const uploadComment = (comment: string, postId: string) => {
 	});
 };
 
-export const uploadSubComment = (comment: string, commentId: number) => {
+export const uploadSubComment = (comment: string, commentId: number, postId: string) => {
 	// user post post with auth token
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/subComments/upload`;
 
-	console.log(url, comment, commentId);
 	const body = JSON.stringify({
 		comment,
 		comment_id: commentId,
+		post_id: postId,
 	});
 
 	return fetch(url, {
