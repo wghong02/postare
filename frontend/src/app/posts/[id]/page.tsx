@@ -119,7 +119,6 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 					<HStack>
 						<VStack
 							maxW="1500px"
-							width="60%"
 							maxH="100%"
 							divider={<StackDivider borderColor="gray.200" />}
 							spacing="5"
@@ -131,7 +130,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 									<Image
 										src={post.imageUrl}
 										alt="Post Image"
-										objectFit="cover"
+										objectFit="scale-down"
 										width="100%"
 										height="400px"
 									/>
