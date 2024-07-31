@@ -10,6 +10,8 @@ import {
 } from "../../components/basicComponents/productBasicComponents";
 
 const MostViewedPage = () => {
+	// page component that shows the most viewed pages
+	// masonry layout is used
 	const [posts, setPosts] = useState<Post[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [initLoading, setInitLoading] = useState(true);
@@ -52,7 +54,7 @@ const MostViewedPage = () => {
 		fetchData();
 	}, [currentPage]);
 
-	// to handle if ha reached the bottom of the page
+	// increase currentPage to allow fetching more data. Listens to scrolling and executes when reach the bottom.
 	useEffect(() => {
 		const handleScroll = () => {
 			if (
@@ -71,6 +73,7 @@ const MostViewedPage = () => {
 	// number of posts to load per scroll
 
 	useEffect(() => {
+		// for changing the number of rows depending on the width of the window
 		const handleResize = () => {
 			const width = window.innerWidth;
 			const rowsToLoad = 1;

@@ -14,6 +14,7 @@ const fetchAndTransformCommentData = async (
 	try {
 		let response;
 		if (authToken) {
+			// if given auth token, then auth is needed
 			response = await fetch(url, {
 				headers: {
 					Authorization: `Bearer ${authToken}`,
@@ -27,6 +28,7 @@ const fetchAndTransformCommentData = async (
 
 		const responseData: any = await response.json();
 
+		// save the response locally based on the size (single or multiple as an array)
 		if (singleComment) {
 			const camelizedData = camelizeKeys(responseData);
 			const comment: Comment = {
@@ -122,7 +124,7 @@ export const getCommentsByPostId = async ({
 	postId: string;
 	query: QueryProps;
 }): Promise<Comment[]> => {
-	// get a single post by post Id. response is json
+	// get a single comment by post Id. response is json
 	const url = new URL(`${domain}/public/getComments/${postId}`);
 
 	if (query?.limit) {
@@ -151,7 +153,7 @@ export const getCommentCountByPostId = async ({
 	postId: string;
 	isTotal: boolean;
 }): Promise<number> => {
-	// get a single post by post Id. response is json
+	// get the count of comments (or with replies) of a post by post Id. response is json
 	const url = new URL(`${domain}/public/getCommentCount/${postId}`);
 	if (isTotal) {
 		url.searchParams.append("isTotal", isTotal.toString());
@@ -178,7 +180,7 @@ export const getSubCommentsByCommentId = async ({
 	commentId: number;
 	query: QueryProps;
 }): Promise<SubComment[]> => {
-	// get a single post by post Id. response is json
+	// get sub comments of a comment by comment Id. response is json
 	const url = new URL(`${domain}/public/getSubComments/${commentId}`);
 
 	if (query?.limit) {
@@ -205,7 +207,7 @@ export const getSubCommentCountByCommentId = async ({
 }: {
 	commentId: number;
 }): Promise<number> => {
-	// get a single post by post Id. response is json
+	// get the count of sub comments of a comment. response is json
 	const url = new URL(`${domain}/public/getSubCommentCount/${commentId}`);
 
 	try {
@@ -224,7 +226,7 @@ export const getSubCommentCountByCommentId = async ({
 };
 
 export const uploadComment = (comment: string, postId: string) => {
-	// user post post with auth token
+	// user comment a post, with auth token
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/comments/upload`;
 
@@ -245,8 +247,12 @@ export const uploadComment = (comment: string, postId: string) => {
 	});
 };
 
-export const uploadSubComment = (comment: string, commentId: number, postId: string) => {
-	// user post post with auth token
+export const uploadSubComment = (
+	comment: string,
+	commentId: number,
+	postId: string
+) => {
+	// user reply to a comment, with auth token
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/subComments/upload`;
 
@@ -269,7 +275,7 @@ export const uploadSubComment = (comment: string, commentId: number, postId: str
 };
 
 export const deleteComment = (commentId: string) => {
-	// delete post using its id
+	// delete a comment using its id
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/comments/delete/${commentId}`;
 
@@ -286,7 +292,7 @@ export const deleteComment = (commentId: string) => {
 };
 
 export const deleteSubComment = (subCommentId: string) => {
-	// delete post using its id
+	// delete a sub comment using its id
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/subComments/delete/${subCommentId}`;
 

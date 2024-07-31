@@ -27,6 +27,7 @@ const Header: React.FC = () => {
 	const handleLogOut = (): void => {
 		localStorage.removeItem("authToken");
 		setAuthed(false);
+		router.push(`/`);
 		showToast();
 	};
 
@@ -101,7 +102,7 @@ const Header: React.FC = () => {
 			</Box>
 
 			<Box flex={1} maxW="300px">
-				{authed != null &&
+				{authed != null && // will only show the buttons once the initial render finishes
 					(authed ? (
 						<Box>
 							<Link as={NextLink} href="/user/home" passHref>

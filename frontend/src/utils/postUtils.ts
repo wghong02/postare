@@ -14,6 +14,7 @@ const fetchAndTransformPostData = async (
 	try {
 		let response;
 		if (authToken) {
+			// if given auth token, then auth is needed
 			response = await fetch(url, {
 				headers: {
 					Authorization: `Bearer ${authToken}`,
@@ -27,6 +28,7 @@ const fetchAndTransformPostData = async (
 
 		const responseData: any = await response.json();
 
+		// save the response locally based on the size (single or multiple as an array)
 		if (singlePost) {
 			const camelizedData = camelizeKeys(responseData);
 			const post: Post = {
@@ -234,6 +236,7 @@ export const getUserPublicPosts = async ({
 };
 
 export const increasePostViews = (postId: string) => {
+	// increase the number of views of a post by 1
 	// only needs post id
 	const url = `${domain}/posts/increasePostView/${postId}`;
 
