@@ -1,8 +1,10 @@
 Ranked by priority
 
-- adjust post page width, add call to view func
+- fix scrolling, check edge case of long description and comments, and margin below comment section, add call to view func
+- add share button for each post
 - refine details on user home info page (allow edit)
 - check if register info is valid
 - make sure search bar's parameter does not disappear after search
 - Add more rows to user public page
 - remove aws rds pw
+- add admin users that can manage categories

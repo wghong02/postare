@@ -112,11 +112,11 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 			mt="30"
 			ml="50"
 			mr="50"
-			minW="735px"
+			minW="700px"
 		>
 			<LoadingWrapper loading={loading} hasFetched={hasFetched}>
 				{post && (
-					<HStack>
+					<VStack>
 						<VStack
 							maxW="1500px"
 							maxH="100%"
@@ -124,9 +124,8 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 							spacing="5"
 							align="stretch"
 						>
-							{/* Hstacks to organize the details of the post */}
-							<HStack spacing={4} maxH="400px">
-								<Flex maxH="400px" align="center" justify="center">
+							<HStack spacing="50px" maxH="600px">
+								<Flex>
 									<Image
 										src={post.imageUrl}
 										alt="Post Image"
@@ -135,74 +134,55 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 										height="400px"
 									/>
 								</Flex>
+								<VStack spacing="5" align="stretch" height="100%">
+									{user && (
+										<Flex height="50px" width="100%">
+											<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
+										</Flex>
+									)}
+									<HStack align="center" justify="left" spacing="30px">
+										<Flex
+											align="center"
+											cursor="pointer"
+											onClick={handleLike}
+											color={liked ? "red.500" : "gray.500"}
+											_hover={{ color: "pink.300" }}
+										>
+											{liked ? (
+												<Icon as={IoMdHeart} boxSize="30px" />
+											) : (
+												<Icon as={IoIosHeartEmpty} boxSize="30px" />
+											)}
+											<Text fontSize="sm" ml="4px">
+												{totalLikes}
+											</Text>
+										</Flex>
 
-								{/* column of icons */}
-								<VStack
-									height="100%"
-									minW="50px"
-									maxH="400px"
-									align="center"
-									justify="space-between"
-									direction="column"
-								>
-									<Flex
-										flexDirection="column"
-										align="center"
-										cursor="pointer"
-										onClick={handleLike}
-										color={liked ? "red.500" : "gray.500"}
-										_hover={{ color: "pink.300" }}
-									>
-										{liked ? (
-											<Icon as={IoMdHeart} boxSize="30px" />
-										) : (
-											<Icon as={IoIosHeartEmpty} boxSize="30px" />
-										)}
-										<Text fontSize="sm">{totalLikes}</Text>
-									</Flex>
+										<Flex align="center" color={"gray.500"}>
+											<Icon as={VscFlame} boxSize="30px" color="#F56565" />
+											<Text fontSize="sm" ml="4px">
+												{post.views}
+											</Text>
+										</Flex>
 
-									<Flex
-										flexDirection="column"
-										align="center"
-										mt="80px"
-										mb="80px"
-										color={"gray.500"}
-									>
-										<Icon as={VscFlame} boxSize="30px" color="#F56565" />
-										<Text fontSize="sm">{post.views}</Text>
-									</Flex>
-
-									<Flex
-										flexDirection="column"
-										align="center"
-										color={"gray.500"}
-									>
-										<Icon as={CiChat1} boxSize="30px" color="#4299E2" />
-										<Text fontSize="sm">{totalComments}</Text>
-									</Flex>
+										<Flex align="center" color={"gray.500"}>
+											<Icon as={CiChat1} boxSize="30px" color="#4299E2" />
+											<Text fontSize="sm" ml="6px">
+												{totalComments}
+											</Text>
+										</Flex>
+										{/* add share button here */}
+									</HStack>
+									{post && (
+										<Flex width="100%" maxH="100%">
+											<PostPageSection post={post}></PostPageSection>
+										</Flex>
+									)}
 								</VStack>
-
-								{/* column of comments */}
 							</HStack>
 
 							{post && (
-								<Flex width="100%" minH="100px">
-									<PostPageSection post={post}></PostPageSection>
-								</Flex>
-							)}
-
-							{/* <Box h="200px" bg="pink.100">
-							For future recommendations
-						</Box> */}
-						</VStack>
-						<VStack ml="3" width="35%" maxH="500px" spacing="5" align={"left"}>
-							{user && (
-								<Flex height="50px" width="100%">
-									<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
-								</Flex>
-							)}
-							{post && (
-								<Box maxH="calc(100% - 50px)">
+								<Box maxH="400px" width="70%" mx="auto">
 									<CommentSection
 										authed={authed}
 										postId={post.postId}
@@ -210,8 +190,12 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 									></CommentSection>
 								</Box>
 							)}
+
+							{/* <Box h="200px" bg="pink.100">
+							For future recommendations
+						</Box> */}
 						</VStack>
-					</HStack>
+					</VStack>
 				)}
 			</LoadingWrapper>
 		</Box>
