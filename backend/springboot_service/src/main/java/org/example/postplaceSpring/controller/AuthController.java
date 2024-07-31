@@ -29,6 +29,7 @@ public class AuthController {
     private final UserAuthService userDetailsService;
 
     @Autowired
+    // automatically inject dependency here
     public AuthController(AuthenticationManager authenticationManager,
                                        JwtTokenUtil jwtTokenUtil,
                           UserAuthService userDetailsService) {
@@ -42,6 +43,7 @@ public class AuthController {
         logger.info("Received POST request for /auth/login");
 
         try {
+            // autheticate the username and pw
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authenticationRequest.getUsername(),
                     authenticationRequest.getPassword()));
@@ -61,6 +63,7 @@ public class AuthController {
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
         logger.info("Received POST request for /auth/register");
         try {
+            // register with the given user info
             userDetailsService.registerNewUser(registrationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (Exception e) {

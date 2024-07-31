@@ -21,7 +21,7 @@ func SaveCommentToSQL(comment *model.Comment) error {
 		query, comment.PosterID, comment.Comment,
 		comment.PostID, comment.CommentTime)
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
-		// 23505 is the foreign key violation error code in PostgreSQL
+		// 23503 is the foreign key violation error code in PostgreSQL
 		return customErrors.ErrUserOrPostNotFound
 	}
 
@@ -38,7 +38,7 @@ func SaveSubCommentToSQL(subComment *model.SubComment) error {
 		query, subComment.PosterID, subComment.Comment,
 		subComment.CommentID, subComment.CommentTime, subComment.PostID)
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
-		// 23505 is the foreign key violation error code in PostgreSQL
+		// 23503 is the foreign key violation error code in PostgreSQL
 		return customErrors.ErrUserOrCommentNotFound
 	}	
 
@@ -76,6 +76,7 @@ func DeleteSubCommentFromSQL(subCommentID int64)  error {
 }
 
 func CheckIfCommentOwnedByUser(commentID int64, userID int64) (bool, error) {
+	// check if the comment has the same id as the given user
 	var commentOwnerID int64
     err := dbPool.QueryRow(context.Background(), "SELECT posterID FROM Comments WHERE CommentID=$1", commentID).Scan(&commentOwnerID)
     if err != nil {
@@ -151,6 +152,7 @@ func GetCommentsByPostID(postID uuid.UUID, limit int, offset int) ([]model.Comme
 }
 
 func checkIfCommentExistsByID(commentID int64) (bool, error) {
+	// check if a comment exists using its id
     var exists bool
     err := dbPool.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM Comments WHERE CommentID=$1)", commentID).Scan(&exists)
     if err != nil {
@@ -206,6 +208,7 @@ func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([]model.
 
 func GetCommentCountByPostID(postID uuid.UUID) (int64, error) {
 
+	// get the count of comments associated with the given post
 	exists, err := checkIfPostExistsByID(postID)
     if err != nil {
         return 0, err
@@ -223,6 +226,7 @@ func GetCommentCountByPostID(postID uuid.UUID) (int64, error) {
 }
 
 func GetSubCommentCountByCommentID(commentID int64) (int64, error) {
+	// get the count of subcomments (replies) associated with the given comment
 	exists, err := checkIfCommentExistsByID(commentID)
     if err != nil {
         return 0, err
@@ -239,7 +243,8 @@ func GetSubCommentCountByCommentID(commentID int64) (int64, error) {
     return count, nil
 }
 
-func GetTotalCommentCountByPostID(postID uuid.UUID) (int64, error) { // this includes comments and subComments
+func GetTotalCommentCountByPostID(postID uuid.UUID) (int64, error) {
+	// get the count of comments and subcomments associated with the given post
 	exists, err := checkIfPostExistsByID(postID)
     if err != nil {
         return 0, err

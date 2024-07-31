@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class ResourceBadRequestException extends RuntimeException {
+    // class that returns HTTP 400 bad request
 
     public ResourceBadRequestException(String message) {
         super(message);

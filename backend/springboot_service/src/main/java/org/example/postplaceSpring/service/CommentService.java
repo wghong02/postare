@@ -4,23 +4,18 @@ import org.example.postplaceSpring.exceptions.ResourceBadRequestException;
 import org.example.postplaceSpring.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @Service
 public class CommentService {
     // connect directly to go BE to get data from be using RESTAPI
     private final RestTemplate restTemplate;
-    private final String goServiceUrl; // Replace with your Go service URL
+    private final String goServiceUrl;
 
     @Autowired
     public CommentService(RestTemplate restTemplate, Environment env) {

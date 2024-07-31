@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    // catch and handle all exceptions from the app
 
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

@@ -17,6 +17,7 @@ public class UserInfoController {
     private static final Logger logger = LoggerFactory.getLogger(UserInfoController.class);
 
     @Autowired
+    // automatically inject dependency here
     public UserInfoController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
     }

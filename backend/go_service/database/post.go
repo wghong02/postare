@@ -25,7 +25,7 @@ func SavePostToSQL(post *model.Post) error {
 		post.Likes, post.CategoryID, post.PostOwnerID, post.PutOutTime,
 		post.PostDetails, post.IsAvailable, post.ImageUrl, post.Views)
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
-		// 23505 is the foreign key violation error code in PostgreSQL
+		// 23503 is the foreign key violation error code in PostgreSQL
 		return customErrors.ErrUserNotFound
 	}
 
@@ -33,6 +33,8 @@ func SavePostToSQL(post *model.Post) error {
 }
 
 func CheckIfPostOwnedByUser(postID uuid.UUID, userID int64) (bool, error) {
+	// check if the post given its id is owned by the given user
+
 	var postOwnerID int64
     err := dbPool.QueryRow(context.Background(), "SELECT PostOwnerID FROM Posts WHERE PostID=$1", postID).Scan(&postOwnerID)
     if err != nil {
@@ -142,6 +144,7 @@ func GetPostByID(postID uuid.UUID) (model.Post, error) {
 
 func GetMostInOneAttributePosts(limit int, offset int, attribute string) ([]model.Post, error) {
 
+	// get the post ranked by one column (attribute)
 	var posts []model.Post
 	var query string
 	var args []interface{}
@@ -233,6 +236,7 @@ func SearchPostsByUserID(userID int64, limit int, offset int) ([]model.Post, err
 }
 
 func checkIfPostExistsByID(postID uuid.UUID) (bool, error) {
+	// check if a post exists by its id
     var exists bool
     err := dbPool.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM Posts WHERE PostID=$1)", postID).Scan(&exists)
     if err != nil {
@@ -242,7 +246,7 @@ func checkIfPostExistsByID(postID uuid.UUID) (bool, error) {
 }
 
 func IncreaseViewByPostID(postID uuid.UUID) error {
-	// increase view by 1
+	// increase given post's view by 1, should be changed when scaling to avoid bottleneck
 
 	query := `
 		UPDATE Posts

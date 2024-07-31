@@ -22,7 +22,7 @@ export function UserPostCard({ post }: { post: Post }) {
 	const postId = post.postId;
 	const toast = useToast();
 
-	// to delete the post
+	// to delete the post, shown as button on the card
 	const deleteOnClick = async (postId: string) => {
 		try {
 			await deletePost(postId);
@@ -160,7 +160,7 @@ export function PostPreviewCard({ post }: { post: Post }) {
 }
 
 export function UserPublicPostCard({ post }: { post: Post }) {
-	const registerTime = timeAgo(post.putOutTime);
+	// card of the breif info of each post, mostly in recom. page
 	const postId = post.postId;
 
 	return (

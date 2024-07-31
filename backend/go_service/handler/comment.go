@@ -104,7 +104,7 @@ func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "sub comment owner does not exist", http.StatusBadRequest)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to sub comment post from backend",
+			http.Error(w, "Failed to upload sub comment from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -228,7 +228,7 @@ func getCommentsByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. call service level to get post info
+	// 2. call service level to get comment info
 	comments, err := service.GetCommentsByPostID(postID, limit, offset)
 	if err != nil {
 		// Check if the error is due to the comments not being found
@@ -236,7 +236,7 @@ func getCommentsByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "post not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search post comments by ID from backend",
+			http.Error(w, "Failed to search post's comments by ID from backend",
 				http.StatusInternalServerError)
 		}
 		return
@@ -245,7 +245,7 @@ func getCommentsByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 	// 3. format json response
 	js, err := json.Marshal(comments)
 	if err != nil {
-		http.Error(w, "Failed to parse posts into JSON format",
+		http.Error(w, "Failed to parse comments into JSON format",
 			http.StatusInternalServerError)
 		return
 	}
@@ -277,7 +277,7 @@ func getSubCommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. call service level to get post info
+	// 2. call service level to get sub comment info
 	subComments, err := service.GetSubCommentsByCommentID(commentID, limit, offset)
 	if err != nil {
 		// Check if the error is due to the comments not being found
@@ -372,10 +372,10 @@ func getSubCommentCountByCommentID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Check if the error is due to the comments not being found
 		if errors.Is (err, customErrors.ErrCommentNotFound) {
-			http.Error(w, "post not found", http.StatusNotFound)
+			http.Error(w, "comment not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search subComment count by post ID from backend",
+			http.Error(w, "Failed to search subComment count by comment ID from backend",
 				http.StatusInternalServerError)
 		}
 		return

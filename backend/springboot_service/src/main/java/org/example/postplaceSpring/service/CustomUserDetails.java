@@ -8,6 +8,7 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
     // the user info required for auth
+    // user userid as the encrypted user info
 
     private final UserAuth userAuth;
     private final long userId;

@@ -22,8 +22,8 @@ func SaveUserInfoToSQL(user *model.UserInfo) error {
 		user.ProfilePicture, user.RegisterTime, user.TotalViews,
 		user.TotalComments, user.TotalLikes, user.UserExperience)
 	if err != nil {
-		if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23505" {
-            // 23505 is the unique violation error code in PostgreSQL
+		if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
+            // 23503 is the unique violation error code in PostgreSQL
             return customErrors.ErrUsernameAlreadyExists
         }
 		return err
@@ -96,6 +96,7 @@ func GetUsernameByUserID(userID int64) (string, error) {
 }
 
 func checkIfUserExistsByID(userID int64) (bool, error) {
+	// check if the given userid exists
     var exists bool
     err := dbPool.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM UserInfo WHERE UserID=$1)", userID).Scan(&exists)
     if err != nil {

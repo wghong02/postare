@@ -33,10 +33,12 @@ export function CommentCard({
 	const subCommentsToLoad = 5;
 
 	function isSubComment(comment: Comment | SubComment): comment is SubComment {
+		// to determine if the given is a sub comment or a comment
 		return "subCommentId" in comment;
 	}
 
 	const fetchData = async () => {
+		// fetching the user public info of each comment
 		try {
 			const userInfo = await getUserPublicInfo(comment.posterId);
 			setPoster(userInfo);
@@ -54,12 +56,15 @@ export function CommentCard({
 	};
 
 	const handleShowReplies = () => {
+		// whenever show more replies, fetch more comments
 		fetchSubComments();
 	};
 
 	const fetchSubComments = async (fetchRecent = false) => {
+		// function that calls backend to fetch
 		try {
 			if (fetchRecent) {
+				// fetch the user's reply immediately after
 				const commentsData = await getSubCommentsByCommentId({
 					commentId: comment.commentId,
 					query: {
@@ -88,6 +93,7 @@ export function CommentCard({
 	};
 
 	const fetchSubCommentCount = async () => {
+		// fetch the number of sub comments from backend
 		try {
 			const countResult = await getSubCommentCountByCommentId({
 				commentId: comment.commentId,
@@ -99,15 +105,18 @@ export function CommentCard({
 	};
 
 	const hideReply = () => {
+		// hide all replies to a comment, is the same as setting the sub comment list to empty
 		setSubComments([]);
 	};
 
 	useEffect(() => {
+		// fetch userInfo and sub comment count when it loads
 		fetchData();
 		fetchSubCommentCount();
 	}, []);
 
 	useEffect(() => {
+		// fetch the user's reply after the reply is submitted
 		if (fetchRecentReply == true) {
 			fetchSubComments(true);
 			setFetchRecentReply(false);

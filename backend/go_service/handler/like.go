@@ -157,7 +157,7 @@ func checkIfLikeExistsHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func getLikesByUserIDHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one get likes by postID request")
+	fmt.Println("Received one get likes by userID request")
 
 	// response is json
 	w.Header().Set("Content-Type", "application/json")
@@ -276,7 +276,7 @@ func getLikeCountByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "post not found", http.StatusNotFound)
 		} else {
 			// For all other errors, return internal server error
-			http.Error(w, "Failed to search likes by post ID from backend",
+			http.Error(w, "Failed to get like count from backend",
 				http.StatusInternalServerError)
 		}
 		return

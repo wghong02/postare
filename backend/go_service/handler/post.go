@@ -18,7 +18,7 @@ import (
 )
 
 func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one upload request")
+	fmt.Println("Received one upload post request")
 
 	// Read userID from request header or context passed from Spring Boot
 	userID := r.Header.Get("X-User-ID")
@@ -51,7 +51,7 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}	
 	
-	// Convert buffer to io.ReadSeeker
+	// Convert buffer to io.ReadSeeker, upload the post's image to S3 for better storage
 	fileReader := bytes.NewReader(buf.Bytes())
 	
 	imageURL, err := uploadToS3(fileReader, fileHeader.Filename)
@@ -86,7 +86,7 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one delete request")
+	fmt.Println("Received one delete post request")
 	// Read userID from request header or context passed from Spring Boot
 	userID := r.Header.Get("X-User-ID")
 	if userID == "" {
@@ -170,7 +170,7 @@ func searchPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPostByIDHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one get post request")
+	fmt.Println("Received one get post by postid request")
 
 	w.Header().Set("Content-Type", "application/json")
 	postIDStr := mux.Vars(r)["postID"]
@@ -207,7 +207,7 @@ func getPostByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getMostInOneAttributePostsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one get most viewed posts request")
+	fmt.Println("Received one get most xxx posts request")
 
 	w.Header().Set("Content-Type", "application/json")
 	attribute := mux.Vars(r)["attribute"]

@@ -95,7 +95,7 @@ func GetSubCommentsByCommentID(commentID int64, limit int, offset int) ([] model
 }
 
 func GetCommentCountByPostID(postID uuid.UUID, isTotal bool) (model.CountModel, error){
-
+	// get the total comment or comment + replies count of a given post
 	var count int64
 	var err error
 	if isTotal { // to track the total of comments and subcomments
@@ -113,7 +113,7 @@ func GetCommentCountByPostID(postID uuid.UUID, isTotal bool) (model.CountModel, 
 }
 
 func GetSubCommentCountByCommentID(commentID int64) (model.CountModel, error){
-
+	// get the total replies count of a given comment
 	count, err := sqlMethods.GetSubCommentCountByCommentID(commentID)
 	result := model.CountModel{}
 	if err != nil {

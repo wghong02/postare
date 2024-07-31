@@ -11,7 +11,7 @@ import (
 
 func SaveLikeToSQL(like *model.Like) error {
 
-	// save comment
+	// save the like
 	query := `INSERT INTO Likes (PostID, 
         Liker, DateTime) VALUES ($1, $2, $3)`
 
@@ -19,12 +19,12 @@ func SaveLikeToSQL(like *model.Like) error {
 		query, like.PostID, like.Liker,
 		like.DateTime)
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23503" {
-		// 23503 means not found
+		// 23503 foreign key volation, means not found
 		return customErrors.ErrUserOrPostNotFound
 	}
 
 	if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23505" {
-		// means already has the like, so its ok
+		// 23505 duplicate key, means already has the like, so its ok
 		return nil
 	}
 
@@ -43,6 +43,7 @@ func DeleteLikeFromSQL(userID int64, postID uuid.UUID)  error {
 }
 
 func CheckIfLikeExistsBy(userID int64, postID uuid.UUID) (bool, error) {
+	// check if the like exist given the user and post ids
     var exists bool
     err := dbPool.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM Likes WHERE Liker=$1 AND PostID=$2)", userID, postID).Scan(&exists)
     if err != nil {
@@ -141,7 +142,8 @@ func GetLikesByUserID(userID int64, limit int, offset int) ([]model.Like, error)
 	return likes, nil
 }
 
-func GetTotalLikeCountByPostID(postID uuid.UUID) (int64, error) { // this includes comments and subComments
+func GetTotalLikeCountByPostID(postID uuid.UUID) (int64, error) {
+	// get the total number of likes associated with a post
 	exists, err := checkIfPostExistsByID(postID)
     if err != nil {
         return 0, err

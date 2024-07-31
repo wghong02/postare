@@ -11,13 +11,12 @@ import {
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import { Post, Comment } from "@/lib/model";
 import { IoIosSend, IoMdCloseCircleOutline } from "react-icons/io";
-import { CommentCard } from "../commets/cards";
+import { CommentCard } from "../comments/cards";
 import {
 	getCommentsByPostId,
 	uploadComment,
 	uploadSubComment,
 } from "@/utils/commentUtils";
-import LoadingWrapper from "../web/LoadingWrapper";
 
 export function PostPageSection({ post }: { post: Post }) {
 	// card of post info

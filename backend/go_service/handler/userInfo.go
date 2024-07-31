@@ -87,7 +87,7 @@ func getUserInfoByIDHandler(w http.ResponseWriter, r *http.Request) {
 	// 3. format json response
 	js, err := json.Marshal(user)
 	if err != nil {
-		http.Error(w, "Failed to parse user into JSON format",
+		http.Error(w, "Failed to parse user info into JSON format",
 			http.StatusInternalServerError)
 		return
 	}
@@ -119,7 +119,7 @@ func getUserIDByNameHandler(w http.ResponseWriter, r *http.Request) {
 	// 3. format json response
 	js, err := json.Marshal(userID)
 	if err != nil {
-		http.Error(w, "Failed to parse user into JSON format",
+		http.Error(w, "Failed to parse userID into JSON format",
 			http.StatusInternalServerError)
 		return
 	}
@@ -127,7 +127,7 @@ func getUserIDByNameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUsernameByIDHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one get username request")
+	fmt.Println("Received one get username by userid request")
 
 	// 1. process data
 	

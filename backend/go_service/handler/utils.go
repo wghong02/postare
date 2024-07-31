@@ -13,6 +13,7 @@ import (
 )
 
 func uploadToS3(file io.ReadSeeker, filename string) (string, error) {
+	// util function to upload large file to AWS s3
 	bucket := os.Getenv("AWS_S3_BUCKET")
 	region := os.Getenv("AWS_REGION")
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
@@ -44,6 +45,7 @@ func uploadToS3(file io.ReadSeeker, filename string) (string, error) {
 }
 
 func deleteFileFromS3(fileURL string) error {
+	// util function to delete existing large files in AWS s3
 	bucket := os.Getenv("AWS_S3_BUCKET")
 	region := os.Getenv("AWS_REGION")
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
