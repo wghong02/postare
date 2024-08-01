@@ -14,6 +14,7 @@ import (
 	"appBE/service"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -158,6 +159,55 @@ func getUsernameByIDHandler(w http.ResponseWriter, r *http.Request) {
 	js, err := json.Marshal(username)
 	if err != nil {
 		http.Error(w, "Failed to parse user into JSON format",
+			http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
+}
+
+func getLikedUsersByPostIDHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get liked users by postID request")
+
+	// response is json
+	w.Header().Set("Content-Type", "application/json")
+	postIDStr := mux.Vars(r)["postID"]
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 1 {
+		offset = 0 // default to first page
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		limit = 10 // default total size to load from server
+	}
+
+	// 1. process data
+	postID, err := uuid.Parse(postIDStr)
+	if err != nil {
+		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
+		return
+	}
+
+	// 2. call service level to get like info
+	users, err := service.GetLikedUsersByPostID(postID, limit, offset)
+	if err != nil {
+		// Check if the error is due to the comments not being found
+		if errors.Is (err, customErrors.ErrPostNotFound) {
+			http.Error(w, "post not found", http.StatusNotFound)
+		} else {
+			// For all other errors, return internal server error
+			http.Error(w, "Failed to search post likes by ID from backend",
+				http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// 3. format json response
+	js, err := json.Marshal(users)
+	if err != nil {
+		http.Error(w, "Failed to parse likes into JSON format",
 			http.StatusInternalServerError)
 		return
 	}

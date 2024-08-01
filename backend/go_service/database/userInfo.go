@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 )
@@ -103,4 +104,56 @@ func checkIfUserExistsByID(userID int64) (bool, error) {
         return false, err
     }
     return exists, nil
+}
+
+func GetLikedUsersByPostID(postID uuid.UUID, limit int, offset int) ([]model.UserInfo, error) {
+
+	// Check if user exists
+    exists, err := checkIfPostExistsByID(postID)
+    if err != nil {
+        return nil, err
+    }
+    if !exists {
+        return nil, customErrors.ErrPostNotFound
+    }
+
+	var users []model.UserInfo
+	var query string
+	var args []interface{}
+
+	// use args to avoid sql injection
+	query = `SELECT u.*
+			FROM Userinfo u
+			JOIN Likes l ON u.UserID = l.Liker
+			WHERE l.PostID = $1
+			ORDER BY l.DateTime DESC
+			LIMIT $2 OFFSET $3;`
+	args = append(args, postID, limit, offset)
+
+	// search with sql statement
+	rows, err := dbPool.Query(context.Background(), query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// add to result
+	for rows.Next() {
+		var user model.UserInfo
+		err := rows.Scan(&user.UserID, &user.Username, &user.UserEmail,
+			&user.UserPhone, &user.Nickname, &user.ProfilePicture,
+			&user.RegisterTime, &user.TotalViews, &user.TotalComments,
+			&user.TotalLikes, &user.UserExperience, &user.TotalPosts,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

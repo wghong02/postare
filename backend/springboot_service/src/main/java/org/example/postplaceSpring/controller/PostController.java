@@ -128,4 +128,23 @@
                 throw new ResponseStatusException(response.getStatusCode(), "Post not found");
             }
         }
+
+        @GetMapping("/user/posts/get/liked")
+        public ResponseEntity<String> getLikesByUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                       @RequestParam(defaultValue = "10") int limit,
+                                                       @RequestParam(defaultValue = "0") int offset) {
+            logger.info("Received Get request for /user/posts/get/liked");
+            // Get the authenticated user's details
+            if (userDetails == null) {
+                throw new IllegalStateException("User details not found in authentication context");
+            }
+            long userId = userDetails.getUserId();
+            ResponseEntity<String> response = postService.findLikedPostsByUserId(userId, limit, offset);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                logger.info("Post {} returned", userId);
+                return response;
+            } else {
+                throw new ResponseStatusException(response.getStatusCode(), "Posts not found");
+            }
+        }
     }

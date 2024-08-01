@@ -101,3 +101,14 @@ func IncreaseViewByPostID(postID uuid.UUID) error {
 	}
 	return err
 }
+
+func GetLikedPostsByUserID(userID int64, limit int, offset int) ([] model.Post, error) {
+	// call backend to get the post information liked by the user and if there is error
+
+	posts, err := sqlMethods.GetLikedPostsByUserID(userID, limit, offset)
+	if err != nil {
+		fmt.Printf("Failed to search likes by userID from SQL, %v\n", err)
+		return []model.Post{}, err
+	}
+	return posts, err
+}

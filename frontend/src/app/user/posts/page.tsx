@@ -77,13 +77,12 @@ const UserPostPage = () => {
 	}, [loadingMore]);
 
 	return (
-		<Box
-			display="flex"
+		<Flex
+			direction="column"
+			align="center"
 			minW="500px"
 			width="100%"
 			height="100%"
-			flexDirection="column"
-			alignContent="center"
 			m="4"
 			ref={containerRef}
 			style={{ overflowY: "auto" }}
@@ -91,7 +90,7 @@ const UserPostPage = () => {
 			{/* can view posts the user uploaded and upload new and delete existing posts */}
 
 			<Flex width="100%" justify="center">
-				<Button  onClick={onOpen} m="4">
+				<Button onClick={onOpen} m="4">
 					Upload New Post
 				</Button>
 			</Flex>
@@ -100,7 +99,7 @@ const UserPostPage = () => {
 
 			<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
 				{posts.length > 0 && (
-					<Flex wrap="wrap" mb="2">
+					<Flex justify="center" wrap="wrap" mb="2">
 						{posts.map((post, index) => (
 							<UserPostCard key={index} post={post} />
 						))}
@@ -110,10 +109,10 @@ const UserPostPage = () => {
 				{posts.length == 0 && <Box>You have no posts, upload to see more.</Box>}
 			</LoadingWrapper>
 			{!loadingMore && currentPage > 1 && reachedEnd && (
-				<Box mb="20px">You have reached the bottom of all posts.</Box>
+				<Box mb="60px">You have reached the bottom of all posts.</Box>
 			)}
 			<BackToTopFooter containerRef={containerRef}></BackToTopFooter>
-		</Box>
+		</Flex>
 	);
 };
 export default UserPostPage;

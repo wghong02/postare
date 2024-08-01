@@ -24,39 +24,6 @@ public class LikeController {
         this.likeService = likeService;
     }
 
-    @GetMapping("/public/getLikesByPost/{postId}")
-    public ResponseEntity<String> getLikesByPostId(@PathVariable UUID postId,
-                                                      @RequestParam(defaultValue = "10") int limit,
-                                                      @RequestParam(defaultValue = "0") int offset) {
-        logger.info("Received Get request for /public/getLikesByPost/{postId}");
-        ResponseEntity<String> response = likeService.findLikesByPostId(postId, limit, offset);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Like {} returned", postId);
-            return response;
-        } else {
-            throw new ResponseStatusException(response.getStatusCode(), "Like not found");
-        }
-    }
-
-    @GetMapping("/user/getLikesByUser")
-    public ResponseEntity<String> getLikesByUserId(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                      @RequestParam(defaultValue = "10") int limit,
-                                                      @RequestParam(defaultValue = "0") int offset) {
-        logger.info("Received Get request for /public/getLikesByUser/{userId}");
-        // Get the authenticated user's details
-        if (userDetails == null) {
-            throw new IllegalStateException("User details not found in authentication context");
-        }
-        long userId = userDetails.getUserId();
-        ResponseEntity<String> response = likeService.findLikesByUserId(userId, limit, offset);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Like {} returned", userId);
-            return response;
-        } else {
-            throw new ResponseStatusException(response.getStatusCode(), "Like not found");
-        }
-    }
-
     @PostMapping("/user/likes/upload")
     public ResponseEntity<String> uploadLike(@RequestBody String likeJson,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {

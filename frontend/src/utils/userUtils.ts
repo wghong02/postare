@@ -1,6 +1,7 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
 import { UserInfo, Post } from "@/lib/model";
+import { QueryProps } from "@/lib/types";
 
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
@@ -129,7 +130,7 @@ export const getUserInfo = async () => {
 export const getUserPublicInfo = async (userID: number) => {
 	// get a single user's public info by user Id. response is json
 
-	const url = `${domain}/public/get/userinfo/${userID}`;
+	const url = `${domain}/public/getUserinfo/${userID}`;
 	try {
 		const user: UserInfo = (await fetchAndTransformUserData(
 			url,
@@ -137,6 +138,29 @@ export const getUserPublicInfo = async (userID: number) => {
 		)) as UserInfo;
 
 		return user;
+	} catch (error) {
+		console.error("Error fetching or parsing data:", error);
+		throw error;
+	}
+};
+
+export const getLikedUsersByPostId = async (
+	postId: string,
+	query: QueryProps
+): Promise<UserInfo[]> => {
+	// get likes of a post. response is json
+	const url = new URL(`${domain}/public/getLikedUsersByPost/${postId}`);
+	const limit = query?.limit ?? "";
+	const offset = query?.offset ?? "";
+	url.searchParams.append("limit", limit.toString());
+	url.searchParams.append("offset", offset.toString());
+	try {
+		const likes: UserInfo[] = (await fetchAndTransformUserData(
+			url.toString(),
+			false
+		)) as UserInfo[];
+
+		return likes;
 	} catch (error) {
 		console.error("Error fetching or parsing data:", error);
 		throw error;

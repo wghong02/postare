@@ -24,27 +24,6 @@ public class LikeService {
         this.goServiceUrl = env.getProperty("GO_BACKEND_URL");
     }
 
-    public ResponseEntity<String> findLikesByPostId(UUID postId, int limit, int offset) {
-        String url = goServiceUrl + "/public/getLikesByPost/" + postId + "?limit=" + limit + "&offset=" + offset;
-        try {
-            return restTemplate.getForEntity(url, String.class);
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new ResourceNotFoundException("Likes not found with PostId: " + postId, ex);
-        }
-    }
-
-    public ResponseEntity<String> findLikesByUserId(long userId, int limit, int offset) {
-        String url = goServiceUrl + "/user/getLikesByUser/" + "?limit=" + limit + "&offset=" + offset;
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-User-ID", String.valueOf(userId));
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        try {
-            return restTemplate.getForEntity(url, String.class, request);
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new ResourceNotFoundException("Likes not found with UserId: " + userId, ex);
-        }
-    }
-
     public ResponseEntity<String> createLike(String likeJson, long userId) {
         String url = goServiceUrl + "/user/likes/upload";
         HttpHeaders headers = new HttpHeaders();

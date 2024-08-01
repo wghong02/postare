@@ -48,48 +48,7 @@ const fetchAndTransformLikeData = async (
 	}
 };
 
-export const getLikesByUserId = async (query: QueryProps): Promise<Like[]> => {
-	// get likes of a user. response is json
-	const authToken = localStorage.getItem("authToken");
-	const url = new URL(`${domain}/user/getLikesByUser`);
-	const limit = query?.limit ?? "";
-	const offset = query?.offset ?? "";
-	url.searchParams.append("limit", limit.toString());
-	url.searchParams.append("offset", offset.toString());
-	try {
-		const likes: Like[] = (await fetchAndTransformLikeData(
-			url,
-			authToken
-		)) as Like[];
 
-		return likes;
-	} catch (error) {
-		console.error("Error fetching or parsing data:", error);
-		throw error;
-	}
-};
-
-export const getLikesByPostId = async (
-	postId: string,
-	query: QueryProps
-): Promise<Like[]> => {
-	// get likes of a post. response is json
-	const url = new URL(`${domain}/public/getLikesByPost/${postId}`);
-	const limit = query?.limit ?? "";
-	const offset = query?.offset ?? "";
-	url.searchParams.append("limit", limit.toString());
-	url.searchParams.append("offset", offset.toString());
-	try {
-		const likes: Like[] = (await fetchAndTransformLikeData(
-			url.toString()
-		)) as Like[];
-
-		return likes;
-	} catch (error) {
-		console.error("Error fetching or parsing data:", error);
-		throw error;
-	}
-};
 
 export const uploadLike = (postId: string) => {
 	// user likes a post with auth token

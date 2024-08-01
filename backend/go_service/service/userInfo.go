@@ -5,6 +5,8 @@ import (
 	"appBE/model"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func SaveUserInfo(user *model.UserInfo) error {
@@ -59,4 +61,15 @@ func GetUsernameByID(userID int64) (string, error) {
 		return "", err
 	}
 	return username, nil
+}
+
+func GetLikedUsersByPostID(postID uuid.UUID, limit int, offset int) ([] model.UserInfo, error) {
+	// call backend to get the users information, return the users info and if there is error
+
+	users, err := sqlMethods.GetLikedUsersByPostID(postID, limit, offset)
+	if err != nil {
+		fmt.Printf("Failed to search likes by postID from SQL, %v\n", err)
+		return []model.UserInfo{}, err
+	}
+	return users, err
 }

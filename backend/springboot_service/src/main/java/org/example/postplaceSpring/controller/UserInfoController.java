@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @RestController
 public class UserInfoController {
     private final UserInfoService userInfoService;
@@ -41,7 +43,7 @@ public class UserInfoController {
         }
     }
 
-    @GetMapping("/public/get/userinfo/{userId}")
+    @GetMapping("/public/getUserinfo/{userId}")
     public ResponseEntity<String> getUserPublicInfo( // call user details related if authed
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable long userId) {
@@ -52,6 +54,20 @@ public class UserInfoController {
             return response;
         } else {
             throw new ResponseStatusException(response.getStatusCode(), "Post not found");
+        }
+    }
+
+    @GetMapping("/public/getLikedUsersByPost/{postId}")
+    public ResponseEntity<String> getLikesByPostId(@PathVariable UUID postId,
+                                                   @RequestParam(defaultValue = "10") int limit,
+                                                   @RequestParam(defaultValue = "0") int offset) {
+        logger.info("Received Get request for /public/getLikedUsersByPost/{postId}");
+        ResponseEntity<String> response = userInfoService.findLikedUsersByPostId(postId, limit, offset);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.info("UserInfo {} returned", postId);
+            return response;
+        } else {
+            throw new ResponseStatusException(response.getStatusCode(), "Like not found");
         }
     }
 

@@ -32,17 +32,6 @@ func UnlikePost(userID int64, postID uuid.UUID) error {
 	return nil
 }
 
-func GetLikesByPostID(postID uuid.UUID, limit int, offset int) ([] model.Like, error) {
-	// call backend to get the post information, return the like info and if there is error
-
-	likes, err := sqlMethods.GetLikesByPostID(postID, limit, offset)
-	if err != nil {
-		fmt.Printf("Failed to search likes by postID from SQL, %v\n", err)
-		return []model.Like{}, err
-	}
-	return likes, err
-}
-
 func CheckIfLikeExists(userID int64, postID uuid.UUID) (bool, error){
 	var exists bool
 	exists, err := sqlMethods.CheckIfLikeExistsBy(userID, postID)
@@ -50,17 +39,6 @@ func CheckIfLikeExists(userID int64, postID uuid.UUID) (bool, error){
         return false, err
     }
     return exists, nil
-}
-
-func GetLikesByUserID(userID int64, limit int, offset int) ([] model.Like, error) {
-	// call backend to get the post information, return the like info and if there is error
-
-	likes, err := sqlMethods.GetLikesByUserID(userID, limit, offset)
-	if err != nil {
-		fmt.Printf("Failed to search likes by userID from SQL, %v\n", err)
-		return []model.Like{}, err
-	}
-	return likes, err
 }
 
 // func GetLikesCountByPostID(postID uuid.UUID) (model.CountModel, error){

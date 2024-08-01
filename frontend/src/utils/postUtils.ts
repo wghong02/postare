@@ -240,3 +240,27 @@ export const increasePostViews = (postId: string) => {
 		handleResponseStatus(response, "Fail to add views");
 	});
 };
+
+export const getLikedPostsByUser = async (
+	query: QueryProps
+): Promise<Post[]> => {
+	// get likes of a user. response is json
+	const authToken = localStorage.getItem("authToken");
+	const url = new URL(`${domain}/user/posts/get/liked`);
+	const limit = query?.limit ?? "";
+	const offset = query?.offset ?? "";
+	url.searchParams.append("limit", limit.toString());
+	url.searchParams.append("offset", offset.toString());
+	try {
+		const likes: Post[] = (await fetchAndTransformPostData(
+			url,
+			false,
+			authToken
+		)) as Post[];
+
+		return likes;
+	} catch (error) {
+		console.error("Error fetching or parsing data:", error);
+		throw error;
+	}
+};

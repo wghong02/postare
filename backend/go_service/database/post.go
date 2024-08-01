@@ -266,3 +266,55 @@ func IncreaseViewByPostID(postID uuid.UUID) error {
 
 	return nil
 }
+
+func GetLikedPostsByUserID(userID int64, limit int, offset int) ([]model.Post, error) {
+
+	// Check if user exists
+    exists, err := checkIfUserExistsByID(userID)
+    if err != nil {
+        return nil, err
+    }
+    if !exists {
+        return nil, customErrors.ErrUserNotFound
+    }
+
+	var posts []model.Post
+	var query string
+	var args []interface{}
+
+	// use args to avoid sql injection
+	query = `SELECT p.*
+			FROM Posts p
+			JOIN Likes l ON p.postID = l.postID
+			WHERE l.Liker = $1
+			ORDER BY l.DateTime DESC
+			LIMIT $2 OFFSET $3;`
+	args = append(args, userID, limit, offset)
+
+	// search with sql statement
+	rows, err := dbPool.Query(context.Background(), query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// add to result
+	for rows.Next() {
+		var post model.Post
+		err := rows.Scan(&post.PostID, &post.Title, &post.Description,
+			&post.Likes, &post.CategoryID, &post.PostOwnerID,
+			&post.PutOutTime, &post.PostDetails, &post.IsAvailable,
+			&post.ImageUrl, &post.Views,
+		)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}

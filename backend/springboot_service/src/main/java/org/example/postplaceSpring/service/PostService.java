@@ -110,4 +110,16 @@ public class PostService {
         String url = goServiceUrl + "/postHistory/" + userId + "?limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
+
+    public ResponseEntity<String> findLikedPostsByUserId(long userId, int limit, int offset) {
+        String url = goServiceUrl + "/user/posts/get/liked" + "?limit=" + limit + "&offset=" + offset;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-ID", String.valueOf(userId));
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        try {
+            return restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceNotFoundException("Likes not found with UserId: " + userId, ex);
+        }
+    }
 }

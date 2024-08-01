@@ -320,3 +320,57 @@ func increaseViewByPostIDHandler(w http.ResponseWriter, r *http.Request){
 	// 3. format response
 	fmt.Fprintf(w, "View increased successfully\n")
 }
+
+func getLikedPostsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get liked posts by userID request")
+
+	// response is json
+	w.Header().Set("Content-Type", "application/json")
+
+	// 1. process data
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	
+	}
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 1 {
+		offset = 0 // default to first page
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		limit = 10 // default total size to load from server
+	}
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid userID provided", http.StatusBadRequest)
+		return
+	}
+
+	// 2. call service level to get like info
+	posts, err := service.GetLikedPostsByUserID(userID, limit, offset)
+	if err != nil {
+		// Check if the error is due to the comments not being found
+		if errors.Is (err, customErrors.ErrUserNotFound) {
+			http.Error(w, "user not found", http.StatusNotFound)
+		} else {
+			// For all other errors, return internal server error
+			http.Error(w, "Failed to search likes by userID from backend",
+				http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// 3. format json response
+	js, err := json.Marshal(posts)
+	if err != nil {
+		http.Error(w, "Failed to parse likes into JSON format",
+			http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
+}
