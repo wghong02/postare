@@ -142,24 +142,24 @@ func GetLikesByUserID(userID int64, limit int, offset int) ([]model.Like, error)
 	return likes, nil
 }
 
-func GetTotalLikeCountByPostID(postID uuid.UUID) (int64, error) {
-	// get the total number of likes associated with a post
-	exists, err := checkIfPostExistsByID(postID)
-    if err != nil {
-        return 0, err
-    }
-    if !exists {
-        return 0, customErrors.ErrPostNotFound
-    }
+// func GetTotalLikeCountByPostID(postID uuid.UUID) (int64, error) {
+// 	// get the total number of likes associated with a post
+// 	exists, err := checkIfPostExistsByID(postID)
+//     if err != nil {
+//         return 0, err
+//     }
+//     if !exists {
+//         return 0, customErrors.ErrPostNotFound
+//     }
 
-    query := `
-        SELECT COUNT(*) FROM Likes WHERE postID = $1 ;
-    `
-    var totalCount int64
-    err = dbPool.QueryRow(context.Background(), query, postID).Scan(&totalCount)
-    if err != nil {
-        return 0, err
-    }
+//     query := `
+//         SELECT COUNT(*) FROM Likes WHERE postID = $1 ;
+//     `
+//     var totalCount int64
+//     err = dbPool.QueryRow(context.Background(), query, postID).Scan(&totalCount)
+//     if err != nil {
+//         return 0, err
+//     }
 
-    return totalCount, nil
-}
+//     return totalCount, nil
+// }

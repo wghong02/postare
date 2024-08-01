@@ -38,11 +38,16 @@ public class LikeController {
         }
     }
 
-    @GetMapping("/public/getLikesByUser/{userId}")
-    public ResponseEntity<String> getLikesByUserId(@PathVariable long userId,
+    @GetMapping("/user/getLikesByUser")
+    public ResponseEntity<String> getLikesByUserId(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                       @RequestParam(defaultValue = "10") int limit,
                                                       @RequestParam(defaultValue = "0") int offset) {
         logger.info("Received Get request for /public/getLikesByUser/{userId}");
+        // Get the authenticated user's details
+        if (userDetails == null) {
+            throw new IllegalStateException("User details not found in authentication context");
+        }
+        long userId = userDetails.getUserId();
         ResponseEntity<String> response = likeService.findLikesByUserId(userId, limit, offset);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Like {} returned", userId);
@@ -89,16 +94,16 @@ public class LikeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/public/getLikesCount/{postId}")
-    public ResponseEntity<String> getLikeCountByPostId(@PathVariable UUID postId) {
-        logger.info("Received Get request for /public/getLikeCount/{postId}");
-        ResponseEntity<String> response = likeService.getLikeCountByPostId(postId);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            logger.info("Like count with post {} returned", postId);
-            return response;
-        } else {
-            throw new ResponseStatusException(response.getStatusCode(), "Like not found");
-        }
-    }
+//    @GetMapping("/public/getLikesCount/{postId}")
+//    public ResponseEntity<String> getLikeCountByPostId(@PathVariable UUID postId) {
+//        logger.info("Received Get request for /public/getLikeCount/{postId}");
+//        ResponseEntity<String> response = likeService.getLikeCountByPostId(postId);
+//        if (response.getStatusCode().is2xxSuccessful()) {
+//            logger.info("Like count with post {} returned", postId);
+//            return response;
+//        } else {
+//            throw new ResponseStatusException(response.getStatusCode(), "Like not found");
+//        }
+//    }
 
 }

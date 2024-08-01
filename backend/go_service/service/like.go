@@ -63,19 +63,19 @@ func GetLikesByUserID(userID int64, limit int, offset int) ([] model.Like, error
 	return likes, err
 }
 
-func GetLikesCountByPostID(postID uuid.UUID) (model.CountModel, error){
-	// get the total number of likes of a post
+// func GetLikesCountByPostID(postID uuid.UUID) (model.CountModel, error){
+// 	// get the total number of likes of a post
 
-	var count int64
-	var err error
+// 	var count int64
+// 	var err error
 	
-	count, err = sqlMethods.GetTotalLikeCountByPostID(postID)
+// 	count, err = sqlMethods.GetTotalLikeCountByPostID(postID)
 	
-	result := model.CountModel{}
-	if err != nil {
-		fmt.Printf("Failed to search post from SQL, %v\n", err)
-		return result, err
-	}
-	result.Count = count
-	return result, err
-}
+// 	result := model.CountModel{}
+// 	if err != nil {
+// 		fmt.Printf("Failed to search post from SQL, %v\n", err)
+// 		return result, err
+// 	}
+// 	result.Count = count
+// 	return result, err
+// }

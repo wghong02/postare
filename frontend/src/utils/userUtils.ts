@@ -5,7 +5,7 @@ import { UserInfo, Post } from "@/lib/model";
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
 const fetchAndTransformUserData = async (
-	url: string,
+	url: string | URL,
 	singleUser: boolean = false,
 	authToken: string | null = null
 ): Promise<UserInfo | UserInfo[]> => {
@@ -114,7 +114,7 @@ export const getUserInfo = async () => {
 	const url = `${domain}/user/get/userinfo`;
 	try {
 		const user: UserInfo = (await fetchAndTransformUserData(
-			url.toString(),
+			url,
 			true,
 			authToken
 		)) as UserInfo;
@@ -132,7 +132,7 @@ export const getUserPublicInfo = async (userID: number) => {
 	const url = `${domain}/public/get/userinfo/${userID}`;
 	try {
 		const user: UserInfo = (await fetchAndTransformUserData(
-			url.toString(),
+			url,
 			true
 		)) as UserInfo;
 

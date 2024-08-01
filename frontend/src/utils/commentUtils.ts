@@ -6,7 +6,7 @@ import { QueryProps } from "@/lib/types";
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
 const fetchAndTransformCommentData = async (
-	url: string,
+	url: string | URL,
 	singleComment: boolean = false,
 	authToken: string | null = null
 ): Promise<Comment | Comment[]> => {
@@ -62,7 +62,7 @@ const fetchAndTransformCommentData = async (
 };
 
 const fetchAndTransformSubCommentData = async (
-	url: string,
+	url: string | URL,
 	singleSubComment: boolean = false,
 	authToken: string | null = null
 ): Promise<SubComment | SubComment[]> => {
@@ -136,7 +136,7 @@ export const getCommentsByPostId = async ({
 
 	try {
 		const comments: Comment[] = (await fetchAndTransformCommentData(
-			url.toString()
+			url
 		)) as Comment[];
 
 		return comments;
@@ -192,7 +192,7 @@ export const getSubCommentsByCommentId = async ({
 
 	try {
 		const subComments: SubComment[] = (await fetchAndTransformSubCommentData(
-			url.toString()
+			url
 		)) as SubComment[];
 
 		return subComments;

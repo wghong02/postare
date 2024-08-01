@@ -11,8 +11,9 @@ import {
 	Text,
 	useToast,
 } from "@chakra-ui/react";
-import { getPost } from "@/utils/postUtils";
+import { getPost, increasePostViews } from "@/utils/postUtils";
 import { getUserPublicInfo } from "@/utils/userUtils";
+import { uploadLike, deleteLike, checkLike } from "@/utils/likeUtils";
 import { Post, UserInfo } from "@/lib/model";
 import { PostOwnerInfoCard } from "@/ui/components/users/userInfoComponents";
 import {
@@ -39,19 +40,24 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const [authed, setAuthed] = useState<boolean>(false); // to track if the user is currently authed to comment
 	const toast = useToast();
 
+	const postId = params.id;
+
 	// fetch the post and corresponding user's info
 	const fetchData = async () => {
 		try {
 			setLoading(true);
-			const postData = await getPost(params.id);
+			const postData = await getPost(postId);
+			await increasePostViews(postId);
 			setPost(postData);
-			if (postData && postData.postOwnerId) {
+			if (postData) {
 				const userInfo = await getUserPublicInfo(postData.postOwnerId);
+				const alreadyLiked = await checkLike(postId);
+				setLiked(alreadyLiked);
 				setUser(userInfo);
 			}
 			setTotalLikes(postData.likes);
 		} catch (error) {
-			console.error("Error fetching posts:", error);
+			console.error("Error fetching post:", error);
 			notFound();
 		} finally {
 			setLoading(false);
@@ -63,7 +69,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const fetchCommentCount = async () => {
 		try {
 			const countResult = await getCommentCountByPostId({
-				postId: params.id,
+				postId: postId,
 				isTotal: true,
 			});
 			setTotalComments(countResult);
@@ -75,25 +81,37 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	// fetch the number of likes of this post
 
 	// handle when user likes. put it here since the user can only like or unlike the post.
-	const handleLike = () => {
+	const handleLike = async () => {
 		if (!liked) {
-			setTotalLikes((likes) => likes + 1);
-			setLiked(true);
-			toast({
-				title: "Liked!",
-				status: "success",
-				duration: 2000,
-				isClosable: true,
-			});
+			try {
+				await uploadLike(postId);
+			} catch (error) {
+				console.error("Error adding like:", error);
+			} finally {
+				setTotalLikes((likes) => likes + 1);
+				setLiked(true);
+				toast({
+					title: "Liked!",
+					status: "success",
+					duration: 2000,
+					isClosable: true,
+				});
+			}
 		} else {
-			setTotalLikes((likes) => likes - 1);
-			setLiked(false);
-			toast({
-				title: "Unliked!",
-				status: "info",
-				duration: 2000,
-				isClosable: true,
-			});
+			try {
+				await deleteLike(postId);
+			} catch (error) {
+				console.error("Error deleting like:", error);
+			} finally {
+				setTotalLikes((likes) => likes - 1);
+				setLiked(false);
+				toast({
+					title: "Unliked!",
+					status: "info",
+					duration: 2000,
+					isClosable: true,
+				});
+			}
 		}
 	};
 
@@ -106,7 +124,12 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	}, []);
 
 	return (
-		<Box display="flex" justifyContent="center" style={{ overflow: "auto" }} minW="700px">
+		<Box
+			display="flex"
+			justifyContent="center"
+			style={{ overflow: "auto" }}
+			minW="700px"
+		>
 			<LoadingWrapper loading={loading} hasFetched={hasFetched}>
 				<Box
 					minW="61.8%"
@@ -116,7 +139,14 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 					justifyContent="center"
 				>
 					{post && (
-						<VStack m="25" borderWidth="1px" borderRadius="30" boxShadow="lg" minW="600px" overflowX="auto">
+						<VStack
+							m="25"
+							borderWidth="1px"
+							borderRadius="30"
+							boxShadow="lg"
+							minW="600px"
+							overflowX="auto"
+						>
 							<VStack
 								maxH="100%"
 								divider={<StackDivider borderColor="gray.200" />}
@@ -168,7 +198,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 											<Flex align="center" color={"gray.500"}>
 												<Icon as={VscFlame} boxSize="30px" color="#F56565" />
 												<Text fontSize="sm" ml="4px">
-													{post.views}
+													{post.views + 1}
 												</Text>
 											</Flex>
 

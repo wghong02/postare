@@ -6,7 +6,7 @@ import { QueryProps } from "@/lib/types";
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
 const fetchAndTransformPostData = async (
-	url: string,
+	url: string | URL,
 	singlePost: boolean = false,
 	authToken: string | null = null
 ): Promise<Post | Post[]> => {
@@ -102,9 +102,7 @@ export const searchPostsByDescription = async (
 	url.searchParams.append("offset", offset.toString());
 
 	try {
-		const posts: Post[] = (await fetchAndTransformPostData(
-			url.toString()
-		)) as Post[];
+		const posts: Post[] = (await fetchAndTransformPostData(url)) as Post[];
 
 		return posts;
 	} catch (error) {
@@ -114,7 +112,7 @@ export const searchPostsByDescription = async (
 };
 
 export const uploadPost = (data: FormData) => {
-	// user post post with auth token
+	// user upload a post with auth token
 	const authToken = localStorage.getItem("authToken");
 	const url = `${domain}/user/posts/upload`;
 
@@ -165,9 +163,7 @@ export const getMostInOneAttributePosts = async ({
 	}
 
 	try {
-		const posts: Post[] = (await fetchAndTransformPostData(
-			url.toString()
-		)) as Post[];
+		const posts: Post[] = (await fetchAndTransformPostData(url)) as Post[];
 
 		return posts;
 	} catch (error) {
@@ -192,7 +188,7 @@ export const getUserPosts = async ({ query }: { query: QueryProps }) => {
 
 	try {
 		const posts: Post[] = (await fetchAndTransformPostData(
-			url.toString(),
+			url,
 			false,
 			authToken
 		)) as Post[];
@@ -224,9 +220,7 @@ export const getUserPublicPosts = async ({
 	}
 
 	try {
-		const posts: Post[] = (await fetchAndTransformPostData(
-			url.toString()
-		)) as Post[];
+		const posts: Post[] = (await fetchAndTransformPostData(url)) as Post[];
 
 		return posts;
 	} catch (error) {

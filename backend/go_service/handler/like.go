@@ -161,7 +161,14 @@ func getLikesByUserIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	// response is json
 	w.Header().Set("Content-Type", "application/json")
-	userIDStr := mux.Vars(r)["userID"]
+
+	// 1. process data
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	
+	}
 	limitStr := r.URL.Query().Get("limit")
 	offsetStr := r.URL.Query().Get("offset")
 
@@ -173,8 +180,6 @@ func getLikesByUserIDHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || limit < 1 {
 		limit = 10 // default total size to load from server
 	}
-
-	// 1. process data
 	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid userID provided", http.StatusBadRequest)
@@ -254,40 +259,40 @@ func getLikesByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func getLikeCountByPostIDHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one get like count request")
+// func getLikeCountByPostIDHandler(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Println("Received one get like count request")
 
-	// response is json
-	w.Header().Set("Content-Type", "application/json")
-	postIDStr := mux.Vars(r)["postID"]
+// 	// response is json
+// 	w.Header().Set("Content-Type", "application/json")
+// 	postIDStr := mux.Vars(r)["postID"]
 
-	// 1. process data
-	postID, err := uuid.Parse(postIDStr)
-	if err != nil {
-		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
-		return
-	}
+// 	// 1. process data
+// 	postID, err := uuid.Parse(postIDStr)
+// 	if err != nil {
+// 		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
+// 		return
+// 	}
 
-	// 2. call service level to get like count
-	count, err := service.GetLikesCountByPostID(postID)
-	if err != nil {
-		// Check if the error is due to the post not being found
-		if errors.Is (err, customErrors.ErrPostNotFound) {
-			http.Error(w, "post not found", http.StatusNotFound)
-		} else {
-			// For all other errors, return internal server error
-			http.Error(w, "Failed to get like count from backend",
-				http.StatusInternalServerError)
-		}
-		return
-	}
+// 	// 2. call service level to get like count
+// 	count, err := service.GetLikesCountByPostID(postID)
+// 	if err != nil {
+// 		// Check if the error is due to the post not being found
+// 		if errors.Is (err, customErrors.ErrPostNotFound) {
+// 			http.Error(w, "post not found", http.StatusNotFound)
+// 		} else {
+// 			// For all other errors, return internal server error
+// 			http.Error(w, "Failed to get like count from backend",
+// 				http.StatusInternalServerError)
+// 		}
+// 		return
+// 	}
 
-	// 3. format json response
-	js, err := json.Marshal(count)
-	if err != nil {
-		http.Error(w, "Failed to parse count into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
-}
+// 	// 3. format json response
+// 	js, err := json.Marshal(count)
+// 	if err != nil {
+// 		http.Error(w, "Failed to parse count into JSON format",
+// 			http.StatusInternalServerError)
+// 		return
+// 	}
+// 	w.Write(js)
+// }

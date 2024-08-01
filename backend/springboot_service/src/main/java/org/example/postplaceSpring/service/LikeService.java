@@ -34,9 +34,12 @@ public class LikeService {
     }
 
     public ResponseEntity<String> findLikesByUserId(long userId, int limit, int offset) {
-        String url = goServiceUrl + "/public/getLikesByUser/" + userId + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/user/getLikesByUser/" + "?limit=" + limit + "&offset=" + offset;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-ID", String.valueOf(userId));
+        HttpEntity<String> request = new HttpEntity<>(headers);
         try {
-            return restTemplate.getForEntity(url, String.class);
+            return restTemplate.getForEntity(url, String.class, request);
         } catch (HttpClientErrorException.NotFound ex) {
             throw new ResourceNotFoundException("Likes not found with UserId: " + userId, ex);
         }
@@ -85,13 +88,13 @@ public class LikeService {
         }
     }
 
-    public ResponseEntity<String> getLikeCountByPostId(UUID postId) {
-        String url = goServiceUrl + "/public/getLikesCount/" + postId;
-        try {
-            return restTemplate.getForEntity(url, String.class);
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new ResourceNotFoundException("Like not found with PostId: " + postId, ex);
-        }
-    }
+//    public ResponseEntity<String> getLikeCountByPostId(UUID postId) {
+//        String url = goServiceUrl + "/public/getLikesCount/" + postId;
+//        try {
+//            return restTemplate.getForEntity(url, String.class);
+//        } catch (HttpClientErrorException.NotFound ex) {
+//            throw new ResourceNotFoundException("Like not found with PostId: " + postId, ex);
+//        }
+//    }
 
 }
