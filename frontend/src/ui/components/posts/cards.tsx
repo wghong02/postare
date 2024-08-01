@@ -45,7 +45,7 @@ export function UserPostCard({ post }: { post: Post }) {
 	};
 
 	return (
-		<Box>
+		<Box boxShadow="md" mb="3">
 			<Card
 				direction={{ base: "column", sm: "row" }}
 				overflow="hidden"
@@ -97,7 +97,7 @@ export function PostPreviewCard({ post }: { post: Post }) {
 	return (
 		<div>
 			<Link as={NextLink} href={`/posts/${post.postId}`} passHref>
-				<Box maxW="300px" borderWidth="1px" borderRadius="lg" overflow="hidden">
+				<Box maxW="300px" borderWidth="1px" borderRadius="lg" overflow="hidden" boxShadow="md">
 					<Image src={post.imageUrl} />
 					{/* //show badges of new if new and available, archived, hot if have many views */}
 					<Box p="3">

@@ -111,7 +111,7 @@ func createTables() {
             CategoryID BIGINT REFERENCES Categories(CategoryID) NOT NULL,
             PostOwnerID BIGINT REFERENCES UserInfo(UserID) NOT NULL,
             PutOutTime TIMESTAMP WITH TIME ZONE NOT NULL,
-            PostDetails VARCHAR(1000),
+            PostDetails VARCHAR(3000),
             IsAvailable BOOLEAN NOT NULL,
             ImageUrl VARCHAR(255),
             Views BIGINT NOT NULL

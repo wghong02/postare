@@ -18,7 +18,16 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
 }) => {
 	// wraps around a child react component to handle loading screen
 	if (loading) {
-		return <Spinner size="xl" />;
+		return (
+			<Spinner
+				mt="30"
+				thickness="4px"
+				speed="0.65s"
+				emptyColor="gray.200"
+				color="teal.500"
+				size="xl"
+			/>
+		);
 	}
 
 	if (hasFetched && !hasData) {

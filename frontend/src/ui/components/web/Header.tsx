@@ -64,7 +64,7 @@ const Header: React.FC = () => {
 			padding={2}
 			bg="teal.500"
 			color="white"
-			minW="735px"
+			minW="750px"
 		>
 			<Flex align="center" mr={5}>
 				<Link as={NextLink} href="/" passHref>

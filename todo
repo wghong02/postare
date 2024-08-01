@@ -1,6 +1,6 @@
 Ranked by priority
 
-- fix scrolling, check edge case of long description and comments, and margin below comment section, add call to view func
+- add call to view func
 - add share button for each post
 - refine details on user home info page (allow edit)
 - check if register info is valid

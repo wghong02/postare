@@ -129,8 +129,8 @@ export function CommentCard({
 				<HStack spacing="3">
 					<Image
 						borderRadius="full"
-						boxSize="35px"
-						width="35px"
+						boxSize="30px"
+						width="30px"
 						src={poster.profilePicture}
 						alt="User Profile Picture"
 					/>
@@ -150,7 +150,7 @@ export function CommentCard({
 							</Box>
 						</HStack>
 
-						<Text>{comment.comment}</Text>
+						<Text as="span">{comment.comment}</Text>
 					</VStack>
 				</HStack>
 			)}
@@ -169,7 +169,7 @@ export function CommentCard({
 				))}
 			</Box>
 			{!isSubComment(comment) && (
-				<Flex ml="50px">
+				<Flex ml="42px">
 					{authed && (
 						<Box
 							fontSize="small"

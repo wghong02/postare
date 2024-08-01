@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	Box,
 	Flex,
@@ -20,12 +20,12 @@ import {
 	CommentSection,
 } from "@/ui/components/posts/postPageComponents";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
+import notFound from "@/app/not-found";
+import { getCommentCountByPostId } from "@/utils/commentUtils";
+
 import { CiChat1 } from "react-icons/ci";
 import { IoIosHeartEmpty, IoMdHeart } from "react-icons/io";
 import { VscFlame } from "react-icons/vsc";
-
-import notFound from "@/app/not-found";
-import { getCommentCountByPostId } from "@/utils/commentUtils";
 
 const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	// post page for the users to upload and delete and view posts they own
@@ -106,97 +106,109 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	}, []);
 
 	return (
-		<Box
-			display="flex"
-			justifyContent="center"
-			mt="30"
-			ml="50"
-			mr="50"
-			minW="700px"
-		>
+		<Box display="flex" justifyContent="center" style={{ overflow: "auto" }} minW="700px">
 			<LoadingWrapper loading={loading} hasFetched={hasFetched}>
-				{post && (
-					<VStack>
-						<VStack
-							maxW="1500px"
-							maxH="100%"
-							divider={<StackDivider borderColor="gray.200" />}
-							spacing="5"
-							align="stretch"
-						>
-							<HStack spacing="50px" maxH="600px">
-								<Flex>
-									<Image
-										src={post.imageUrl}
-										alt="Post Image"
-										objectFit="scale-down"
-										width="100%"
-										height="400px"
-									/>
-								</Flex>
-								<VStack spacing="5" align="stretch" height="100%">
-									{user && (
-										<Flex height="50px" width="100%">
-											<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
-										</Flex>
-									)}
-									<HStack align="center" justify="left" spacing="30px">
-										<Flex
-											align="center"
-											cursor="pointer"
-											onClick={handleLike}
-											color={liked ? "red.500" : "gray.500"}
-											_hover={{ color: "pink.300" }}
-										>
-											{liked ? (
-												<Icon as={IoMdHeart} boxSize="30px" />
-											) : (
-												<Icon as={IoIosHeartEmpty} boxSize="30px" />
-											)}
-											<Text fontSize="sm" ml="4px">
-												{totalLikes}
-											</Text>
-										</Flex>
+				<Box
+					minW="61.8%"
+					maxW="1200px"
+					display="flex"
+					flexDir="column"
+					justifyContent="center"
+				>
+					{post && (
+						<VStack m="25" borderWidth="1px" borderRadius="30" boxShadow="lg" minW="600px" overflowX="auto">
+							<VStack
+								maxH="100%"
+								divider={<StackDivider borderColor="gray.200" />}
+								spacing="5"
+								align="center"
+								m="25"
+							>
+								<HStack spacing="50px" maxH="600px">
+									<Flex width="61.8%" minW="300px">
+										<Image
+											src={post.imageUrl}
+											alt="Post Image"
+											objectFit="scale-down"
+											width="100%"
+											minW="300px"
+											height="400px"
+										/>
+									</Flex>
+									<VStack
+										spacing="5"
+										align="start"
+										minH="400px"
+										minW="200px"
+										maxW="40%"
+									>
+										{user && (
+											<Flex height="50px" width="100%">
+												<PostOwnerInfoCard user={user}></PostOwnerInfoCard>
+											</Flex>
+										)}
+										<HStack align="center" justify="left" spacing="30px">
+											<Flex
+												align="center"
+												cursor="pointer"
+												onClick={handleLike}
+												color={liked ? "red.500" : "gray.500"}
+												_hover={{ color: "pink.300" }}
+											>
+												{liked ? (
+													<Icon as={IoMdHeart} boxSize="30px" />
+												) : (
+													<Icon as={IoIosHeartEmpty} boxSize="30px" />
+												)}
+												<Text fontSize="sm" ml="4px">
+													{totalLikes}
+												</Text>
+											</Flex>
 
-										<Flex align="center" color={"gray.500"}>
-											<Icon as={VscFlame} boxSize="30px" color="#F56565" />
-											<Text fontSize="sm" ml="4px">
-												{post.views}
-											</Text>
-										</Flex>
+											<Flex align="center" color={"gray.500"}>
+												<Icon as={VscFlame} boxSize="30px" color="#F56565" />
+												<Text fontSize="sm" ml="4px">
+													{post.views}
+												</Text>
+											</Flex>
 
-										<Flex align="center" color={"gray.500"}>
-											<Icon as={CiChat1} boxSize="30px" color="#4299E2" />
-											<Text fontSize="sm" ml="6px">
-												{totalComments}
-											</Text>
-										</Flex>
-										{/* add share button here */}
-									</HStack>
-									{post && (
-										<Flex width="100%" maxH="100%">
-											<PostPageSection post={post}></PostPageSection>
-										</Flex>
-									)}
-								</VStack>
-							</HStack>
+											<Flex align="center" color={"gray.500"}>
+												<Icon as={CiChat1} boxSize="30px" color="#4299E2" />
+												<Text fontSize="sm" ml="6px">
+													{totalComments}
+												</Text>
+											</Flex>
+											{/* add share button here */}
+										</HStack>
+										{post && (
+											<Flex width="100%" maxH="100%">
+												<PostPageSection post={post}></PostPageSection>
+											</Flex>
+										)}
+									</VStack>
+								</HStack>
 
-							{post && (
-								<Box maxH="400px" width="70%" mx="auto">
-									<CommentSection
-										authed={authed}
-										postId={post.postId}
-										setTotalComments={setTotalComments}
-									></CommentSection>
-								</Box>
-							)}
-
-							{/* <Box h="200px" bg="pink.100">
-							For future recommendations
-						</Box> */}
+								{post && (
+									<Box height="500px" width="70%">
+										<CommentSection
+											authed={authed}
+											postId={post.postId}
+											setTotalComments={setTotalComments}
+										></CommentSection>
+									</Box>
+								)}
+							</VStack>
 						</VStack>
-					</VStack>
-				)}
+					)}
+					<Box
+						h="200px"
+						fontSize="x-large"
+						justifyContent="center"
+						display="flex"
+					>
+						More Like This
+					</Box>
+				</Box>
 			</LoadingWrapper>
 		</Box>
 	);

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
 	Box,
 	Badge,
@@ -7,6 +7,13 @@ import {
 	Flex,
 	Icon,
 	useToast,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	ModalCloseButton,
+	useDisclosure,
 } from "@chakra-ui/react";
 import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
 import { Post, Comment } from "@/lib/model";
@@ -25,22 +32,55 @@ export function PostPageSection({ post }: { post: Post }) {
 	const postedRecent = isPostedWithin(post.putOutTime, "month");
 	const isAvailable = post.isAvailable;
 	const isHot = post.views >= 500;
+	const [isPostDetailsLong, setIsPostDetailsLong] = useState(false);
+	const [detailsLengthToKeep, setDetailsLengthToKeep] = useState(0);
+
+	const contentRef = useRef<HTMLDivElement | null>(null);
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
+	const updateDetailsLength = () => {
+		// to update how long of the post details to show in the page
+		if (contentRef.current) {
+			const containerWidth = contentRef.current.clientWidth;
+			console.log(containerWidth);
+			setDetailsLengthToKeep(1.5 * containerWidth - post.description.length);
+			setIsPostDetailsLong(post.postDetails.length > detailsLengthToKeep);
+		}
+	};
+
+	useEffect(() => {
+		// Update details length on mount
+		updateDetailsLength();
+
+		// Update details length on window resize
+		window.addEventListener("resize", updateDetailsLength);
+
+		// Clean up the event listener on unmount
+		return () => {
+			window.removeEventListener("resize", updateDetailsLength);
+		};
+	}, [post.postDetails.length, detailsLengthToKeep]);
 
 	// put all information of the post out
 	return (
-		<Box borderRadius="lg" overflow="auto">
+		<Box borderRadius="lg" overflow="auto" ref={contentRef}>
 			<Box display="flex" alignItems="baseline">
 				{postedRecent && isAvailable && (
-					<Badge borderRadius="full" px="2" colorScheme="blue" mr="4">
+					<Badge borderRadius="full" px="2" colorScheme="blue" mr="3">
 						New
 					</Badge>
 				)}
 				{!isAvailable && (
-					<Badge borderRadius="full" px="2" colorScheme="gray">
+					<Badge borderRadius="full" px="2" colorScheme="gray" mr="3">
 						Archived
 					</Badge>
 				)}
-				<Box fontWeight={500} letterSpacing="wide" fontSize="lg" ml="2">
+				{isHot && (
+					<Badge borderRadius="full" px="2" colorScheme="red" mr="3">
+						Hot
+					</Badge>
+				)}
+				<Box fontWeight={500} letterSpacing="wide" fontSize="lg">
 					{post.title}
 				</Box>
 				<Box as="span" ml="8" color="gray.600" fontSize="sm">
@@ -48,22 +88,49 @@ export function PostPageSection({ post }: { post: Post }) {
 				</Box>
 			</Box>
 
-			{isHot && (
-				<Box mt="1" as="h4" lineHeight="tight" noOfLines={1} fontSize="lg">
-					<Badge borderRadius="full" px="2" colorScheme="red" mr="8">
-						Hot
-					</Badge>
-					{post.views} {"views"}
-				</Box>
-			)}
-
 			<Box mt="1" as="h4" lineHeight="tight" fontSize="md" fontWeight={450}>
 				<Text as="span">{post.description}</Text>
 			</Box>
 
-			<Box mt="1" as="h4" lineHeight="tight" fontSize="md" fontWeight={350}>
-				<Text as="span">{post.postDetails}</Text>{" "}
-			</Box>
+			<Flex
+				mt="1"
+				lineHeight="tight"
+				fontSize="md"
+				fontWeight={325}
+				wrap="wrap"
+				align="center"
+			>
+				<Box as="span">
+					{post.postDetails.substring(0, detailsLengthToKeep) + "..."}
+					{isPostDetailsLong && (
+						<Text
+							align="right"
+							fontSize="sm"
+							colorScheme="blue"
+							onClick={onOpen}
+							_hover={{ color: "blue.300" }}
+						>
+							Show More
+						</Text>
+					)}
+				</Box>
+			</Flex>
+			<Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Post Details</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<Box maxH="60vh" overflowY="auto">
+							{post.postDetails.split("\n\n").map((paragraph, index) => (
+								<Text key={index} mb="4">
+									{paragraph}
+								</Text>
+							))}
+						</Box>
+					</ModalBody>
+				</ModalContent>
+			</Modal>
 		</Box>
 	);
 }
@@ -245,15 +312,15 @@ export function CommentSection({
 	};
 
 	return (
-		<Box width="100%" height={onReply ? "400px" : "430px"}>
+		<Box width="100%" height="500px">
 			{/* add to display comments related to this post */}
 			<Text fontSize="large" fontWeight="bold" height="30px">
 				{" "}
 				Comments{" "}
 			</Text>
 			<Box
-				height={onReply ? "calc(100% - 82px)" : "calc(100% - 62px)"}
-				overflowY="scroll"
+				height={onReply ? "calc(100% - 131px)" : "calc(100% - 100px)"}
+				overflowY="auto"
 				id="commentBox"
 				mb="2"
 			>
