@@ -43,7 +43,7 @@ public class UserInfoController {
         }
     }
 
-    @GetMapping("/public/getUserinfo/{userId}")
+    @GetMapping("/public/get/userInfo/userID/{userId}")
     public ResponseEntity<String> getUserPublicInfo( // call user details related if authed
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable long userId) {
@@ -57,11 +57,11 @@ public class UserInfoController {
         }
     }
 
-    @GetMapping("/public/getLikedUsersByPost/{postId}")
+    @GetMapping("/public/get/userInfo/userLikes/{postId}")
     public ResponseEntity<String> getLikesByPostId(@PathVariable UUID postId,
                                                    @RequestParam(defaultValue = "10") int limit,
                                                    @RequestParam(defaultValue = "0") int offset) {
-        logger.info("Received Get request for /public/getLikedUsersByPost/{postId}");
+        logger.info("Received Get request for /public/get/userInfo/userLikes/{postId}");
         ResponseEntity<String> response = userInfoService.findLikedUsersByPostId(postId, limit, offset);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("UserInfo {} returned", postId);

@@ -125,7 +125,7 @@ export const getCommentsByPostId = async ({
 	query: QueryProps;
 }): Promise<Comment[]> => {
 	// get a single comment by post Id. response is json
-	const url = new URL(`${domain}/public/getComments/${postId}`);
+	const url = new URL(`${domain}/public/get/comments/postID/${postId}`);
 
 	if (query?.limit) {
 		url.searchParams.append("limit", query.limit.toString());
@@ -154,7 +154,7 @@ export const getCommentCountByPostId = async ({
 	isTotal: boolean;
 }): Promise<number> => {
 	// get the count of comments (or with replies) of a post by post Id. response is json
-	const url = new URL(`${domain}/public/getCommentCount/${postId}`);
+	const url = new URL(`${domain}/public/get/count/comment/postID/${postId}`);
 	if (isTotal) {
 		url.searchParams.append("isTotal", isTotal.toString());
 	}
@@ -181,7 +181,9 @@ export const getSubCommentsByCommentId = async ({
 	query: QueryProps;
 }): Promise<SubComment[]> => {
 	// get sub comments of a comment by comment Id. response is json
-	const url = new URL(`${domain}/public/getSubComments/${commentId}`);
+	const url = new URL(
+		`${domain}/public/get/subComments/commentID/${commentId}`
+	);
 
 	if (query?.limit) {
 		url.searchParams.append("limit", query.limit.toString());
@@ -208,7 +210,9 @@ export const getSubCommentCountByCommentId = async ({
 	commentId: number;
 }): Promise<number> => {
 	// get the count of sub comments of a comment. response is json
-	const url = new URL(`${domain}/public/getSubCommentCount/${commentId}`);
+	const url = new URL(
+		`${domain}/public/count/subComment/commentID/${commentId}`
+	);
 
 	try {
 		let response;

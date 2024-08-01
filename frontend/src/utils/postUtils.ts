@@ -246,7 +246,7 @@ export const getLikedPostsByUser = async (
 ): Promise<Post[]> => {
 	// get likes of a user. response is json
 	const authToken = localStorage.getItem("authToken");
-	const url = new URL(`${domain}/user/posts/get/liked`);
+	const url = new URL(`${domain}/user/posts/userLiked`);
 	const limit = query?.limit ?? "";
 	const offset = query?.offset ?? "";
 	url.searchParams.append("limit", limit.toString());

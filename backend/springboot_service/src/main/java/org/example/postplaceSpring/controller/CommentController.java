@@ -24,11 +24,11 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping("/public/getComments/{postId}")
+    @GetMapping("/public/get/comments/postID/{postId}")
     public ResponseEntity<String> getCommentsByPostId(@PathVariable UUID postId,
                                                       @RequestParam(defaultValue = "10") int limit,
                                                       @RequestParam(defaultValue = "0") int offset) {
-        logger.info("Received Get request for /public/getComments/{commentId}");
+        logger.info("Received Get request for /public/get/comments/postID/{commentId}");
         ResponseEntity<String> response = commentService.findCommentsByPostId(postId, limit, offset);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Comment {} returned", postId);
@@ -61,11 +61,11 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/public/getSubComments/{commentId}")
+    @GetMapping("/public/get/subComments/commentID/{commentId}")
     public ResponseEntity<String> getSubCommentsByPostId(@PathVariable long commentId,
                                                          @RequestParam(defaultValue = "10") int limit,
                                                          @RequestParam(defaultValue = "0") int offset) {
-        logger.info("Received Get request for /public/getSubComments/{commentId}");
+        logger.info("Received Get request for /public/get/subComments/commentID/{commentId}");
         ResponseEntity<String> response = commentService.findSubCommentsByCommentId(commentId, limit, offset);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Sub comment {} returned", commentId);
@@ -98,10 +98,10 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/public/getCommentCount/{postId}")
+    @GetMapping("/public/get/count/comment/postID/{postId}")
     public ResponseEntity<String> getCommentCountByPostId(@PathVariable UUID postId,
                                                           @RequestParam boolean isTotal) {
-        logger.info("Received Get request for /public/getCommentCount/{commentId}");
+        logger.info("Received Get request for /public/get/count/comment/postID/{postId}");
         ResponseEntity<String> response = commentService.getCommentCountByPostId(postId, isTotal);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Comment count with post {} returned", postId);
@@ -111,9 +111,9 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/public/getSubCommentCount/{commentId}")
+    @GetMapping("/public/count/subComment/commentID/{commentId}")
     public ResponseEntity<String> getSubCommentCountByPostId(@PathVariable long commentId) {
-        logger.info("Received Get request for /public/getSubCommentCount/{commentId}");
+        logger.info("Received Get request for /public/count/subComment/commentID/{commentId}");
         ResponseEntity<String> response = commentService.getSubCommentCountByCommentId(commentId);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Sub comment count with comment {} returned", commentId);

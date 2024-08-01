@@ -26,7 +26,7 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/user/likes/upload", saveLikeHandler).Methods("POST")
 	router.HandleFunc("/user/likes/delete/{postID}", unLikeHandler).Methods("DELETE")
 	router.HandleFunc("/user/likes/check/{postID}", checkIfLikeExistsHandler).Methods("GET")
-	router.HandleFunc("/user/posts/get/liked", getLikedPostsByUserIDHandler).Methods("GET")
+	router.HandleFunc("/user/posts/userLiked", getLikedPostsByUserIDHandler).Methods("GET")
 
 	router.HandleFunc("/saveUserInfo", saveUserInfoHandler).Methods("POST")
 	router.HandleFunc("/posts/{postID}", getPostByIDHandler).Methods("GET")
@@ -35,14 +35,14 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/search", searchPostsHandler).Methods("GET")
 	router.HandleFunc("/postHistory/{userID}", getUserPostsHandler).Methods("GET")
 	
-	router.HandleFunc("/public/getUserInfo/{userID}", getUserInfoByIDHandler).Methods("GET")
-	router.HandleFunc("/public/getUserID/{username}", getUserIDByNameHandler).Methods("GET")
-	router.HandleFunc("/public/getUsername/{userID}", getUsernameByIDHandler).Methods("GET")
-	router.HandleFunc("/public/getComments/{postID}", getCommentsByPostIDHandler).Methods("GET")
-	router.HandleFunc("/public/getSubComments/{commentID}", getSubCommentsByCommentIDHandler).Methods("GET")
-	router.HandleFunc("/public/getCommentCount/{postID}", getCommentCountByPostID).Methods("GET")
-	router.HandleFunc("/public/getSubCommentCount/{commentID}", getSubCommentCountByCommentID).Methods("GET")
-	router.HandleFunc("/public/getLikedUsersByPost/{postID}", getLikedUsersByPostIDHandler).Methods("GET")
+	router.HandleFunc("/public/get/userInfo/userID/{userID}", getUserInfoByIDHandler).Methods("GET")
+	router.HandleFunc("/public/get/userID/username/{username}", getUserIDByNameHandler).Methods("GET")
+	router.HandleFunc("/public/get/username/userID/{userID}", getUsernameByIDHandler).Methods("GET")
+	router.HandleFunc("/public/get/comments/postID/{postID}", getCommentsByPostIDHandler).Methods("GET")
+	router.HandleFunc("/public/get/subComments/commentID/{commentID}", getSubCommentsByCommentIDHandler).Methods("GET")
+	router.HandleFunc("/public/get/count/comment/postID/{postID}", getCommentCountByPostID).Methods("GET")
+	router.HandleFunc("/public/get/count/subComment/commentID/{commentID}", getSubCommentCountByCommentID).Methods("GET")
+	router.HandleFunc("/public/get/userInfo/userLikes/{postID}", getLikedUsersByPostIDHandler).Methods("GET")
 	// router.HandleFunc("/public/getLikesCount/{postID}", getLikeCountByPostIDHandler).Methods("GET")
 	
 	// Set up CORS middleware

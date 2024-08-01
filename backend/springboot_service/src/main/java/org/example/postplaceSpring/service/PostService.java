@@ -112,7 +112,7 @@ public class PostService {
     }
 
     public ResponseEntity<String> findLikedPostsByUserId(long userId, int limit, int offset) {
-        String url = goServiceUrl + "/user/posts/get/liked" + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/user/posts/userLiked" + "?limit=" + limit + "&offset=" + offset;
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", String.valueOf(userId));
         HttpEntity<String> request = new HttpEntity<>(headers);
