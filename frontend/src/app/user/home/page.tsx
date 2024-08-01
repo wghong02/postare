@@ -35,6 +35,7 @@ const UserHomePage = () => {
       display="flex"
       justifyContent="center"
       minHeight="100vh"
+      minW="280px"
     >
       {/* User card for now */}
       <LoadingWrapper loading={loading} hasFetched={hasFetched}>

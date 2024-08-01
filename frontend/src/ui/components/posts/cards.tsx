@@ -18,7 +18,7 @@ import { deletePost } from "@/utils/postUtils";
 import { Post } from "@/lib/model";
 
 export function UserPostCard({ post }: { post: Post }) {
-	const registerTime = timeAgo(post.putOutTime);
+	const uploadedTime = timeAgo(post.putOutTime);
 	const postId = post.postId;
 	const toast = useToast();
 
@@ -45,16 +45,11 @@ export function UserPostCard({ post }: { post: Post }) {
 	};
 
 	return (
-		<Box boxShadow="md" mb="3">
-			<Card
-				direction={{ base: "column", sm: "row" }}
-				overflow="hidden"
-				variant="outline"
-				width="1000px"
-			>
+		<Box boxShadow="md" m="3">
+			<Card direction="row" overflow="hidden" variant="outline" width="500px">
 				<Image
 					objectFit="cover"
-					maxW={{ base: "100%", sm: "200px" }}
+					maxW="200px"
 					src={post.imageUrl}
 					alt="Post Image"
 				/>
@@ -64,7 +59,7 @@ export function UserPostCard({ post }: { post: Post }) {
 						<Heading size="md">{post.title}</Heading>
 
 						<Text py="2">{post.description}</Text>
-						<Text py="3">Post posted {registerTime}</Text>
+						<Text py="3">Post posted {uploadedTime}</Text>
 					</CardBody>
 
 					<CardFooter>
@@ -97,7 +92,13 @@ export function PostPreviewCard({ post }: { post: Post }) {
 	return (
 		<div>
 			<Link as={NextLink} href={`/posts/${post.postId}`} passHref>
-				<Box maxW="300px" borderWidth="1px" borderRadius="lg" overflow="hidden" boxShadow="md">
+				<Box
+					maxW="300px"
+					borderWidth="1px"
+					borderRadius="lg"
+					overflow="hidden"
+					boxShadow="md"
+				>
 					<Image src={post.imageUrl} />
 					{/* //show badges of new if new and available, archived, hot if have many views */}
 					<Box p="3">

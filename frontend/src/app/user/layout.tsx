@@ -12,7 +12,6 @@ const UserLayout = ({ children }: { children: React.ReactNode }) => {
     <Flex height="calc(100vh - 56px)">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar}></Sidebar>
       <Box
-        p="4"
         ml={isSidebarOpen ? "200px" : "0"}
         transition="margin-left 0.3s"
         overflowY="hidden"

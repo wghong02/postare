@@ -26,7 +26,7 @@ const UserPostPage = () => {
 		try {
 			setLoadingMore(true); // Start loading
 			const newPosts = await getUserPosts({
-				query: { limit: 4, offset: posts.length, description: null }, // load 10 posts at a time
+				query: { limit: 12, offset: posts.length, description: null }, // load 12 posts at a time
 			});
 			if (newPosts != null && newPosts.length != 0) {
 				if (currentPage == 1) {
@@ -79,19 +79,19 @@ const UserPostPage = () => {
 	return (
 		<Box
 			display="flex"
+			minW="500px"
 			width="100%"
 			height="100%"
 			flexDirection="column"
-			alignItems="center"
-			ml="4"
-			mt="4"
+			alignContent="center"
+			m="4"
 			ref={containerRef}
 			style={{ overflowY: "auto" }}
 		>
 			{/* can view posts the user uploaded and upload new and delete existing posts */}
 
-			<Flex>
-				<Button onClick={onOpen} mb="4">
+			<Flex width="100%" justify="center">
+				<Button  onClick={onOpen} m="4">
 					Upload New Post
 				</Button>
 			</Flex>
@@ -100,7 +100,7 @@ const UserPostPage = () => {
 
 			<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
 				{posts.length > 0 && (
-					<Flex justify="space-between" wrap="wrap" mb="2">
+					<Flex wrap="wrap" mb="2">
 						{posts.map((post, index) => (
 							<UserPostCard key={index} post={post} />
 						))}

@@ -35,7 +35,6 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 			height="100%"
 			flexDirection="column"
 			alignItems="center"
-			ml="4"
 			mt="4"
 			style={{ overflowY: "auto" }}
 		>
