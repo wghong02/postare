@@ -81,11 +81,11 @@ const UserPostPage = () => {
 			direction="column"
 			align="center"
 			minW="500px"
-			width="100%"
+			width="100vw"
+			maxW="100%"
 			height="100%"
-			m="4"
 			ref={containerRef}
-			style={{ overflowY: "auto" }}
+			overflow="auto"
 		>
 			{/* can view posts the user uploaded and upload new and delete existing posts */}
 

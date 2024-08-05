@@ -37,7 +37,7 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const [liked, setLiked] = useState(false); // the track if the user currently likes this post
 	const [totalLikes, setTotalLikes] = useState<number>(0); // to adjust the total likes of the post
 	const [totalComments, setTotalComments] = useState<number>(0); // to track the total comments of the post
-	const [authed, setAuthed] = useState<boolean>(false); // to track if the user is currently authed to comment
+	const [authed, setAuthed] = useState<boolean>(false); // to track if the user is currently authed to comment and like
 	const toast = useToast();
 
 	const postId = params.id;
@@ -51,8 +51,12 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 			setPost(postData);
 			if (postData) {
 				const userInfo = await getUserPublicInfo(postData.postOwnerId);
-				const alreadyLiked = await checkLike(postId);
-				setLiked(alreadyLiked);
+				if (!authed) {
+					setLiked(false);
+				} else {
+					const alreadyLiked = await checkLike(postId);
+					setLiked(alreadyLiked);
+				}
 				setUser(userInfo);
 			}
 			setTotalLikes(postData.likes);
@@ -82,7 +86,14 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 
 	// handle when user likes. put it here since the user can only like or unlike the post.
 	const handleLike = async () => {
-		if (!liked) {
+		if (!authed) {
+			toast({
+				title: "Log into your account to like",
+				status: "info",
+				duration: 2000,
+				isClosable: true,
+			});
+		} else if (!liked) {
 			try {
 				await uploadLike(postId);
 			} catch (error) {

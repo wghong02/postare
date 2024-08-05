@@ -155,9 +155,9 @@ export function CommentCard({
 				</HStack>
 			)}
 			<Box ml="30px">
-				{subComments.map((subComment, index) => (
+				{subComments.map((subComment) => (
 					<CommentCard
-						key={index}
+						key={subComment.commentId}
 						comment={subComment}
 						setReplyName={setReplyName}
 						setReplyCommentId={setReplyCommentId}

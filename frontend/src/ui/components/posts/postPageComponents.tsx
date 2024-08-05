@@ -42,7 +42,6 @@ export function PostPageSection({ post }: { post: Post }) {
 		// to update how long of the post details to show in the page
 		if (contentRef.current) {
 			const containerWidth = contentRef.current.clientWidth;
-			console.log(containerWidth);
 			setDetailsLengthToKeep(1.5 * containerWidth - post.description.length);
 			setIsPostDetailsLong(post.postDetails.length > detailsLengthToKeep);
 		}
@@ -324,10 +323,9 @@ export function CommentSection({
 				id="commentBox"
 				mb="2"
 			>
-				{comments.map((comment, index) => (
-					<Box>
+				{comments.map((comment) => (
+					<Box key={comment.commentId}>
 						<CommentCard
-							key={index}
 							comment={comment}
 							setReplyName={setReplyName}
 							setReplyCommentId={setReplyCommentId}
