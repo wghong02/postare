@@ -5,5 +5,4 @@ Ranked by priority
 - check if register info is valid
 - make sure search bar's parameter does not disappear after search
 - Add more rows to user public page
-- remove aws rds pw
 - add admin users that can manage categories
