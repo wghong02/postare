@@ -22,5 +22,5 @@ spring:
 
 jwt:
   token:
-    validity: 108000
+    validity: 252000
   secret: MEgCQQCVLUrhxnooS+smVoYXd0YXP1lTybhzg0XnNUUg6sM+mw7/ItGKND/8ncNHx3vw+4v5J0wR+hR5IfHeU9274sBzAgMBAAE=

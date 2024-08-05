@@ -24,10 +24,10 @@ public class UserInfoController {
         this.userInfoService = userInfoService;
     }
 
-    @GetMapping("/user/get/userinfo")
+    @GetMapping("/user/userinfo")
     public ResponseEntity<String> getUserInfo( // call user details related if authed
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        logger.info("Received Get request for /user/get/userinfo");
+        logger.info("Received Get request for /user/userinfo");
         if (userDetails == null) {
             throw new IllegalStateException("User details not found in authentication context");
         }
@@ -43,11 +43,11 @@ public class UserInfoController {
         }
     }
 
-    @GetMapping("/public/get/userInfo/userID/{userId}")
+    @GetMapping("/public/userInfo/userID/{userId}")
     public ResponseEntity<String> getUserPublicInfo( // call user details related if authed
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable long userId) {
-        logger.info("Received Get request for /public/get/userinfo/{userId}");
+        logger.info("Received Get request for /public/userinfo/{userId}");
         ResponseEntity<String> response = userInfoService.getUserInfoById(userId);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("Post {} returned", userId);
@@ -57,11 +57,11 @@ public class UserInfoController {
         }
     }
 
-    @GetMapping("/public/get/userInfo/userLikes/{postId}")
+    @GetMapping("/public/userInfo/userLikes/{postId}")
     public ResponseEntity<String> getLikesByPostId(@PathVariable UUID postId,
                                                    @RequestParam(defaultValue = "10") int limit,
                                                    @RequestParam(defaultValue = "0") int offset) {
-        logger.info("Received Get request for /public/get/userInfo/userLikes/{postId}");
+        logger.info("Received Get request for /public/userInfo/userLikes/{postId}");
         ResponseEntity<String> response = userInfoService.findLikedUsersByPostId(postId, limit, offset);
         if (response.getStatusCode().is2xxSuccessful()) {
             logger.info("UserInfo {} returned", postId);

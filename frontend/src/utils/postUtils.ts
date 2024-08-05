@@ -96,7 +96,7 @@ export const searchPostsByDescription = async (
 	const limit = query?.limit ?? "";
 	const offset = query?.offset ?? "";
 
-	const url = new URL(`${domain}/search`);
+	const url = new URL(`${domain}/posts/search`);
 	url.searchParams.append("description", description);
 	url.searchParams.append("limit", limit.toString());
 	url.searchParams.append("offset", offset.toString());
@@ -153,7 +153,7 @@ export const getMostInOneAttributePosts = async ({
 }) => {
 	// get a most viewed posts for recommendation. response is json
 
-	const url = new URL(`${domain}/posts/get/most/${attribute}`);
+	const url = new URL(`${domain}/posts/most/${attribute}`);
 	if (query?.limit) {
 		url.searchParams.append("limit", query.limit.toString());
 	}
@@ -176,7 +176,7 @@ export const getUserPosts = async ({ query }: { query: QueryProps }) => {
 	// get the upload history of a user with its id
 
 	const authToken = localStorage.getItem("authToken");
-	const url = new URL(`${domain}/user/get/postHistory`);
+	const url = new URL(`${domain}/user/posts/history`);
 
 	if (query?.limit) {
 		url.searchParams.append("limit", query.limit.toString());
@@ -209,7 +209,7 @@ export const getUserPublicPosts = async ({
 }) => {
 	// get the upload history of a user with its id
 
-	const url = new URL(`${domain}/public/get/postHistory/${userId}`);
+	const url = new URL(`${domain}/public/posts/history/${userId}`);
 
 	if (query?.limit) {
 		url.searchParams.append("limit", query.limit.toString());
@@ -232,7 +232,7 @@ export const getUserPublicPosts = async ({
 export const increasePostViews = (postId: string) => {
 	// increase the number of views of a post by 1
 	// only needs post id
-	const url = `${domain}/posts/increasePostView/${postId}`;
+	const url = `${domain}/posts/view/${postId}`;
 
 	return fetch(url, {
 		method: "POST",

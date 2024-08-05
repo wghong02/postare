@@ -42,7 +42,7 @@ public class PostService {
     }
 
     public ResponseEntity<String> findPostsByDescription(String description, int limit, int offset) {
-        String url = goServiceUrl + "/search?description=" + description + "&limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/posts/search?description=" + description + "&limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 
@@ -88,7 +88,7 @@ public class PostService {
     }
 
     public void increaseViewsByPostId(UUID postId) {
-        String url = goServiceUrl + "/posts/increasePostView/" + postId;
+        String url = goServiceUrl + "/posts/view/" + postId;
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> request = new HttpEntity<>(headers);
         try {
@@ -102,12 +102,12 @@ public class PostService {
     }
 
     public ResponseEntity<String> findMostInOneAttributePosts(int limit, int offset, String attribute) {
-        String url = goServiceUrl + "/posts/get/most/" + attribute + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/posts/most/" + attribute + "?limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 
     public ResponseEntity<String> findUserPostHistory(long userId, int limit, int offset) {
-        String url = goServiceUrl + "/postHistory/" + userId + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/posts/history/" + userId + "?limit=" + limit + "&offset=" + offset;
         return restTemplate.getForEntity(url, String.class);
     }
 

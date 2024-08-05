@@ -39,12 +39,12 @@
             }
         }
 
-        @GetMapping("/search")
+        @GetMapping("/posts/search")
         public ResponseEntity<String> findPostsByDescription(
                 @RequestParam(required = false) String description,
                 @RequestParam(defaultValue = "30") int limit,
                 @RequestParam(defaultValue = "0") int offset) {
-            logger.info("Received Get request for /search");
+            logger.info("Received Get request for /posts/search");
             return postService.findPostsByDescription(description, limit, offset);
         }
 
@@ -76,7 +76,7 @@
             return ResponseEntity.noContent().build();
         }
 
-        @PostMapping("/posts/increasePostView/{postId}")
+        @PostMapping("/posts/view/{postId}")
         public ResponseEntity<Void> increaseViewsByPostId(@PathVariable UUID postId) {
             logger.info("Received Delete request for /user/posts/delete/{postId}");
 
@@ -84,21 +84,21 @@
             return ResponseEntity.noContent().build();
         }
 
-        @GetMapping("/posts/get/most/{attribute}")
+        @GetMapping("/posts/most/{attribute}")
         public ResponseEntity<String> getMostInOneAttributePosts(
                 @PathVariable String attribute,
                 @RequestParam(defaultValue = "30") int limit,
                 @RequestParam(defaultValue = "0") int offset) {
-            logger.info("Received Get request for /posts/get/most/{attribute}");
+            logger.info("Received Get request for /posts/most/{attribute}");
             return postService.findMostInOneAttributePosts(limit, offset, attribute);
         }
 
-        @GetMapping("/user/get/postHistory")
+        @GetMapping("/user/posts/history")
         public ResponseEntity<String> getUserPostHistory(
                 @AuthenticationPrincipal CustomUserDetails userDetails,
                 @RequestParam(defaultValue = "30") int limit,
                 @RequestParam(defaultValue = "0") int offset) {
-            logger.info("Received Get request for /user/get/postHistory");
+            logger.info("Received Get request for /user/posts/history");
             if (userDetails == null) {
                 throw new IllegalStateException("User details not found in authentication context");
             }
@@ -114,12 +114,12 @@
             }
         }
 
-        @GetMapping("/public/get/postHistory/{userId}")
+        @GetMapping("/public/posts/history/{userId}")
         public ResponseEntity<String> getUserPublicInfo( // call user details related if authed
                                                          @RequestParam(defaultValue = "30") int limit,
                                                          @RequestParam(defaultValue = "0") int offset,
                                                          @PathVariable long userId) {
-            logger.info("Received Get request for /public/get/postHistory/{userId}");
+            logger.info("Received Get request for /public/posts/history/{userId}");
             ResponseEntity<String> response = postService.findUserPostHistory(userId, limit, offset);
             if (response.getStatusCode().is2xxSuccessful()) {
                 logger.info("Post {} returned", userId);

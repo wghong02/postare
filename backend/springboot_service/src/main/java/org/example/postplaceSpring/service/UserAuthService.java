@@ -41,7 +41,7 @@ public class UserAuthService implements UserDetailsService {
     }
 
     private String getUsernameFromGoService(long userId) {
-        String url = goServiceUrl + "/public/get/username/userID/" + userId;  // Change URL to match db url
+        String url = goServiceUrl + "/public/username/userID/" + userId;  // Change URL to match db url
         String response = restTemplate.getForObject(url, String.class);
         if (response == null) {
             throw new IllegalArgumentException("No response received from Go service");
@@ -63,7 +63,7 @@ public class UserAuthService implements UserDetailsService {
     }
 
     private Long getUserIdFromGoService(String username) {
-        String url = goServiceUrl + "/public/get/userID/username/" + username;  // Change URL to match db url
+        String url = goServiceUrl + "/public/userID/username/" + username;  // Change URL to match db url
         return restTemplate.getForObject(url, Long.class);
     }
 
@@ -85,7 +85,7 @@ public class UserAuthService implements UserDetailsService {
     }
 
     private void saveUserInfoInGoService(UserRegistrationRequest registrationRequest) {
-        String url = goServiceUrl +  "/saveUserInfo";
+        String url = goServiceUrl +  "/public/userInfo";
         GoSaveUserInfo goRequest = new GoSaveUserInfo(
                 registrationRequest.getUsername(),
                 registrationRequest.getUserEmail(),

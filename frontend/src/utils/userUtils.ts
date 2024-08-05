@@ -112,7 +112,7 @@ export const getUserInfo = async () => {
 	// get a single user's info by user Id. response is json
 
 	const authToken = localStorage.getItem("authToken");
-	const url = `${domain}/user/get/userinfo`;
+	const url = `${domain}/user/userinfo`;
 	try {
 		const user: UserInfo = (await fetchAndTransformUserData(
 			url,
@@ -130,7 +130,7 @@ export const getUserInfo = async () => {
 export const getUserPublicInfo = async (userID: number) => {
 	// get a single user's public info by user Id. response is json
 
-	const url = `${domain}/public/get/userInfo/userID/${userID}`;
+	const url = `${domain}/public/userInfo/userID/${userID}`;
 	try {
 		const user: UserInfo = (await fetchAndTransformUserData(
 			url,
@@ -149,7 +149,7 @@ export const getLikedUsersByPostId = async (
 	query: QueryProps
 ): Promise<UserInfo[]> => {
 	// get likes of a post. response is json
-	const url = new URL(`${domain}/public/get/userInfo/userLikes/${postId}`);
+	const url = new URL(`${domain}/public/userInfo/userLikes/${postId}`);
 	const limit = query?.limit ?? "";
 	const offset = query?.offset ?? "";
 	url.searchParams.append("limit", limit.toString());

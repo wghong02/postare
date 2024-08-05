@@ -25,7 +25,7 @@ public class CommentService {
     }
 
     public ResponseEntity<String> findCommentsByPostId(UUID postId, int limit, int offset) {
-        String url = goServiceUrl + "/public/get/comments/postID/" + postId + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/public/comments/postID/" + postId + "?limit=" + limit + "&offset=" + offset;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {
@@ -57,7 +57,7 @@ public class CommentService {
     }
 
     public ResponseEntity<String> findSubCommentsByCommentId(long commentId, int limit, int offset) {
-        String url = goServiceUrl + "/public/get/subComments/commentID/" + commentId + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/public/subComments/commentID/" + commentId + "?limit=" + limit + "&offset=" + offset;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {
@@ -89,7 +89,7 @@ public class CommentService {
     }
 
     public ResponseEntity<String> getCommentCountByPostId(UUID postId, boolean isTotal) {
-        String url = goServiceUrl + "/public/get/count/comment/postID/" + postId + "?isTotal=" + isTotal;
+        String url = goServiceUrl + "/public/count/comment/postID/" + postId + "?isTotal=" + isTotal;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {

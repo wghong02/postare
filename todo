@@ -1,6 +1,5 @@
 Ranked by priority
 
-- remove /get/ from HTTP address
 - test updated get likes by user
 - add share button for each post
 - refine details on user home info page (allow edit)

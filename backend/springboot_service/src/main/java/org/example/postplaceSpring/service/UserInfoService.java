@@ -22,7 +22,7 @@ public class UserInfoService {
         this.goServiceUrl = env.getProperty("GO_BACKEND_URL");
     }
     public ResponseEntity<String> getUserInfoById(long userId) {
-        String url= goServiceUrl + "/public/get/userInfo/userID/" + userId ;;
+        String url= goServiceUrl + "/public/userInfo/userID/" + userId ;;
 
         try {
             return restTemplate.getForEntity(url, String.class);
@@ -32,7 +32,7 @@ public class UserInfoService {
     }
 
     public ResponseEntity<String> findLikedUsersByPostId(UUID postId, int limit, int offset) {
-        String url = goServiceUrl + "/public/get/userInfo/userLikes/" + postId + "?limit=" + limit + "&offset=" + offset;
+        String url = goServiceUrl + "/public/userInfo/userLikes/" + postId + "?limit=" + limit + "&offset=" + offset;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {
