@@ -124,7 +124,7 @@ const MostViewedPage = () => {
 				justifyContent="center"
 				alignItems="center"
 				mt="4"
-				overflowY="auto"
+				overflowY="hidden"
 			>
 				<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
 					<Heading as="h1" mb="4" fontWeight={500}>
