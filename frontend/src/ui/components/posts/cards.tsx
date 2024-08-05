@@ -45,24 +45,24 @@ export function UserPostCard({ post }: { post: Post }) {
 	};
 
 	return (
-		<Box boxShadow="md" m="3">
-			<Card direction="row" overflow="hidden" variant="outline" width="500px">
+		<Box m="3" borderWidth="1px" borderRadius="lg" boxShadow="md">
+			<Card direction="row" overflow="hidden" width="500px" height="300px">
 				<Image
 					objectFit="cover"
-					maxW="200px"
+					maxW="240px"
 					src={post.imageUrl}
 					alt="Post Image"
 				/>
 
-				<Stack>
+				<Stack height="300px">
 					<CardBody>
 						<Heading size="md">{post.title}</Heading>
 
-						<Text py="2">{post.description}</Text>
-						<Text py="3">Post posted {uploadedTime}</Text>
+						<Text py="1">{post.description}</Text>
+						<Text py="1">Post posted {uploadedTime}</Text>
 					</CardBody>
 
-					<CardFooter>
+					<CardFooter mt="-3">
 						<Link as={NextLink} href={`/posts/${postId}`} passHref>
 							<Button variant="solid" colorScheme="blue" mr="6">
 								View
@@ -98,6 +98,7 @@ export function PostPreviewCard({ post }: { post: Post }) {
 					borderRadius="lg"
 					overflow="hidden"
 					boxShadow="md"
+					m="2"
 				>
 					<Image src={post.imageUrl} />
 					{/* //show badges of new if new and available, archived, hot if have many views */}

@@ -99,7 +99,7 @@ const UserPostPage = () => {
 
 			<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
 				{posts.length > 0 && (
-					<Flex justify="center" wrap="wrap" mb="2">
+					<Flex justify="center" wrap="wrap">
 						{posts.map((post, index) => (
 							<UserPostCard key={index} post={post} />
 						))}

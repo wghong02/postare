@@ -1,7 +1,6 @@
 package org.example.postplaceSpring.service;
 
 import org.example.postplaceSpring.exceptions.ResourceBadRequestException;
-import org.example.postplaceSpring.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;

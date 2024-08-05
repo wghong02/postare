@@ -1,9 +1,8 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Flex, useDisclosure } from "@chakra-ui/react";
-import { UserPostCard } from "@/ui/components/posts/cards";
-import { getUserPosts } from "@/utils/postUtils";
-import { UploadPostForm } from "@/ui/components/posts/forms";
+import { Box, Flex } from "@chakra-ui/react";
+import { PostPreviewCard } from "@/ui/components/posts/cards";
+import { getLikedPostsByUser } from "@/utils/postUtils";
 import { Post } from "@/lib/model";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 import { BackToTopFooter } from "@/ui/components/basicComponents/productBasicComponents";
@@ -18,17 +17,15 @@ const UserLikePage = () => {
 	const [hasFetched, setHasFetched] = useState(false);
 	const [reachedEnd, setReachedEnd] = useState(false);
 
-	const { isOpen, onOpen, onClose } = useDisclosure();
-
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	// fetch post from the user
 	const fetchData = async () => {
 		try {
 			setLoadingMore(true); // Start loading
-			const newPosts = await getUserPosts({
-				query: { limit: 12, offset: posts.length, description: null }, // load 12 posts at a time
-			});
+			const newPosts = await getLikedPostsByUser(
+				{ limit: 12, offset: posts.length, description: null } // load 12 posts at a time
+			);
 			if (newPosts != null && newPosts.length != 0) {
 				if (currentPage == 1) {
 					setPosts(newPosts);
@@ -90,13 +87,11 @@ const UserLikePage = () => {
 		>
 			{/* can view posts the user uploaded and upload new and delete existing posts */}
 
-			<UploadPostForm isOpen={isOpen} onClose={onClose} />
-
 			<LoadingWrapper loading={initLoading} hasFetched={hasFetched}>
 				{posts.length > 0 && (
 					<Flex justify="center" wrap="wrap" mb="2">
 						{posts.map((post, index) => (
-							<UserPostCard key={index} post={post} />
+							<PostPreviewCard key={index} post={post} />
 						))}
 					</Flex>
 				)}

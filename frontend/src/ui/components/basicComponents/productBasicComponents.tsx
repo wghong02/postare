@@ -63,7 +63,7 @@ export const Masonry: React.FC<MasonryProps> = ({ children, columns, gap }) => {
   return (
     <Box
       className="masonry-grid"
-      style={{ marginLeft: -gap }}
+      style={{ margin: -gap }}
       justifyContent="center" // Centers items horizontally
       display="flex"
     >

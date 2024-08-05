@@ -130,7 +130,7 @@ const MostViewedPage = () => {
 					<Heading as="h1" mb="4" fontWeight={500}>
 						Posts For You
 					</Heading>
-					<Masonry columns={numColumns} gap={10}>
+					<Masonry columns={numColumns} gap={2}>
 						{posts?.length > 0 ? (
 							posts.map((post, index) => (
 								<PostPreviewCard key={index} post={post} />
