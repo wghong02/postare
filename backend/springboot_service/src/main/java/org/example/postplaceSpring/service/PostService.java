@@ -33,7 +33,7 @@ public class PostService {
     }
 
     public ResponseEntity<String> findPostById(UUID postId) {
-        String url = goServiceUrl + "/posts/" + postId;
+        String url = goServiceUrl + "/posts/postId/" + postId;
         try {
             return restTemplate.getForEntity(url, String.class);
         } catch (HttpClientErrorException.NotFound ex) {

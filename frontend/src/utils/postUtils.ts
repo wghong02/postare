@@ -76,7 +76,7 @@ const fetchAndTransformPostData = async (
 
 export const getPost = async (postId: string): Promise<Post> => {
 	// get a single post by post Id. response is json
-	const url = `${domain}/posts/${postId}`;
+	const url = `${domain}/posts/postId/${postId}`;
 
 	try {
 		const post: Post = (await fetchAndTransformPostData(url, true)) as Post;

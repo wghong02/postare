@@ -27,9 +27,9 @@
             this.postService = postService;
         }
 
-        @GetMapping("/posts/{postId}")
+        @GetMapping("/posts/postId/{postId}")
         public ResponseEntity<String> getIdPost(@PathVariable UUID postId) {
-            logger.info("Received Get request for /post/{postId}");
+            logger.info("Received Get request for /posts/postId/{postId}");
             ResponseEntity<String> response = postService.findPostById(postId);
             if (response.getStatusCode().is2xxSuccessful()) {
                 logger.info("Post {} returned", postId);

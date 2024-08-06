@@ -10,6 +10,15 @@ import {
 	Icon,
 	Text,
 	useToast,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	ModalCloseButton,
+	useDisclosure,
+	useClipboard,
+	IconButton,
 } from "@chakra-ui/react";
 import { getPost, increasePostViews } from "@/utils/postUtils";
 import { getUserPublicInfo } from "@/utils/userUtils";
@@ -26,7 +35,9 @@ import { getCommentCountByPostId } from "@/utils/commentUtils";
 
 import { CiChat1 } from "react-icons/ci";
 import { IoIosHeartEmpty, IoMdHeart } from "react-icons/io";
+import { BsThreeDots } from "react-icons/bs";
 import { VscFlame } from "react-icons/vsc";
+import { CopyIcon } from "@chakra-ui/icons";
 
 const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	// post page for the users to upload and delete and view posts they own
@@ -38,6 +49,8 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const [totalLikes, setTotalLikes] = useState<number>(0); // to adjust the total likes of the post
 	const [totalComments, setTotalComments] = useState<number>(0); // to track the total comments of the post
 	const [authed, setAuthed] = useState<boolean>(false); // to track if the user is currently authed to comment and like
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { hasCopied, onCopy } = useClipboard(window.location.href);
 	const toast = useToast();
 
 	const postId = params.id;
@@ -124,6 +137,18 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 				});
 			}
 		}
+	};
+
+	// for copying the url of the post to share
+	const handleCopy = () => {
+		onCopy();
+		toast({
+			title: "URL Copied.",
+			description: "The current URL has been copied to your clipboard.",
+			status: "success",
+			duration: 3000,
+			isClosable: true,
+		});
 	};
 
 	// fetch the data, number of comments and number of likes each load of the website
@@ -219,7 +244,16 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 													{totalComments}
 												</Text>
 											</Flex>
-											{/* add share button here */}
+
+											<Flex
+												align="center"
+												color={"gray.500"}
+												cursor="pointer"
+												onClick={onOpen}
+												_hover={{ color: "blue.300" }}
+											>
+												<Icon as={BsThreeDots} boxSize="30px" color="grey" />
+											</Flex>
 										</HStack>
 										{post && (
 											<Flex width="100%" maxH="100%">
@@ -228,6 +262,35 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 										)}
 									</VStack>
 								</HStack>
+
+								<Modal isOpen={isOpen} onClose={onClose} size="md" isCentered>
+									<ModalOverlay />
+									<ModalContent>
+										<ModalHeader>Share this Post</ModalHeader>
+										<ModalCloseButton />
+										<ModalBody>
+											<HStack
+												spacing={4}
+												p={4}
+												borderWidth={1}
+												borderRadius="md"
+												borderColor="gray.200"
+												bg="gray.50"
+												alignItems="center"
+											>
+												<Text flex="1">{window.location.href}</Text>
+												<IconButton
+													icon={<CopyIcon />}
+													aria-label="Copy URL"
+													onClick={() => {
+														handleCopy();
+														onOpen();
+													}}
+												/>
+											</HStack>
+										</ModalBody>
+									</ModalContent>
+								</Modal>
 
 								{post && (
 									<Box height="500px" width="70%">

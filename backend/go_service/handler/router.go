@@ -28,7 +28,7 @@ func InitRouter() http.Handler {
 	router.HandleFunc("/user/likes/check/{postID}", checkIfLikeExistsHandler).Methods("GET")
 	router.HandleFunc("/user/posts/userLiked", getLikedPostsByUserIDHandler).Methods("GET")
 
-	router.HandleFunc("/posts/{postID}", getPostByIDHandler).Methods("GET")
+	router.HandleFunc("/posts/postId/{postID}", getPostByIDHandler).Methods("GET")
 	router.HandleFunc("/posts/most/{attribute}", getMostInOneAttributePostsHandler).Methods("GET")
 	router.HandleFunc("/posts/view/{postID}", increaseViewByPostIDHandler).Methods("Post")
 	router.HandleFunc("/posts/search", searchPostsHandler).Methods("GET")
