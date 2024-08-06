@@ -96,7 +96,9 @@ const UserLikePage = () => {
 					</Flex>
 				)}
 				{loadingMore && <Box mb="20px">Loading More...</Box>}
-				{posts.length == 0 && <Box>You have no posts, upload to see more.</Box>}
+				{posts.length == 0 && (
+					<Box>You have no liked posts, like a post to see more.</Box>
+				)}
 			</LoadingWrapper>
 			{!loadingMore && currentPage > 1 && reachedEnd && (
 				<Box mb="20px">You have reached the bottom of all posts.</Box>

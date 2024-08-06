@@ -15,6 +15,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'org.example.postplaceSpring.PostplaceSpringApplication'
+        )
+    }
+}
+
 repositories {
     mavenCentral()
 }
