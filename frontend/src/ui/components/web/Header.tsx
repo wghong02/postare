@@ -1,28 +1,35 @@
 "use client";
+import { useEffect, useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import {
-	Box,
 	Flex,
+	Box,
 	Button,
 	Input,
 	FormControl,
 	useToast,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
-import { Link } from "@chakra-ui/react";
-import React, { FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Header: React.FC = () => {
 	const router = useRouter();
-	// header of the website for the entire website
-	// includes a search bar in the middle, app icon and link to home on topleft
-	// user login/logout organization on top right
 	const [authed, setAuthed] = useState<boolean | null>(null);
+	const [searchQuery, setSearchQuery] = useState<string>("");
+	const toast = useToast();
 
 	useEffect(() => {
 		const authToken = localStorage.getItem("authToken");
 		setAuthed(authToken !== null);
-	}, [authed]);
+	}, []);
+
+	useEffect(() => {
+		const query = new URLSearchParams(window.location.search).get(
+			"description"
+		);
+		if (query) {
+			setSearchQuery(query);
+		}
+	}, []);
 
 	const handleLogOut = (): void => {
 		localStorage.removeItem("authToken");
@@ -31,28 +38,21 @@ const Header: React.FC = () => {
 		showToast();
 	};
 
-	const toast = useToast();
 	const showToast = () => {
 		toast({
 			title: "Logged out successfully",
 			status: "success",
-			duration: 3000, // Duration in milliseconds the notification should be displayed
+			duration: 3000,
 			isClosable: true,
 		});
 	};
 
 	const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		const formData = new FormData(event.currentTarget);
-		const searchQuery = formData.get("searchInput") as string;
-		// console.log("Searching for:", searchQuery);
-		if (searchQuery === "") {
-			router.push(`/`);
-		} else {
-			window.location.href = `/search?description=${encodeURIComponent(
-				searchQuery
-			)}`;
-		}
+		// Set search query parameter and update the URL
+		window.location.href = `/search?description=${encodeURIComponent(
+			searchQuery
+		)}`;
 	};
 
 	return (
@@ -67,7 +67,7 @@ const Header: React.FC = () => {
 			minW="750px"
 		>
 			<Flex align="center" mr={5}>
-				<Link as={NextLink} href="/" passHref>
+				<Link href="/" passHref>
 					<Button
 						width="100%"
 						colorScheme="blackAlpha"
@@ -93,6 +93,8 @@ const Header: React.FC = () => {
 							bg="white"
 							color="black"
 							_placeholder={{ color: "gray.500" }}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
 						/>
 						<Button type="submit" colorScheme="blue" ml={2}>
 							Search
@@ -105,7 +107,7 @@ const Header: React.FC = () => {
 				{authed != null && // will only show the buttons once the initial render finishes
 					(authed ? (
 						<Box>
-							<Link as={NextLink} href="/user/home" passHref>
+							<Link href="/user/home" passHref>
 								<Button
 									variant="ghost"
 									shadow="md"
@@ -130,7 +132,7 @@ const Header: React.FC = () => {
 							</Button>
 						</Box>
 					) : (
-						<Link as={NextLink} href="/auth" passHref>
+						<Link href="/auth" passHref>
 							<Button
 								variant="ghost"
 								shadow="md"

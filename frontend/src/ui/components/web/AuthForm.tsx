@@ -5,6 +5,7 @@ import {
 	Flex,
 	FormControl,
 	FormErrorMessage,
+	FormHelperText,
 	FormLabel,
 	Input,
 	Text,
@@ -12,6 +13,12 @@ import {
 } from "@chakra-ui/react";
 import { useState, ChangeEvent } from "react";
 import { register, login } from "@/utils/userUtils";
+import {
+	isValidUsername,
+	isValidEmail,
+	isValidPassword,
+	isValidNickname,
+} from "@/utils/generalUtils";
 
 // Define types for form fields
 type FormFields = {
@@ -84,88 +91,88 @@ const AuthForm = () => {
 	const handleSubmit = async () => {
 		// submit the form to call register or login
 		// only call the backend APIs if all required fields are completed.
+
 		const { username, password, userEmail, phoneNumber, nickname } = formValues;
 
+		// Validate fields
+		const errors: Partial<FormFields> = {};
+
+		if (!isValidUsername(username)) {
+			errors.username = "Invalid or profane username.";
+		}
+
+		if (!isValidPassword(password)) {
+			errors.password =
+				"Password must be at least 8 characters long, with letters and numbers.";
+		}
+
 		if (showRegister) {
-			// decides whether to call login or register
-			if (
-				touchedFields.username &&
-				touchedFields.password &&
-				touchedFields.userEmail &&
-				touchedFields.nickname
-			) {
-				try {
-					await register({
-						username,
-						password,
-						userEmail,
-						phoneNumber,
-						nickname,
-					});
-					toast({
-						description: "Registration Successful.",
-						status: "success",
-						duration: 3000,
-						isClosable: true,
-					});
-					handleRegisterClick();
-				} catch (error: any) {
-					toast({
-						description: "Registration failed, " + error.message,
-						status: "error",
-						duration: 3000,
-						isClosable: true,
-					});
-				}
-			} else {
-				setTouchedFields({
-					username: true,
-					password: true,
-					userEmail: true,
-					phoneNumber: true,
-					nickname: true,
+			if (!isValidEmail(userEmail)) {
+				errors.userEmail = "Invalid email address.";
+			}
+
+			if (!nickname) {
+				errors.nickname = "Nickname is required.";
+			}
+		}
+
+		// Update touched fields and errors state
+		setTouchedFields({
+			...touchedFields,
+			username: true,
+			password: true,
+			userEmail: showRegister ? true : touchedFields.userEmail,
+			phoneNumber: showRegister ? true : touchedFields.phoneNumber,
+			nickname: showRegister ? true : touchedFields.nickname,
+		});
+
+		// If there are errors, prevent form submission
+		if (Object.keys(errors).length > 0) {
+			toast({
+				description:
+					"Please fill in all required fields following the requirements and try again",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		try {
+			if (showRegister) {
+				await register({
+					username,
+					password,
+					userEmail,
+					phoneNumber,
+					nickname,
 				});
 				toast({
-					description: "Please complete all required fields and try again.",
-					status: "error",
+					description: "Registration Successful.",
+					status: "success",
 					duration: 3000,
 					isClosable: true,
 				});
-			}
-		} else {
-			if (username && password) {
-				try {
-					await login({ username, password });
-					toast({
-						description: "Login Successful.",
-						status: "success",
-						duration: 3000,
-						isClosable: true,
-					});
-					window.location.href = "/";
-				} catch (error: any) {
-					toast({
-						description: "Login failed, " + error.message,
-						status: "error",
-						duration: 3000,
-						isClosable: true,
-					});
-				}
+				handleRegisterClick();
 			} else {
-				setTouchedFields({
-					username: true,
-					password: true,
-					userEmail: true,
-					phoneNumber: true,
-					nickname: true,
-				});
+				await login({ username, password });
 				toast({
-					description: "Please complete all required fields and try again.",
-					status: "error",
+					description: "Login Successful.",
+					status: "success",
 					duration: 3000,
 					isClosable: true,
 				});
+				window.location.href = "/";
 			}
+		} catch (error: any) {
+			toast({
+				description: `${showRegister ? "Registration" : "Login"} failed, ${
+					error.message
+				}`,
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
 		}
 	};
 
@@ -173,11 +180,16 @@ const AuthForm = () => {
 		label: string,
 		name: keyof FormFields,
 		type: string,
-		isRequired: boolean
+		isRequired: boolean,
+		condition: Function | null
 	) => (
 		// function to render each text input field in the form
 		<FormControl
-			isInvalid={touchedFields[name] && !formValues[name] && isRequired}
+			isInvalid={
+				touchedFields[name] &&
+				(!formValues[name] ||
+					(isRequired && condition != null && !condition(formValues[name])))
+			}
 			mt="4"
 		>
 			<FormLabel>
@@ -188,15 +200,36 @@ const AuthForm = () => {
 					</Text>
 				)}
 			</FormLabel>
+
+			{touchedFields[name] && label == "Username" && showRegister && (
+				<FormHelperText>
+					Username must only contain letters, numbers, underscores(_) and
+					dashes(-).
+				</FormHelperText>
+			)}
+			{touchedFields[name] && label == "Password" && showRegister && (
+				<FormHelperText>
+					Password must be at least 8 characters long.
+				</FormHelperText>
+			)}
+			{touchedFields[name] && label == "Nickname" && (
+				<FormHelperText>
+					Nickname must only contain letters, numbers, underscores(_) and
+					dashes(-).
+				</FormHelperText>
+			)}
 			<Input
+				mt="2"
 				type={type}
 				name={name}
 				value={formValues[name]}
 				onChange={handleChange}
 			/>
-			{touchedFields[name] && !formValues[name] && isRequired && (
-				<FormErrorMessage>{label} is required.</FormErrorMessage>
-			)}
+			{touchedFields[name] &&
+				(!formValues[name] ||
+					(condition != null && !condition(formValues[name]))) && (
+					<FormErrorMessage>Please provide a valid {label}.</FormErrorMessage>
+				)}
 		</FormControl>
 	);
 
@@ -206,13 +239,43 @@ const AuthForm = () => {
 				<Box fontSize="xl" mb="4" fontWeight={500}>
 					{showRegister ? "Register" : "Log In"}
 				</Box>
-				{renderInputField("Username", "username", "text", true)}
-				{renderInputField("Password", "password", "password", true)}
+				{renderInputField(
+					"Username",
+					"username",
+					"text",
+					true,
+					isValidUsername
+				)}
+				{renderInputField(
+					"Password",
+					"password",
+					"password",
+					true,
+					isValidPassword
+				)}
 				{showRegister && ( // these fields are only needed for register
 					<>
-						{renderInputField("Email", "userEmail", "email", true)}
-						{renderInputField("Phone Number", "phoneNumber", "tel", false)}
-						{renderInputField("Nickname", "nickname", "text", true)}
+						{renderInputField(
+							"Email",
+							"userEmail",
+							"email",
+							true,
+							isValidEmail
+						)}
+						{renderInputField(
+							"Phone Number",
+							"phoneNumber",
+							"tel",
+							false,
+							null
+						)}
+						{renderInputField(
+							"Nickname",
+							"nickname",
+							"text",
+							true,
+							isValidNickname
+						)}
 					</>
 				)}
 				<Button fontSize="md" mt="4" mb="4" onClick={handleSubmit}>

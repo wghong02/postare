@@ -15,7 +15,7 @@ import {
 	ModalCloseButton,
 	useDisclosure,
 } from "@chakra-ui/react";
-import { timeAgo, isPostedWithin } from "@/utils/generalUtils";
+import { timeAgo, isPostedWithin, isCleanComment } from "@/utils/generalUtils";
 import { Post, Comment } from "@/lib/model";
 import { IoIosSend, IoMdCloseCircleOutline } from "react-icons/io";
 import { CommentCard } from "../comments/cards";
@@ -194,6 +194,13 @@ export function CommentSection({
 				if (newComment == "") {
 					toast({
 						title: "Comment cannot be empty.",
+						status: "error",
+						duration: 2000,
+						isClosable: true,
+					});
+				} else if (!isCleanComment(newComment)) {
+					toast({
+						title: "Please ensure language used in the comments and try again.",
 						status: "error",
 						duration: 2000,
 						isClosable: true,

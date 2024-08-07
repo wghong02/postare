@@ -1,3 +1,5 @@
+import Filter from "bad-words";
+
 export const timeAgo = (dateString: string) => {
 	// use js Date to transform it to date
 	const date = new Date(dateString);
@@ -57,3 +59,57 @@ export function formatCounts(
 
 	return `${formattedPosts}, ${formattedLikes}, ${formattedViews}`;
 }
+
+const filter = new Filter();
+
+export const isValidUsername = (username: string): boolean => {
+	// Normalize the username by converting to lowercase and replacing special characters
+	const isValid = /^[a-zA-Z0-9_-]+$/.test(username);
+
+	if (!isValid) {
+		return false;
+	}
+
+	// Normalize the username by converting to lowercase
+	const normalizedUsername = username.toLowerCase();
+
+	// Check for profanity in the normalized username
+	return !filter.isProfane(normalizedUsername);
+};
+
+export const isCleanComment = (comment: string): boolean => {
+	// Normalize the comment by converting to lowercase
+	const normalizedComment = comment.toLowerCase();
+
+	// Check for profanity in the normalized comment
+	return !filter.isProfane(normalizedComment);
+};
+
+export const isValidEmail = (email: string): boolean => {
+	// Define the regex pattern for validating email addresses
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	return emailRegex.test(email);
+};
+
+export const isValidPassword = (password: string): boolean => {
+	// Regex to check for at least one letter and one number
+	//const hasLetterAndNumber = /^(?=.*[A-Za-z])(?=.*\d)/;
+
+	// Check if the password is at least 8 characters long
+	return password.length >= 8; //&& hasLetterAndNumber.test(password);
+};
+
+export const isValidNickname = (username: string): boolean => {
+	// Allow letters, numbers, underscores, hyphens, and spaces
+	const isValid = /^[a-zA-Z0-9 _-]+$/.test(username);
+
+	if (!isValid) {
+		return false;
+	}
+
+	// Normalize the username by converting to lowercase
+	const normalizedUsername = username.toLowerCase();
+
+	// Check for profanity in the normalized username
+	return !filter.isProfane(normalizedUsername);
+};
