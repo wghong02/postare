@@ -153,10 +153,10 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 
 	// fetch the data, number of comments and number of likes each load of the website
 	useEffect(() => {
-		fetchData();
-		fetchCommentCount();
 		const authToken = localStorage.getItem("authToken");
 		setAuthed(authToken !== null);
+		fetchData();
+		fetchCommentCount();
 	}, []);
 
 	return (

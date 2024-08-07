@@ -1,17 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-	Box,
-	Flex,
-	VStack,
-	Image,
-	StackDivider,
-	HStack,
-	Icon,
-	Text,
-	IconButton,
-	useToast,
-} from "@chakra-ui/react";
+import { Box, Flex, VStack, StackDivider, useToast } from "@chakra-ui/react";
 import { getUserPublicPosts } from "@/utils/postUtils";
 import { getUserPublicInfo } from "@/utils/userUtils";
 import { Post, UserInfo } from "@/lib/model";
@@ -19,7 +8,6 @@ import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
 import { UserPublicInfoComponent } from "@/ui/components/users/userPublicInfoComponents";
 import { notFound } from "next/navigation";
 import { UserPublicPostRow } from "@/ui/components/posts/rows";
-import { VscTasklist } from "react-icons/vsc";
 
 const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
 	// to view the posts and info of a user

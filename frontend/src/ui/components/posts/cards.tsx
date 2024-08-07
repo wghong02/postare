@@ -164,6 +164,7 @@ export function PostPreviewCard({ post }: { post: Post }) {
 export function UserPublicPostCard({ post }: { post: Post }) {
 	// card of the breif info of each post, mostly in recom. page
 	const postId = post.postId;
+	const registerTime = timeAgo(post.putOutTime);
 
 	return (
 		<Box>
@@ -172,13 +173,13 @@ export function UserPublicPostCard({ post }: { post: Post }) {
 					direction="column"
 					overflow="hidden"
 					variant="outline"
-					width="300px"
-					height="400px"
+					width="400px"
+					height="340px"
 					margin="2"
 				>
 					<Image
-						objectFit="cover"
-						width="300px"
+						objectFit="scale-down"
+						width="400px"
 						height="240px"
 						src={post.imageUrl}
 						alt="Post Image"
@@ -187,10 +188,64 @@ export function UserPublicPostCard({ post }: { post: Post }) {
 					<CardBody>
 						<Heading size="md">{post.title}</Heading>
 
-						<Text py="2">{post.description}</Text>
+						<Box display="flex" alignItems="baseline" mt="4">
+							<Box as="span" color="gray.600" fontSize="sm">
+								{registerTime}
+							</Box>
+							<Box
+								color="gray.500"
+								fontWeight="semibold"
+								letterSpacing="wide"
+								fontSize="xs"
+								textTransform="uppercase"
+								ml="4"
+							>
+								{post.likes} likes
+							</Box>
+							<Box
+								color="gray.500"
+								fontWeight="semibold"
+								letterSpacing="wide"
+								fontSize="xs"
+								textTransform="uppercase"
+								ml="4"
+							>
+								{post.views} views
+							</Box>
+						</Box>
 					</CardBody>
 				</Card>
 			</Link>
+		</Box>
+	);
+}
+
+export function LikedPostCard({ post }: { post: Post }) {
+	const uploadedTime = timeAgo(post.putOutTime);
+	const postId = post.postId;
+	const toast = useToast();
+
+	return (
+		<Box m="3" borderWidth="1px" borderRadius="lg" boxShadow="md">
+			<Card direction="row" overflow="hidden" width="500px" height="300px">
+				<Image
+					objectFit="cover"
+					maxW="240px"
+					src={post.imageUrl}
+					alt="Post Image"
+				/>
+
+				<Stack height="300px">
+					<CardBody>
+						<Link as={NextLink} href={`/posts/${post.postId}`} passHref>
+							<Heading size="md">{post.title}</Heading>
+						</Link>
+
+						<Text py="1">{post.description}</Text>
+						<Text py="1">Post posted {uploadedTime}</Text>
+					</CardBody>
+				</Stack>
+			</Card>
 		</Box>
 	);
 }

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Flex } from "@chakra-ui/react";
-import { PostPreviewCard } from "@/ui/components/posts/cards";
+import { LikedPostCard } from "@/ui/components/posts/cards";
 import { getLikedPostsByUser } from "@/utils/postUtils";
 import { Post } from "@/lib/model";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
@@ -91,7 +91,7 @@ const UserLikePage = () => {
 				{posts.length > 0 && (
 					<Flex justify="center" wrap="wrap" mb="2">
 						{posts.map((post, index) => (
-							<PostPreviewCard key={index} post={post} />
+							<LikedPostCard key={index} post={post} />
 						))}
 					</Flex>
 				)}

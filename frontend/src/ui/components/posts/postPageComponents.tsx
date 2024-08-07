@@ -100,7 +100,9 @@ export function PostPageSection({ post }: { post: Post }) {
 				align="center"
 			>
 				<Box as="span">
-					{post.postDetails.substring(0, detailsLengthToKeep) + "..."}
+					{post.postDetails.length > 600
+						? post.postDetails.substring(0, detailsLengthToKeep) + "..."
+						: post.postDetails.substring(0, detailsLengthToKeep)}
 					{isPostDetailsLong && (
 						<Text
 							align="right"
