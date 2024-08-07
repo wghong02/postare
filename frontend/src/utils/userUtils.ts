@@ -42,6 +42,7 @@ const fetchAndTransformUserData = async (
 				totalLikes: camelizedData.totalLikes,
 				userExperience: camelizedData.userExperience,
 				totalPosts: camelizedData.totalPosts,
+				bio: camelizedData.bio,
 			};
 			return user;
 		} else {
@@ -50,18 +51,19 @@ const fetchAndTransformUserData = async (
 					const camelizedData = camelizeKeys(camelizedUser);
 
 					return {
-						postId: camelizedData.postId,
-						title: camelizedData.title,
-						description: camelizedData.description,
-						likes: camelizedData.likes,
-						categoryId: camelizedData.categoryId,
-						postOwnerId: camelizedData.postOwnerId,
-						putOutTime: camelizedData.putOutTime,
-						postDetails: camelizedData.postDetails,
-						isAvailable: camelizedData.isAvailable,
-						imageUrl: camelizedData.imageUrl,
-						views: camelizedData.views,
-						// Add other fields as needed
+						userId: camelizedData.userId,
+						username: camelizedData.username,
+						userEmail: camelizedData.userEmail,
+						userPhone: camelizedData.userPhone,
+						nickname: camelizedData.nickname,
+						profilePicture: camelizedData.profilePicture,
+						registerTime: camelizedData.registerTime,
+						totalViews: camelizedData.totalViews,
+						totalComments: camelizedData.totalComments,
+						totalLikes: camelizedData.totalLikes,
+						userExperience: camelizedData.userExperience,
+						totalPosts: camelizedData.totalPosts,
+						bio: camelizedData.bio,
 					};
 				}
 			);

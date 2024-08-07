@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 const UserHomeLayout = ({ children }: { children: React.ReactNode }) => {
-	return <Box >{children}</Box>;
+	return children;
 };
 
 export default UserHomeLayout;

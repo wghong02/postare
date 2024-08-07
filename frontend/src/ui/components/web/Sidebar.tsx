@@ -3,6 +3,7 @@ import { Box, IconButton, VStack, Button } from "@chakra-ui/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
+import { usePathname } from "next/navigation";
 
 interface SidebarProps {
 	// only used for sidebars
@@ -13,6 +14,12 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 	// side bar for user pages, used for navigation between different user pages
 	// can pull out or stay in
+	const pathname = usePathname();
+	const links = [
+		{ href: "/user/home", label: "User Information" },
+		{ href: "/user/posts", label: "Manage Posts" },
+		{ href: "/user/likes", label: "Liked Posts" },
+	];
 
 	// vertical stack for each button that direct to a different page
 	return (
@@ -38,39 +45,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 					>
 						User Actions
 					</Box>
-					<Link as={NextLink} href="/user/home" passHref>
-						<Button
-							width="100%"
-							colorScheme="blackAlpha"
-							variant="ghost"
-							shadow="md"
-							fontFamily="'Roboto', sans-serif"
-						>
-							User Information
-						</Button>
-					</Link>
-					<Link as={NextLink} href="/user/posts" passHref>
-						<Button
-							width="100%"
-							colorScheme="blackAlpha"
-							variant="ghost"
-							shadow="md"
-							fontFamily="'Roboto', sans-serif"
-						>
-							Manage Posts
-						</Button>
-					</Link>
-					<Link as={NextLink} href="/user/likes" passHref>
-						<Button
-							width="100%"
-							colorScheme="blackAlpha"
-							variant="ghost"
-							shadow="md"
-							fontFamily="'Roboto', sans-serif"
-						>
-							Liked Posts
-						</Button>
-					</Link>
+					{links.map((link) => (
+						<Link href={link.href} key={link.href}>
+							<Button
+								width="100%"
+								colorScheme={pathname === link.href ? "teal" : "blackAlpha"}
+								variant={pathname === link.href ? "solid" : "ghost"}
+								shadow="md"
+								fontFamily="'Roboto', sans-serif"
+							>
+								{link.label}
+							</Button>
+						</Link>
+					))}
 				</VStack>
 			</Box>
 			<IconButton

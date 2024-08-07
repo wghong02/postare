@@ -14,6 +14,7 @@ export interface UserInfo {
 	totalLikes: number;
 	userExperience: number;
 	totalPosts: number;
+	bio: string;
 }
 
 // UserAuth Model

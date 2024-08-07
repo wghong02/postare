@@ -97,7 +97,8 @@ func createTables() {
             TotalComments BIGINT NOT NULL,
             TotalLikes BIGINT NOT NULL,
             UserExperience BIGINT NOT NULL,
-			TotalPosts BIGINT NOT NULL
+			TotalPosts BIGINT NOT NULL,
+			Bio VARCHAR(255)
         )`,
 		`CREATE TABLE IF NOT EXISTS Categories (
             CategoryID BIGSERIAL PRIMARY KEY NOT NULL,
@@ -299,11 +300,11 @@ func insertSampleData() {
 	for _, user := range model.Users {
 		_, err := dbPool.Exec(context.Background(), `INSERT INTO UserInfo (UserID, 
             Username, UserEmail, UserPhone, Nickname,ProfilePicture, RegisterTime, 
-			TotalViews, TotalComments, TotalLikes, UserExperience, TotalPosts)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+			TotalViews, TotalComments, TotalLikes, UserExperience, TotalPosts, Bio)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
             ON CONFLICT (UserID) DO NOTHING`, user.UserID, user.Username, user.UserEmail,
 			user.UserPhone, user.Nickname, user.ProfilePicture, user.RegisterTime, user.TotalViews, 
-			user.TotalComments, user.TotalLikes, user.UserExperience, user.TotalPosts)
+			user.TotalComments, user.TotalLikes, user.UserExperience, user.TotalPosts, user.Bio)
 		if err != nil {
 			log.Fatalf("Failed to insert user data: %v", err)
 		}

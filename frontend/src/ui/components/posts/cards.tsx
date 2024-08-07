@@ -222,8 +222,6 @@ export function UserPublicPostCard({ post }: { post: Post }) {
 
 export function LikedPostCard({ post }: { post: Post }) {
 	const uploadedTime = timeAgo(post.putOutTime);
-	const postId = post.postId;
-	const toast = useToast();
 
 	return (
 		<Box m="3" borderWidth="1px" borderRadius="lg" boxShadow="md">
@@ -241,8 +239,32 @@ export function LikedPostCard({ post }: { post: Post }) {
 							<Heading size="md">{post.title}</Heading>
 						</Link>
 
-						<Text py="1">{post.description}</Text>
-						<Text py="1">Post posted {uploadedTime}</Text>
+						<Box display="flex" alignItems="baseline" mt="4">
+							<Box as="span" color="gray.600" fontSize="sm">
+								{uploadedTime}
+							</Box>
+							<Box
+								color="gray.500"
+								fontWeight="semibold"
+								letterSpacing="wide"
+								fontSize="xs"
+								textTransform="uppercase"
+								ml="4"
+							>
+								{post.likes} likes
+							</Box>
+							<Box
+								color="gray.500"
+								fontWeight="semibold"
+								letterSpacing="wide"
+								fontSize="xs"
+								textTransform="uppercase"
+								ml="4"
+							>
+								{post.views} views
+							</Box>
+						</Box>
+						<Text py="4">{post.description}</Text>
 					</CardBody>
 				</Stack>
 			</Card>

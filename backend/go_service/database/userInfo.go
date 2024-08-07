@@ -40,11 +40,11 @@ func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 	err := dbPool.QueryRow(context.Background(),
 		`SELECT UserID, Username, UserEmail, UserPhone, Nickname,
     ProfilePicture, RegisterTime, TotalViews, TotalComments, TotalLikes, 
-    UserExperience, TotalPosts FROM UserInfo WHERE UserID = $1`,
+    UserExperience, TotalPosts, Bio FROM UserInfo WHERE UserID = $1`,
 		userID).Scan(&user.UserID, &user.Username, &user.UserEmail,
 		&user.UserPhone, &user.Nickname, &user.ProfilePicture,
 		&user.RegisterTime, &user.TotalViews, &user.TotalComments,
-		&user.TotalLikes, &user.UserExperience, &user.TotalPosts,
+		&user.TotalLikes, &user.UserExperience, &user.TotalPosts, & user.Bio,
 	)
 
 	// Check if the query returned an error

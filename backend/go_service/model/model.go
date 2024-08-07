@@ -21,6 +21,7 @@ type UserInfo struct {
 	TotalLikes      int64     `json:"total_likes"`
 	UserExperience  int64     `json:"user_experience"`
 	TotalPosts      int64	  `json:"total_posts"`
+	Bio				string	  `json:"bio"`
 }
 
 type UserAuth struct {
