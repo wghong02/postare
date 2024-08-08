@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -41,6 +43,24 @@ public class UserInfoController {
         } else {
             throw new ResponseStatusException(response.getStatusCode(), "Post not found");
         }
+    }
+
+    @PostMapping("/user/userinfo/update")
+    public ResponseEntity<String> uploadPost( @RequestParam("userEmail") String userEmail,
+                                              @RequestParam("userPhone") String userPhone,
+                                              @RequestParam("nickname") String nickname,
+                                              @RequestParam("bio") String bio,
+                                              @RequestParam("imageFile") MultipartFile image,
+                                              @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+        logger.info("Received Post request for /user/userinfo/update");
+        // Get the authenticated user's details
+        if (userDetails == null) {
+            throw new IllegalStateException("User details not found in authentication context");
+        }
+        long userId = userDetails.getUserId();
+        // Pass the post file and userId to the service layer
+        return userInfoService.updateUserInfo(userEmail, userPhone, nickname,
+                bio, image, userId);
     }
 
     @GetMapping("/public/userInfo/userID/{userId}")

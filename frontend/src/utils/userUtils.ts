@@ -168,3 +168,19 @@ export const getLikedUsersByPostId = async (
 		throw error;
 	}
 };
+
+export const updateUserInfo = (data: FormData) => {
+	// user upload a post with auth token
+	const authToken = localStorage.getItem("authToken");
+	const url = `${domain}/user/userinfo/update`;
+
+	return fetch(url, {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${authToken}`,
+		},
+		body: data,
+	}).then((response) => {
+		handleResponseStatus(response, "Fail to update userinfo");
+	});
+};

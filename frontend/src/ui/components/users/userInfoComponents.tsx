@@ -20,6 +20,7 @@ import { timeAgo, formatCounts } from "@/utils/generalUtils";
 import { UserInfo } from "@/lib/model";
 import { EditIcon } from "@chakra-ui/icons";
 import { isCleanComment, isValidNickname } from "@/utils/generalUtils";
+import { updateUserInfo } from "@/utils/userUtils";
 
 export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	const registerTime = timeAgo(user.registerTime);
@@ -92,8 +93,23 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	};
 
 	// Handle save changes
-	const handleSaveChanges = () => {
+	const handleSaveChanges = async () => {
 		if (isCleanComment(bio) && isValidNickname(nickname)) {
+			const formData = new FormData();
+			formData.append("userEmail", userEmail);
+			formData.append("userPhone", phoneNumber);
+			formData.append("nickname", nickname);
+			formData.append("bio", bio);
+			formData.append("imageFile", profilePicture);
+
+			await updateUserInfo(formData);
+				toast({
+					description: "update Successful.",
+					status: "success",
+					duration: 3000,
+					isClosable: true,
+				});
+
 		} else {
 			toast({
 				description:

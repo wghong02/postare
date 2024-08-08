@@ -3,11 +3,16 @@ package org.example.postplaceSpring.service;
 import org.example.postplaceSpring.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -38,5 +43,34 @@ public class UserInfoService {
         } catch (HttpClientErrorException.NotFound ex) {
             throw new ResourceNotFoundException("User info not found liked PostId: " + postId, ex);
         }
+    }
+
+    public ResponseEntity<String> updateUserInfo(String userEmail, String userPhone, String nickname,
+                                                 String bio, MultipartFile image, long userId) throws IOException {
+        String url = goServiceUrl + "/user/userinfo/update";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.set("X-User-ID", String.valueOf(userId));
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("userEmail", userEmail);
+        body.add("userPhone", userPhone);
+        body.add("nickname", nickname);
+        body.add("bio", bio);
+        body.add("image", new ByteArrayResource(image.getBytes()) {
+            @Override
+            public String getFilename() {
+                return image.getOriginalFilename();
+            }
+        });
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+        return new ResponseEntity<>(response.getBody(), response.getStatusCode());
     }
 }
