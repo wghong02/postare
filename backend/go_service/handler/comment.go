@@ -57,7 +57,6 @@ func uploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 	// Response
 	fmt.Fprintf(w, "Comment saved successfully\n")
 	fmt.Fprintf(w, "Uploaded by %d \n", userID)
-	sendStatusCode(w, http.StatusOK)
 }
 
 func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +103,6 @@ func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 	// Response
 	fmt.Fprintf(w, "Comment saved successfully\n")
 	fmt.Fprintf(w, "Uploaded by %d \n", userID)
-	sendStatusCode(w, http.StatusOK)
 }
 
 func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +147,6 @@ func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Comment deleted successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func deleteSubCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -194,7 +191,6 @@ func deleteSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Sub Comment deleted successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func getCommentsByPostIDHandler(w http.ResponseWriter, r *http.Request) {

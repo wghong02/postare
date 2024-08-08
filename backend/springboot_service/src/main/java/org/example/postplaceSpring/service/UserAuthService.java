@@ -31,7 +31,7 @@ public class UserAuthService implements UserDetailsService {
 
 
     public UserDetails loadUserByUserId(long userId) throws UsernameNotFoundException {
-        String username = getUsernameFromGoService(userId);
+        String username = getUsernameFromGoService(userId).trim();;
         UserAuth userAuth = userAuthRepository.findByUsername(username);
         if (userAuth == null) {
             throw new UsernameNotFoundException("User not found");

@@ -66,7 +66,6 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Post saved successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +112,6 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Post deleted successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func searchPostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -278,7 +276,6 @@ func increaseViewByPostIDHandler(w http.ResponseWriter, r *http.Request){
 
 	// 3. format response
 	fmt.Fprintf(w, "View increased successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func getLikedPostsByUserIDHandler(w http.ResponseWriter, r *http.Request) {

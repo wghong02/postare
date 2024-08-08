@@ -50,7 +50,6 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 	const [totalComments, setTotalComments] = useState<number>(0); // to track the total comments of the post
 	const [authed, setAuthed] = useState<boolean>(false); // to track if the user is currently authed to comment and like
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { hasCopied, onCopy } = useClipboard(window.location.href);
 	const toast = useToast();
 
 	const postId = params.id;
@@ -63,16 +62,14 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 			await increasePostViews(postId);
 			setPost(postData);
 			if (postData) {
+				setTotalLikes(postData.likes);
 				const userInfo = await getUserPublicInfo(postData.postOwnerId);
-				if (!authed) {
-					setLiked(false);
-				} else {
+				setUser(userInfo);
+				if (localStorage.getItem("authToken") != null) {
 					const alreadyLiked = await checkLike(postId);
 					setLiked(alreadyLiked);
 				}
-				setUser(userInfo);
 			}
-			setTotalLikes(postData.likes);
 		} catch (error) {
 			console.error("Error fetching post:", error);
 			notFound();
@@ -141,14 +138,29 @@ const PostInfoPage = ({ params }: { params: { id: string } }) => {
 
 	// for copying the url of the post to share
 	const handleCopy = () => {
-		onCopy();
-		toast({
-			title: "URL Copied.",
-			description: "The current URL has been copied to your clipboard.",
-			status: "success",
-			duration: 3000,
-			isClosable: true,
-		});
+		if (typeof window !== "undefined") {
+			navigator.clipboard
+				.writeText(window.location.href)
+				.then(() => {
+					toast({
+						title: "URL Copied.",
+						description: "The current URL has been copied to your clipboard.",
+						status: "success",
+						duration: 3000,
+						isClosable: true,
+					});
+				})
+				.catch((err) => {
+					console.error("Could not copy text: ", err);
+					toast({
+						title: "Copy Failed.",
+						description: "Failed to copy the URL.",
+						status: "error",
+						duration: 3000,
+						isClosable: true,
+					});
+				});
+		}
 	};
 
 	// fetch the data, number of comments and number of likes each load of the website

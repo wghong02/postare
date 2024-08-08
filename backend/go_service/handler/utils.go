@@ -14,7 +14,3 @@ func sendJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) {
 		}
 	}
 }
-
-func sendStatusCode(w http.ResponseWriter, statusCode int) {
-	w.WriteHeader(statusCode)
-}

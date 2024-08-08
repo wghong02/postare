@@ -55,7 +55,6 @@ func saveLikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Response
-	sendStatusCode(w, http.StatusOK)
 	fmt.Fprintf(w, "Like saved successfully\n")
 	fmt.Fprintf(w, "Uploaded by %d \n", userID)
 }
@@ -104,7 +103,6 @@ func unLikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Like deleted successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func checkIfLikeExistsHandler(w http.ResponseWriter, r *http.Request){

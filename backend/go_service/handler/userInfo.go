@@ -49,7 +49,6 @@ func saveUserInfoHandler (w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "User info saved successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func updateUserInfoHandler (w http.ResponseWriter, r *http.Request) {
@@ -104,7 +103,6 @@ func updateUserInfoHandler (w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "User info saved successfully\n")
-	sendStatusCode(w, http.StatusOK)
 }
 
 func getUserInfoByIDHandler(w http.ResponseWriter, r *http.Request) {
