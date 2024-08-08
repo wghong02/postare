@@ -2,9 +2,7 @@ package handler
 
 import (
 	customErrors "appBE/errors"
-	"appBE/model"
 	"appBE/service"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -23,14 +21,14 @@ func saveLikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Read userID from request header or context passed from Spring Boot
-	userID := r.Header.Get("X-User-ID")
-	if userID == "" {
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
 	// Parse userID to int64
-	userIDInt, err := strconv.ParseInt(userID, 10, 64)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
@@ -42,16 +40,12 @@ func saveLikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var like model.Like
-	if err := json.Unmarshal(body, &like); err != nil {
-		http.Error(w, "Unable to parse JSON", http.StatusBadRequest)
-		return
-	}
-
 	// Call service to process and save the like
-	if err := service.LikePost(&like, userIDInt); err != nil {
+	if err := service.LikePost(body, userID); err != nil {
 		if errors.Is(err, customErrors.ErrUserNotFound) {
 			http.Error(w, "liker does not exist", http.StatusBadRequest)
+		} else if errors.Is(err, customErrors.ErrUnableToParseJson) {
+			http.Error(w, "unable to parse json", http.StatusBadRequest)
 		} else {
 			// For all other errors, return internal server error
 			http.Error(w, "Failed to save likes from backend",
@@ -61,8 +55,9 @@ func saveLikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Response
+	sendStatusCode(w, http.StatusOK)
 	fmt.Fprintf(w, "Like saved successfully\n")
-	fmt.Fprintf(w, "Uploaded by %d \n", userIDInt)
+	fmt.Fprintf(w, "Uploaded by %d \n", userID)
 }
 
 func unLikeHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,6 +104,7 @@ func unLikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Like deleted successfully\n")
+	sendStatusCode(w, http.StatusOK)
 }
 
 func checkIfLikeExistsHandler(w http.ResponseWriter, r *http.Request){
@@ -155,41 +151,3 @@ func checkIfLikeExistsHandler(w http.ResponseWriter, r *http.Request){
         fmt.Fprint(w, "false")
     }
 }
-
-// func getLikeCountByPostIDHandler(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("Received one get like count request")
-
-// 	// response is json
-// 	w.Header().Set("Content-Type", "application/json")
-// 	postIDStr := mux.Vars(r)["postID"]
-
-// 	// 1. process data
-// 	postID, err := uuid.Parse(postIDStr)
-// 	if err != nil {
-// 		http.Error(w, "Invalid postID provided", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	// 2. call service level to get like count
-// 	count, err := service.GetLikesCountByPostID(postID)
-// 	if err != nil {
-// 		// Check if the error is due to the post not being found
-// 		if errors.Is (err, customErrors.ErrPostNotFound) {
-// 			http.Error(w, "post not found", http.StatusNotFound)
-// 		} else {
-// 			// For all other errors, return internal server error
-// 			http.Error(w, "Failed to get like count from backend",
-// 				http.StatusInternalServerError)
-// 		}
-// 		return
-// 	}
-
-// 	// 3. format json response
-// 	js, err := json.Marshal(count)
-// 	if err != nil {
-// 		http.Error(w, "Failed to parse count into JSON format",
-// 			http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Write(js)
-// }

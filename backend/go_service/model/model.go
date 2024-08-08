@@ -7,6 +7,7 @@ import (
 )
 
 // the model of each row in each of the table, and some sample data
+// use pointers for optional values (that can be empty)
 
 type UserInfo struct {
 	UserID          int64     `json:"user_id"`
@@ -21,7 +22,7 @@ type UserInfo struct {
 	TotalLikes      int64     `json:"total_likes"`
 	UserExperience  int64     `json:"user_experience"`
 	TotalPosts      int64	  `json:"total_posts"`
-	Bio				string	  `json:"bio"`
+	Bio				*string	  `json:"bio"`
 }
 
 type UserAuth struct {

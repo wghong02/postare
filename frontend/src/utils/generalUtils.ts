@@ -79,6 +79,7 @@ export const isValidUsername = (username: string): boolean => {
 
 export const isCleanComment = (comment: string): boolean => {
 	// Normalize the comment by converting to lowercase
+	if (!comment) return true;
 	const normalizedComment = comment.toLowerCase();
 
 	// Check for profanity in the normalized comment

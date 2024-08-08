@@ -2,19 +2,28 @@ package service
 
 import (
 	sqlMethods "appBE/database"
+	customErrors "appBE/errors"
 	"appBE/model"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-func LikePost(like *model.Like, userID int64) error {
+func LikePost(body []byte, userID int64) error {
+
+	// parse json body
+	var like model.Like
+	if err := json.Unmarshal(body, &like); err != nil {
+		return customErrors.ErrUnableToParseJson
+	}
+
 	// process additional data
 	like.Liker = userID
 	like.DateTime = time.Now()
 
-	if err := sqlMethods.SaveLikeToSQL(like); err != nil {
+	if err := sqlMethods.SaveLikeToSQL(&like); err != nil {
 		fmt.Printf("Failed to save like to SQL %v\n", err)
 		return err
 	}
@@ -40,20 +49,3 @@ func CheckIfLikeExists(userID int64, postID uuid.UUID) (bool, error){
     }
     return exists, nil
 }
-
-// func GetLikesCountByPostID(postID uuid.UUID) (model.CountModel, error){
-// 	// get the total number of likes of a post
-
-// 	var count int64
-// 	var err error
-	
-// 	count, err = sqlMethods.GetTotalLikeCountByPostID(postID)
-	
-// 	result := model.CountModel{}
-// 	if err != nil {
-// 		fmt.Printf("Failed to search post from SQL, %v\n", err)
-// 		return result, err
-// 	}
-// 	result.Count = count
-// 	return result, err
-// }

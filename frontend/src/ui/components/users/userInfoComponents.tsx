@@ -10,15 +10,16 @@ import {
 	Link,
 	IconButton,
 	Textarea,
-	Slide,
 	Button,
 	useDisclosure,
 	Collapse,
+	useToast,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { timeAgo, formatCounts } from "@/utils/generalUtils";
 import { UserInfo } from "@/lib/model";
 import { EditIcon } from "@chakra-ui/icons";
+import { isCleanComment, isValidNickname } from "@/utils/generalUtils";
 
 export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	const registerTime = timeAgo(user.registerTime);
@@ -30,6 +31,7 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	const [phoneNumber, setPhoneNumber] = useState(user.userPhone || "");
 	const [nickname, setNickname] = useState(user.nickname);
 	const [bio, setBio] = useState(user.bio);
+	const toast = useToast();
 
 	// useDisclosure hook to handle slide visibility
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -83,23 +85,26 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	) => {
 		setter(value);
 		if (value !== originalValue) {
-			console.log("Opening slide - input value changed");
 			onOpen();
 		} else {
-			console.log("Closing slide - input value unchanged");
 			onClose();
 		}
 	};
 
 	// Handle save changes
 	const handleSaveChanges = () => {
-		setOriginalValues({
-			userEmail,
-			profilePicture,
-			phoneNumber,
-			nickname,
-			bio,
-		});
+		if (isCleanComment(bio) && isValidNickname(nickname)) {
+		} else {
+			toast({
+				description:
+					"Please fill in all required fields following the requirements and try again",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+		}
+
+		// call backend
 		onClose();
 	};
 
@@ -232,6 +237,7 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 						mt="2"
 						textAlign="center"
 						width="300px"
+						isInvalid={!isValidNickname(nickname)}
 					/>
 				</Box>
 
@@ -247,6 +253,7 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 						mt="2"
 						textAlign="center"
 						width="300px"
+						isInvalid={!isCleanComment(bio)}
 					/>
 				</Box>
 

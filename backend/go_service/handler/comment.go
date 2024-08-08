@@ -2,9 +2,7 @@ package handler
 
 import (
 	customErrors "appBE/errors"
-	"appBE/model"
 	"appBE/service"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -23,14 +21,14 @@ func uploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Read userID from request header or context passed from Spring Boot
-	userID := r.Header.Get("X-User-ID")
-	if userID == "" {
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
 	// Parse userID to int64
-	userIDInt, err := strconv.ParseInt(userID, 10, 64)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
@@ -42,16 +40,12 @@ func uploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var comment model.Comment
-	if err := json.Unmarshal(body, &comment); err != nil {
-		http.Error(w, "Unable to parse JSON", http.StatusBadRequest)
-		return
-	}
-
 	// Call service to process and save the comment
-	if err := service.UploadComment(&comment, userIDInt); err != nil {
+	if err := service.UploadComment(body, userID); err != nil {
 		if errors.Is(err, customErrors.ErrUserNotFound) {
 			http.Error(w, "comment owner does not exist", http.StatusBadRequest)
+		} else if errors.Is(err, customErrors.ErrUnableToParseJson) {
+			http.Error(w, "unable to parse json", http.StatusBadRequest)
 		} else {
 			// For all other errors, return internal server error
 			http.Error(w, "Failed to save comment from backend",
@@ -62,7 +56,8 @@ func uploadCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Comment saved successfully\n")
-	fmt.Fprintf(w, "Uploaded by %d \n", userIDInt)
+	fmt.Fprintf(w, "Uploaded by %d \n", userID)
+	sendStatusCode(w, http.StatusOK)
 }
 
 func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,14 +68,14 @@ func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Read userID from request header or context passed from Spring Boot
-	userID := r.Header.Get("X-User-ID")
-	if userID == "" {
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
 	// Parse userID to int64
-	userIDInt, err := strconv.ParseInt(userID, 10, 64)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
@@ -92,16 +87,12 @@ func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var subComment model.SubComment
-	if err := json.Unmarshal(body, &subComment); err != nil {
-		http.Error(w, "Unable to parse JSON", http.StatusBadRequest)
-		return
-	}
-
 	// Call service to process and save the subComment
-	if err := service.UploadSubComment(&subComment, userIDInt); err != nil {
+	if err := service.UploadSubComment(body, userID); err != nil {
 		if errors.Is(err, customErrors.ErrUserNotFound) {
 			http.Error(w, "sub comment owner does not exist", http.StatusBadRequest)
+		} else if errors.Is(err, customErrors.ErrUnableToParseJson) {
+			http.Error(w, "unable to parse json", http.StatusBadRequest)
 		} else {
 			// For all other errors, return internal server error
 			http.Error(w, "Failed to upload sub comment from backend",
@@ -112,20 +103,21 @@ func uploadSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Comment saved successfully\n")
-	fmt.Fprintf(w, "Uploaded by %d \n", userIDInt)
+	fmt.Fprintf(w, "Uploaded by %d \n", userID)
+	sendStatusCode(w, http.StatusOK)
 }
 
 func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one delete comment request")
 	// Read userID from request header or context passed from Spring Boot
-	userID := r.Header.Get("X-User-ID")
-	if userID == "" {
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
 	// Parse userID to int64
-	userIDInt, err := strconv.ParseInt(userID, 10, 64)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
@@ -140,7 +132,7 @@ func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call service level to delete comment
-	err = service.DeleteComment(commentID, userIDInt)
+	err = service.DeleteComment(commentID, userID)
 	if err != nil {
 		// Check if the error is due to the comment not being found
 		if errors.Is(err, customErrors.ErrCommentNotFound) {
@@ -157,19 +149,20 @@ func deleteCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Comment deleted successfully\n")
+	sendStatusCode(w, http.StatusOK)
 }
 
 func deleteSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one delete comment request")
 	// Read userID from request header or context passed from Spring Boot
-	userID := r.Header.Get("X-User-ID")
-	if userID == "" {
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
 	// Parse userID to int64
-	userIDInt, err := strconv.ParseInt(userID, 10, 64)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
@@ -184,7 +177,7 @@ func deleteSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call service level to delete comment
-	err = service.DeleteSubComment(subCommentID, userIDInt)
+	err = service.DeleteSubComment(subCommentID, userID)
 	if err != nil {
 		// Check if the error is due to the comment not being found
 		if errors.Is(err, customErrors.ErrCommentNotFound) {
@@ -201,6 +194,7 @@ func deleteSubCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Sub Comment deleted successfully\n")
+	sendStatusCode(w, http.StatusOK)
 }
 
 func getCommentsByPostIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -243,13 +237,7 @@ func getCommentsByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(comments)
-	if err != nil {
-		http.Error(w, "Failed to parse comments into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, comments, http.StatusOK)
 }
 
 func getSubCommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -292,13 +280,7 @@ func getSubCommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(subComments)
-	if err != nil {
-		http.Error(w, "Failed to parse subComments into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, subComments, http.StatusOK)
 }
 
 func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
@@ -344,13 +326,7 @@ func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(count)
-	if err != nil {
-		http.Error(w, "Failed to parse count into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, count, http.StatusOK)
 }
 
 func getSubCommentCountByCommentID(w http.ResponseWriter, r *http.Request) {
@@ -382,11 +358,5 @@ func getSubCommentCountByCommentID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(count)
-	if err != nil {
-		http.Error(w, "Failed to parse count into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, count, http.StatusOK)
 }

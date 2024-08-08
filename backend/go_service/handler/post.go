@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -21,14 +20,14 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one upload post request")
 
 	// Read userID from request header or context passed from Spring Boot
-	userID := r.Header.Get("X-User-ID")
-	if userID == "" {
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
 	// Parse userID to int64
-	userIDInt, err := strconv.ParseInt(userID, 10, 64)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
@@ -50,29 +49,14 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to read image", http.StatusBadRequest)
 		return
 	}	
-	
-	// Convert buffer to io.ReadSeeker, upload the post's image to S3 for better storage
-	fileReader := bytes.NewReader(buf.Bytes())
-	
-	imageURL, err := uploadToS3(fileReader, fileHeader.Filename)
-
-	if err != nil {
-		http.Error(w, "Failed to upload image to S3", http.StatusInternalServerError)
-		return
-	}
-
-	post := model.Post{
-		Title:       title,
-		Description: description,
-		ImageUrl:    imageURL,
-		PostDetails: postDetails,
-	}
 
 	// Call service to process and save the post
-	if err := service.UploadPost(&post, userIDInt); err != nil {
+	if err := service.UploadPost(userID,title, description, postDetails, buf, fileHeader); err != nil {
 		if errors.Is(err, customErrors.ErrUserNotFound) {
 			http.Error(w, "post owner does not exist", http.StatusBadRequest)
-		} else {
+		} else if errors.Is(err, customErrors.ErrUnableToUploadToS3) {
+			http.Error(w, "unable to upload image to s3", http.StatusInternalServerError)
+		}else {
 			// For all other errors, return internal server error
 			http.Error(w, "Failed to upload post from backend",
 				http.StatusInternalServerError)
@@ -82,20 +66,20 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Response
 	fmt.Fprintf(w, "Post saved successfully\n")
-	fmt.Fprintf(w, "Uploaded %s by %d \n", post.Title, userIDInt)
+	sendStatusCode(w, http.StatusOK)
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one delete post request")
 	// Read userID from request header or context passed from Spring Boot
-	userID := r.Header.Get("X-User-ID")
-	if userID == "" {
+	userIDStr := r.Header.Get("X-User-ID")
+	if userIDStr == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
 	// Parse userID to int64
-	userIDInt, err := strconv.ParseInt(userID, 10, 64)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
@@ -110,14 +94,16 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call service level to delete post
-	imageUrl, err := service.DeletePost(postID, userIDInt)
+	err = service.DeletePost(postID, userID)
 	if err != nil {
 		// Check if the error is due to the post not being found
 		if errors.Is(err, customErrors.ErrPostNotFound) {
 			http.Error(w, "post not found", http.StatusNotFound)
 		} else if errors.Is(err, customErrors.ErrPostNotOwnedByUser){
 			http.Error(w, "post not owned by user", http.StatusNotFound)
-		} else {
+		} else if errors.Is(err, customErrors.ErrUnableToDeleteFromS3){
+			http.Error(w, "failed to delete file from S3", http.StatusInternalServerError)
+		}else {
 			// For all other errors, return internal server error
 			http.Error(w, "Failed to delete post from backend",
 				http.StatusInternalServerError)
@@ -125,14 +111,9 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = deleteFileFromS3(imageUrl)
-	if err != nil {
-		http.Error(w, "Failed to delete file from S3", http.StatusInternalServerError)
-		return
-	}
-
 	// Response
 	fmt.Fprintf(w, "Post deleted successfully\n")
+	sendStatusCode(w, http.StatusOK)
 }
 
 func searchPostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -161,12 +142,7 @@ func searchPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(posts)
-	if err != nil {
-		http.Error(w, "Failed to parse posts into JSON format", http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, posts, http.StatusOK)
 }
 
 func getPostByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -197,13 +173,7 @@ func getPostByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(post)
-	if err != nil {
-		http.Error(w, "Failed to parse post into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, post, http.StatusOK)
 }
 
 func getMostInOneAttributePostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -233,12 +203,7 @@ func getMostInOneAttributePostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(posts)
-	if err != nil {
-		http.Error(w, "Failed to parse posts into JSON format", http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, posts, http.StatusOK)
 }
 
 func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -281,13 +246,7 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(posts)
-	if err != nil {
-		http.Error(w, "Failed to parse posts into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, posts, http.StatusOK)
 }
 
 func increaseViewByPostIDHandler(w http.ResponseWriter, r *http.Request){
@@ -319,6 +278,7 @@ func increaseViewByPostIDHandler(w http.ResponseWriter, r *http.Request){
 
 	// 3. format response
 	fmt.Fprintf(w, "View increased successfully\n")
+	sendStatusCode(w, http.StatusOK)
 }
 
 func getLikedPostsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -366,11 +326,5 @@ func getLikedPostsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. format json response
-	js, err := json.Marshal(posts)
-	if err != nil {
-		http.Error(w, "Failed to parse likes into JSON format",
-			http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	sendJSONResponse(w, posts, http.StatusOK)
 }

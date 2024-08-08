@@ -4,46 +4,71 @@ import (
 	sqlMethods "appBE/database"
 	customErrors "appBE/errors"
 	"appBE/model"
+	"bytes"
 	"fmt"
+	"mime/multipart"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-func UploadPost(post *model.Post, userID int64) error {
+func UploadPost(userID int64, title, description, postDetails string, buf bytes.Buffer, fileHeader *multipart.FileHeader) error {
+
+		
+	// Convert buffer to io.ReadSeeker, upload the post's image to S3 for better storage
+	fileReader := bytes.NewReader(buf.Bytes())
+	
+	imageURL, err := uploadToS3(fileReader, fileHeader.Filename)
+
+	if err != nil {
+		return customErrors.ErrUnableToUploadToS3
+	}
+
+	// construct the post
+	post := model.Post{
+		Title:       title,
+		Description: description,
+		ImageUrl:    imageURL,
+		PostDetails: postDetails,
+		PostID: uuid.New(),
+		PostOwnerID: userID,
+		PutOutTime: time.Now(),
+		Likes: 0,
+		Views: 0,
+		IsAvailable: true,
+		CategoryID: 3,
+	}
+
 	// Set additional fields
-	post.PostID = uuid.New()
-	post.PostOwnerID = userID
-	post.PutOutTime = time.Now()
-	post.Likes = 0
-	post.Views = 0
-	post.IsAvailable = true
-	post.CategoryID = 3
 
 	// Save post to the database
-	if err := sqlMethods.SavePostToSQL(post); err != nil {
+	if err := sqlMethods.SavePostToSQL(&post); err != nil {
 		fmt.Printf("Failed to save post to SQL %v\n", err)
 		return err
 	}
 	return nil
 }
 
-func DeletePost(postID uuid.UUID, userID int64) (string, error) {
+func DeletePost(postID uuid.UUID, userID int64) (error) {
 	// verify that the post is owned by the user
 	postedByUser, err := sqlMethods.CheckIfPostOwnedByUser(postID, userID)
 	if err != nil {
-		return "", err
+		return err
 	}	
 	if !postedByUser {
-		return "", customErrors.ErrPostNotOwnedByUser
+		return customErrors.ErrPostNotOwnedByUser
 	}
 	// call backend to delete the post, return if there is error
 	imageUrl, err := sqlMethods.DeletePostFromSQL(postID)
 	if err != nil {
 		fmt.Printf("Failed to delete post from SQL %v\n", err)
-		return "", err
+		return err
 	}
-	return imageUrl, nil
+	err = deleteFileFromS3(imageUrl)
+	if err != nil {
+		return customErrors.ErrUnableToDeleteFromS3
+	}
+	return nil
 }
 
 func SearchPostsByDescription(description string, limit int, offset int) ([]model.Post, error) {

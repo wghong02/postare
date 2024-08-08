@@ -8,6 +8,10 @@ import (
 )
 
 var (
+    ErrUnableToUploadToS3 = errors.New("unable to upload to s3")
+    ErrUnableToDeleteFromS3 = errors.New("unable to delete from s3")
+    ErrUnableToParseJson = errors.New("unable to parse json")
+
     ErrUserNotFound = errors.New("user not found")
     ErrPostNotFound = errors.New("post not found")
     ErrUserOrPostNotFound = errors.New("user or post not found")
@@ -21,6 +25,7 @@ var (
     
     ErrLikeNotFound = errors.New("like not found")
     ErrNotLikedByUser = errors.New("post not owned by user")
+    
 )
 
 func CheckUserError (err error) error {

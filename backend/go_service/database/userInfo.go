@@ -33,6 +33,27 @@ func SaveUserInfoToSQL(user *model.UserInfo) error {
 	return nil
 }
 
+func UpdateUserInfo(user *model.UserInfo) error {
+	
+	// save user
+	query := `UPDATE UserInfo
+	SET UserEmail = $2,
+		UserPhone = $3,
+		Nickname = $4,
+		ProfilePicture = $5,
+		Bio = $6
+	WHERE UserID = $1;`
+
+	_, err := dbPool.Exec(context.Background(),
+		query, user.UserID, user.UserEmail, user.UserPhone, user.Nickname,
+		user.ProfilePicture, user.Bio, )
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 	// search if user id exists
 	
@@ -44,7 +65,7 @@ func GetUserInfoByID(userID int64) (model.UserInfo, error) {
 		userID).Scan(&user.UserID, &user.Username, &user.UserEmail,
 		&user.UserPhone, &user.Nickname, &user.ProfilePicture,
 		&user.RegisterTime, &user.TotalViews, &user.TotalComments,
-		&user.TotalLikes, &user.UserExperience, &user.TotalPosts, & user.Bio,
+		&user.TotalLikes, &user.UserExperience, &user.TotalPosts, &user.Bio,
 	)
 
 	// Check if the query returned an error
@@ -143,7 +164,7 @@ func GetLikedUsersByPostID(postID uuid.UUID, limit int, offset int) ([]model.Use
 		err := rows.Scan(&user.UserID, &user.Username, &user.UserEmail,
 			&user.UserPhone, &user.Nickname, &user.ProfilePicture,
 			&user.RegisterTime, &user.TotalViews, &user.TotalComments,
-			&user.TotalLikes, &user.UserExperience, &user.TotalPosts,
+			&user.TotalLikes, &user.UserExperience, &user.TotalPosts, &user.Bio,
 		)
 		if err != nil {
 			return nil, err

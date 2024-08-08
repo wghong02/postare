@@ -17,6 +17,7 @@ func InitRouter() http.Handler {
 	// })
 
 	router := mux.NewRouter()
+	router.HandleFunc("/user/userinfo/update", updateUserInfoHandler).Methods("POST")
 	router.HandleFunc("/user/posts/upload", uploadPostHandler).Methods("POST")
 	router.HandleFunc("/user/posts/delete/{postID}", deletePostHandler).Methods("DELETE")
 	router.HandleFunc("/user/comments/upload", uploadCommentHandler).Methods("POST")

@@ -4,30 +4,43 @@ import (
 	sqlMethods "appBE/database"
 	customErrors "appBE/errors"
 	"appBE/model"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-func UploadComment(comment *model.Comment, userID int64) error {
+func UploadComment(body []byte, userID int64) error {
+
+	// parse json body
+	var comment model.Comment
+	if err := json.Unmarshal(body, &comment); err != nil {
+		return customErrors.ErrUnableToParseJson
+	}
 	// process additional data
 	comment.PosterID = userID
 	comment.CommentTime = time.Now()
 
-	if err := sqlMethods.SaveCommentToSQL(comment); err != nil {
+	if err := sqlMethods.SaveCommentToSQL(&comment); err != nil {
 		fmt.Printf("Failed to save comment to SQL %v\n", err)
 		return err
 	}
 	return nil
 }
 
-func UploadSubComment(subComment *model.SubComment, userID int64) error {
+func UploadSubComment(body []byte, userID int64) error {
+	
+	// parse json body
+	var subComment model.SubComment
+	if err := json.Unmarshal(body, &subComment); err != nil {
+		return customErrors.ErrUnableToParseJson
+	}
 	// process additional data
 	subComment.PosterID = userID
 	subComment.CommentTime = time.Now()
 
-	if err := sqlMethods.SaveSubCommentToSQL(subComment); err != nil {
+	if err := sqlMethods.SaveSubCommentToSQL(&subComment); err != nil {
 		fmt.Printf("Failed to save subComment to SQL %v\n", err)
 		return err
 	}
