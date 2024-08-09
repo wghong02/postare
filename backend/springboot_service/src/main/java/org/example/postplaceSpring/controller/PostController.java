@@ -147,4 +147,16 @@
                 throw new ResponseStatusException(response.getStatusCode(), "Posts not found");
             }
         }
+
+        @GetMapping("/public/count/post/userID/{userId}")
+        public ResponseEntity<String> getPostCountByUserId(@PathVariable long userId) {
+            logger.info("Received Get request for /public/count/post/userID/{userID}");
+            ResponseEntity<String> response = postService.getPostCountByUserId(userId);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                logger.info("post count with user {} returned", userId);
+                return response;
+            } else {
+                throw new ResponseStatusException(response.getStatusCode(), "Sub comment not found");
+            }
+        }
     }

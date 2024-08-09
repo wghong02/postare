@@ -122,4 +122,13 @@ public class PostService {
             throw new ResourceNotFoundException("Likes not found with UserId: " + userId, ex);
         }
     }
+
+    public ResponseEntity<String> getPostCountByUserId(long userId) {
+        String url = goServiceUrl + "/public/count/post/userID/" + userId;
+        try {
+            return restTemplate.getForEntity(url, String.class);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResourceNotFoundException("Post count not found with userId: " + userId, ex);
+        }
+    }
 }

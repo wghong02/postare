@@ -9,14 +9,12 @@ export function UserPublicPostRow({
 	currentPage,
 	handleNextPage,
 	handlePrevPage,
-	reachedEnd,
 }: {
 	posts: Post[];
 	postsPerPage: number;
 	currentPage: number;
 	handleNextPage: () => void;
 	handlePrevPage: () => void;
-	reachedEnd: boolean;
 }) {
 	// this is the horizontal rows of cards of posts. number of cards each page is determined by the size of the page
 	// content of each page is decided by the index of posts.
@@ -54,7 +52,6 @@ export function UserPublicPostRow({
 					icon={<MdKeyboardArrowRight />}
 					onClick={handleNextPage}
 					size="lg"
-					disabled={reachedEnd}
 				/>
 			</Flex>
 		</Box>

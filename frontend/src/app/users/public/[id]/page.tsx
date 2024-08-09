@@ -1,7 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Box, Flex, VStack, StackDivider, useToast } from "@chakra-ui/react";
-import { getUserPublicPosts } from "@/utils/postUtils";
+import {
+	getUserPublicPosts,
+	getPostCountByUserId,
+	getPost,
+} from "@/utils/postUtils";
 import { getUserPublicInfo } from "@/utils/userUtils";
 import { Post, UserInfo } from "@/lib/model";
 import LoadingWrapper from "@/ui/components/web/LoadingWrapper";
@@ -18,8 +22,8 @@ const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
 	const [hasFetched, setHasFetched] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [postsPerPage, setPostsPerPage] = useState(4);
-	const [reachedEnd, setReachedEnd] = useState(false);
-	const [totalPages, setTotalPages] = useState<number | null>(null);
+	const [totalPages, setTotalPages] = useState<number>(0);
+	const [totalPosts, setTotalPosts] = useState(0);
 
 	const userId = parseInt(params.id);
 	const toast = useToast();
@@ -40,9 +44,12 @@ const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
 	const fetchPostsData = async () => {
 		try {
 			setLoadingMore(true);
+			const postCount = await getPostCountByUserId({ userId });
+			setTotalPosts(postCount);
+			setTotalPages(postCount / postsPerPage);
 			const newPosts = await getUserPublicPosts({
 				query: {
-					limit: postsPerPage + 1,
+					limit: 20,
 					offset: posts.length,
 					description: null,
 				},
@@ -50,9 +57,6 @@ const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
 			});
 			if (newPosts.length > 0) {
 				setPosts([...posts, ...newPosts]); // Append new posts to existing posts
-			} else {
-				setReachedEnd(true); // No more posts to load
-				setTotalPages(currentPage);
 			}
 		} catch (error) {
 			console.error("Error fetching posts:", error);
@@ -65,14 +69,13 @@ const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
 		const handleResize = () => {
 			const width = window.innerWidth;
 			let columns = 1;
-			if (width > 1600) {
-				columns = 4;
-			} else if (width > 1100) {
+			if (width > 1500) {
 				columns = 3;
-			} else if (width > 600) {
+			} else if (width > 1000) {
 				columns = 2;
 			}
 			setPostsPerPage(columns);
+			setTotalPages(totalPosts / postsPerPage);
 		};
 
 		// Initial setup
@@ -93,10 +96,14 @@ const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
 
 	const handleNextPage = () => {
 		setCurrentPage((prevPage) => {
-			if (!reachedEnd) {
-				fetchPostsData();
-				return prevPage + 1;
-			} else if (totalPages && currentPage <= totalPages) {
+			if (currentPage <= totalPages) {
+				if (
+					posts.length < totalPosts &&
+					currentPage * postsPerPage >= 0.6 * posts.length
+				) {
+					fetchPostsData();
+				}
+
 				return prevPage + 1;
 			} else {
 				toast({
@@ -155,7 +162,6 @@ const UserPublicInfoPage = ({ params }: { params: { id: string } }) => {
 									currentPage={currentPage}
 									handleNextPage={handleNextPage}
 									handlePrevPage={handlePrevPage}
-									reachedEnd={reachedEnd}
 								/>
 							</Flex>
 						</LoadingWrapper>

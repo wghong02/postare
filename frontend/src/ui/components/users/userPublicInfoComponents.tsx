@@ -11,7 +11,6 @@ export function UserPublicInfoComponent({ user }: { user: UserInfo }) {
 		user.totalViews
 	);
 	const registerTime = timeAgo(user.registerTime);
-	console.log(user);
 
 	// the public info of each user.
 

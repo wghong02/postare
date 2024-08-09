@@ -37,13 +37,14 @@ func InitRouter() http.Handler {
 	
 	router.HandleFunc("/public/userInfo", saveUserInfoHandler).Methods("POST")
 	router.HandleFunc("/public/userInfo/userID/{userID}", getUserInfoByIDHandler).Methods("GET")
+	router.HandleFunc("/public/userInfo/userLikes/{postID}", getLikedUsersByPostIDHandler).Methods("GET")
 	router.HandleFunc("/public/userID/username/{username}", getUserIDByNameHandler).Methods("GET")
 	router.HandleFunc("/public/username/userID/{userID}", getUsernameByIDHandler).Methods("GET")
 	router.HandleFunc("/public/comments/postID/{postID}", getCommentsByPostIDHandler).Methods("GET")
 	router.HandleFunc("/public/subComments/commentID/{commentID}", getSubCommentsByCommentIDHandler).Methods("GET")
-	router.HandleFunc("/public/count/comment/postID/{postID}", getCommentCountByPostID).Methods("GET")
-	router.HandleFunc("/public/count/subComment/commentID/{commentID}", getSubCommentCountByCommentID).Methods("GET")
-	router.HandleFunc("/public/userInfo/userLikes/{postID}", getLikedUsersByPostIDHandler).Methods("GET")
+	router.HandleFunc("/public/count/post/userID/{userID}", getPostCountByUserIDHandler).Methods("GET")
+	router.HandleFunc("/public/count/comment/postID/{postID}", getCommentCountByPostIDHandler).Methods("GET")
+	router.HandleFunc("/public/count/subComment/commentID/{commentID}", getSubCommentCountByCommentIDHandler).Methods("GET")
 	// router.HandleFunc("/public/getLikesCount/{postID}", getLikeCountByPostIDHandler).Methods("GET")
 	
 	// Set up CORS middleware

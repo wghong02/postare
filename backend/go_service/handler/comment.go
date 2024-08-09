@@ -279,7 +279,7 @@ func getSubCommentsByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
 	sendJSONResponse(w, subComments, http.StatusOK)
 }
 
-func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
+func getCommentCountByPostIDHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one get comment count request")
 
 	// response is json
@@ -325,7 +325,7 @@ func getCommentCountByPostID(w http.ResponseWriter, r *http.Request) {
 	sendJSONResponse(w, count, http.StatusOK)
 }
 
-func getSubCommentCountByCommentID(w http.ResponseWriter, r *http.Request) {
+func getSubCommentCountByCommentIDHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one get comment count request")
 
 	// response is json

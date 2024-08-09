@@ -235,6 +235,28 @@ func SearchPostsByUserID(userID int64, limit int, offset int) ([]model.Post, err
 	return posts, nil
 }
 
+func GetPostCountByUserID(userID int64) (int64, error) {
+
+	// Check if user exists
+    exists, err := checkIfUserExistsByID(userID)
+    if err != nil {
+        return 0, err
+    }
+    if !exists {
+        return 0, customErrors.ErrUserNotFound
+    }
+
+	var count int64
+    err = dbPool.QueryRow(context.Background(), "SELECT COUNT(*) FROM Posts WHERE PostOwnerID = $1", userID).Scan(&count)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+
 func checkIfPostExistsByID(postID uuid.UUID) (bool, error) {
 	// check if a post exists by its id
     var exists bool

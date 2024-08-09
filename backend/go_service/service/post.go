@@ -116,6 +116,18 @@ func GetPostsByUserID(userID int64, limit int, offset int) ([]model.Post, error)
 	return posts, err
 }
 
+func GetPostCountByUserID(userID int64) (model.CountModel, error){
+	// get the total replies count of a given comment
+	count, err := sqlMethods.GetPostCountByUserID(userID)
+	result := model.CountModel{}
+	if err != nil {
+		fmt.Printf("Failed to search post from SQL, %v\n", err)
+		return result, err
+	}
+	result.Count = count
+	return result, err
+}
+
 func IncreaseViewByPostID(postID uuid.UUID) error {
 	
 	// call backedn

@@ -1,6 +1,6 @@
 import handleResponseStatus from "./errorUtils";
 import { camelizeKeys, decamelizeKeys } from "humps";
-import { Post } from "@/lib/model";
+import { CountData, Post } from "@/lib/model";
 import { QueryProps } from "@/lib/types";
 
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
@@ -194,6 +194,29 @@ export const getUserPosts = async ({ query }: { query: QueryProps }) => {
 		)) as Post[];
 
 		return posts;
+	} catch (error) {
+		console.error("Error fetching or parsing data:", error);
+		throw error;
+	}
+};
+
+export const getPostCountByUserId = async ({
+	userId,
+}: {
+	userId: number;
+}): Promise<number> => {
+	// get the count of sub comments of a comment. response is json
+	const url = new URL(`${domain}/public/count/post/userID/${userId}`);
+
+	try {
+		const response = await fetch(url);
+
+		handleResponseStatus(response, "Failed to fetch data");
+
+		const responseData: CountData = await response.json();
+
+
+		return responseData.count;
 	} catch (error) {
 		console.error("Error fetching or parsing data:", error);
 		throw error;

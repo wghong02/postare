@@ -247,6 +247,39 @@ func getUserPostsHandler(w http.ResponseWriter, r *http.Request) {
 	sendJSONResponse(w, posts, http.StatusOK)
 }
 
+func getPostCountByUserIDHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Received one get comment count request")
+
+	// response is json
+	w.Header().Set("Content-Type", "application/json")
+	userIDStr := mux.Vars(r)["userID"]
+
+	// 1. process data
+
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid userID provided", http.StatusBadRequest)
+		return
+	}
+
+	// 2. call service level to get post count
+	count, err := service.GetPostCountByUserID(userID)
+	if err != nil {
+		// Check if the error is due to the comments not being found
+		if errors.Is (err, customErrors.ErrUserNotFound) {
+			http.Error(w, "user not found", http.StatusNotFound)
+		} else {
+			// For all other errors, return internal server error
+			http.Error(w, "Failed to search post count by user ID from backend",
+				http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// 3. format json response
+	sendJSONResponse(w, count, http.StatusOK)
+}
+
 func increaseViewByPostIDHandler(w http.ResponseWriter, r *http.Request){
 	fmt.Println("Received one increase view request")
 
