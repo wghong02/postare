@@ -46,11 +46,11 @@ public class UserInfoController {
     }
 
     @PostMapping("/user/userinfo/update")
-    public ResponseEntity<String> uploadPost( @RequestParam("userEmail") String userEmail,
+    public ResponseEntity<String> updateUserInfo( @RequestParam("userEmail") String userEmail,
                                               @RequestParam("userPhone") String userPhone,
                                               @RequestParam("nickname") String nickname,
                                               @RequestParam("bio") String bio,
-                                              @RequestParam("imageFile") MultipartFile image,
+                                              @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
         logger.info("Received Post request for /user/userinfo/update");
         // Get the authenticated user's details
@@ -58,9 +58,9 @@ public class UserInfoController {
             throw new IllegalStateException("User details not found in authentication context");
         }
         long userId = userDetails.getUserId();
-        // Pass the post file and userId to the service layer
+        // Pass the info file and userId to the service layer
         return userInfoService.updateUserInfo(userEmail, userPhone, nickname,
-                bio, image, userId);
+                bio, profilePicture, userId);
     }
 
     @GetMapping("/public/userInfo/userID/{userId}")

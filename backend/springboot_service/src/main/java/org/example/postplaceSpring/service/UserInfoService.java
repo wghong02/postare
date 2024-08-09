@@ -46,7 +46,7 @@ public class UserInfoService {
     }
 
     public ResponseEntity<String> updateUserInfo(String userEmail, String userPhone, String nickname,
-                                                 String bio, MultipartFile image, long userId) throws IOException {
+                                                 String bio, MultipartFile profilePicture, long userId) throws IOException {
         String url = goServiceUrl + "/user/userinfo/update";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -57,12 +57,16 @@ public class UserInfoService {
         body.add("userPhone", userPhone);
         body.add("nickname", nickname);
         body.add("bio", bio);
-        body.add("image", new ByteArrayResource(image.getBytes()) {
-            @Override
-            public String getFilename() {
-                return image.getOriginalFilename();
-            }
-        });
+        if (profilePicture!=null){
+            body.add("profilePicture", new ByteArrayResource(profilePicture.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return profilePicture.getOriginalFilename();
+                }
+            });
+        } else {
+            body.add("profilePicture",null);
+        }
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(

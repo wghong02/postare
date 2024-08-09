@@ -11,6 +11,7 @@ export function UserPublicInfoComponent({ user }: { user: UserInfo }) {
 		user.totalViews
 	);
 	const registerTime = timeAgo(user.registerTime);
+	console.log(user);
 
 	// the public info of each user.
 
@@ -32,6 +33,7 @@ export function UserPublicInfoComponent({ user }: { user: UserInfo }) {
 						boxSize="100px"
 						src={user.profilePicture}
 						alt="User Profile Picture"
+						objectFit="cover"
 					/>
 				</Box>
 
@@ -46,6 +48,12 @@ export function UserPublicInfoComponent({ user }: { user: UserInfo }) {
 				<Box as="h4" lineHeight="tight" fontSize="lg">
 					<Text ml="5" as="span" fontWeight="semibold" fontSize="sm">
 						Registered {registerTime}, {countString}
+					</Text>
+				</Box>
+
+				<Box as="h4" lineHeight="tight" fontSize="lg">
+					<Text ml="5" as="span" fontSize="sm">
+						"{user.bio}"
 					</Text>
 				</Box>
 

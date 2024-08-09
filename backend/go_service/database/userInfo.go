@@ -35,18 +35,35 @@ func SaveUserInfoToSQL(user *model.UserInfo) error {
 
 func UpdateUserInfo(user *model.UserInfo) error {
 	
-	// save user
-	query := `UPDATE UserInfo
-	SET UserEmail = $2,
-		UserPhone = $3,
-		Nickname = $4,
-		ProfilePicture = $5,
-		Bio = $6
-	WHERE UserID = $1;`
+	// if image is updated, then overwrite it, otherwise don't
+	var err error
+	if user.ProfilePicture != nil {
+		// save user
+		query := `UPDATE UserInfo
+		SET UserEmail = $2,
+			UserPhone = $3,
+			Nickname = $4,
+			ProfilePicture = $5,
+			Bio = $6
+		WHERE UserID = $1;`
 
-	_, err := dbPool.Exec(context.Background(),
-		query, user.UserID, user.UserEmail, user.UserPhone, user.Nickname,
-		user.ProfilePicture, user.Bio, )
+		_, err = dbPool.Exec(context.Background(),
+			query, user.UserID, user.UserEmail, user.UserPhone, user.Nickname,
+			user.ProfilePicture, user.Bio, )
+	} else {
+		// save user
+		query := `UPDATE UserInfo
+		SET UserEmail = $2,
+			UserPhone = $3,
+			Nickname = $4,
+			Bio = $5
+		WHERE UserID = $1;`
+
+		_, err = dbPool.Exec(context.Background(),
+			query, user.UserID, user.UserEmail, user.UserPhone, user.Nickname,
+			user.Bio, )
+	}
+	
 	if err != nil {
 		return err
 	}

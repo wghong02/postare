@@ -41,25 +41,30 @@ func SaveUserInfo(body []byte) error {
 
 func UpdateUserInfo(userID int64, userEmail, userPhone, userNickname, bio string, buf bytes.Buffer, fileHeader *multipart.FileHeader) error {
 
-	// Convert buffer to io.ReadSeeker, upload the post's image to S3 for better storage
-	fileReader := bytes.NewReader(buf.Bytes())
+	// fileHeader is nil if a picture is not given
 	
-	// upload the pfp to aws s3 for storage
-	imageURL, err := uploadToS3(fileReader, fileHeader.Filename)
-	if err != nil {
-		return customErrors.ErrUnableToUploadToS3
-	}
-
-	// construct the user model with the given info
 	user := model.UserInfo{
 		UserID: userID,
 		UserEmail: userEmail,
 		UserPhone: &userPhone,
 		Nickname: userNickname,
 		Bio: &bio,
-		ProfilePicture: &imageURL,
 	}
 
+	if fileHeader != nil {
+		// Convert buffer to io.ReadSeeker, upload the post's image to S3 for better storage
+		fileReader := bytes.NewReader(buf.Bytes())
+		
+		// upload the pfp to aws s3 for storage
+		imageURL, err := uploadToS3(fileReader, fileHeader.Filename)
+		if err != nil {
+			return customErrors.ErrUnableToUploadToS3
+		}
+	
+		// construct the user model with the given info
+		user.ProfilePicture = &imageURL
+		
+	}
 	// Save post to the database
 	if err := sqlMethods.UpdateUserInfo(&user); err != nil {
 		fmt.Printf("Failed to update userinfo to SQL %v\n", err)

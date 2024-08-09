@@ -73,18 +73,24 @@ func updateUserInfoHandler (w http.ResponseWriter, r *http.Request) {
 	userNickname := r.FormValue("nickname")
 	bio := r.FormValue("bio")
 	file, fileHeader, err := r.FormFile("profilePicture")
-	if err != nil {
-		http.Error(w, "Unable to read image", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-
-	// Read file content into a buffer
 	var buf bytes.Buffer
-	if _, err := io.Copy(&buf, file); err != nil {
-		http.Error(w, "Unable to read image", http.StatusBadRequest)
-		return
-	}	
+
+	if err != nil {
+		if err != http.ErrMissingFile {
+			http.Error(w, "Unable to read image", http.StatusBadRequest)
+			return
+		}
+		// If profile picture is not provided, skip file processing
+		fileHeader = nil
+	} else {
+		defer file.Close()
+		// Read file content into a buffer
+		if _, err := io.Copy(&buf, file); err != nil {
+			http.Error(w, "Unable to read image", http.StatusBadRequest)
+			return
+		}	
+	}
+	
 
 	// Call service to process and save the post
 	if err := service.UpdateUserInfo(userID, userEmail, userPhone, userNickname, bio, buf, fileHeader); err != nil {

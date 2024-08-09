@@ -28,7 +28,10 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	// State to manage editable fields
 	const username = user.username;
 	const [userEmail, setUserEmail] = useState(user.userEmail);
-	const [profilePicture, setProfilePicture] = useState(user.profilePicture);
+	const [profilePicture, setProfilePicture] = useState<null | File>(null);
+	const [profilePicturePreview, setProfilePicturePreview] = useState<string>(
+		user.profilePicture
+	);
 	const [phoneNumber, setPhoneNumber] = useState(user.userPhone || "");
 	const [nickname, setNickname] = useState(user.nickname);
 	const [bio, setBio] = useState(user.bio);
@@ -38,13 +41,13 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	// State to manage original values for canceling changes
-	const [originalValues, setOriginalValues] = useState({
+	const originalValues = {
 		userEmail: user.userEmail,
-		profilePicture: user.profilePicture,
+		profilePicturePreview: user.profilePicture,
 		phoneNumber: user.userPhone || "",
 		nickname: user.nickname,
 		bio: user.bio || "",
-	});
+	};
 
 	// Ref for the hidden file input
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,15 +58,14 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	) => {
 		if (event.target.files && event.target.files[0]) {
 			const file = event.target.files[0];
+			setProfilePicture(file);
 			const reader = new FileReader();
 			reader.onloadend = () => {
 				const newProfilePicture = reader.result as string;
-				setProfilePicture(newProfilePicture);
-				if (newProfilePicture !== originalValues.profilePicture) {
-					console.log("Opening slide - profile picture changed");
+				setProfilePicturePreview(newProfilePicture);
+				if (newProfilePicture !== originalValues.profilePicturePreview) {
 					onOpen();
 				} else {
-					console.log("Closing slide - profile picture unchanged");
 					onClose();
 				}
 			};
@@ -100,16 +102,17 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 			formData.append("userPhone", phoneNumber);
 			formData.append("nickname", nickname);
 			formData.append("bio", bio);
-			formData.append("imageFile", profilePicture);
+			if (profilePicture) {
+				formData.append("profilePicture", profilePicture);
+			}
 
 			await updateUserInfo(formData);
-				toast({
-					description: "update Successful.",
-					status: "success",
-					duration: 3000,
-					isClosable: true,
-				});
-
+			toast({
+				description: "update Successful.",
+				status: "success",
+				duration: 3000,
+				isClosable: true,
+			});
 		} else {
 			toast({
 				description:
@@ -127,7 +130,7 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 	// Handle cancel changes
 	const handleCancelChanges = () => {
 		setUserEmail(originalValues.userEmail);
-		setProfilePicture(originalValues.profilePicture);
+		setProfilePicturePreview(originalValues.profilePicturePreview);
 		setPhoneNumber(originalValues.phoneNumber);
 		setNickname(originalValues.nickname);
 		setBio(originalValues.bio);
@@ -162,8 +165,9 @@ export function UserHomeInfoComponent({ user }: { user: UserInfo }) {
 						<Image
 							borderRadius="full"
 							boxSize="150px"
-							src={profilePicture}
+							src={profilePicturePreview}
 							alt="Profile Picture"
+							objectFit="cover"
 						/>
 						<IconButton
 							size="sm"
