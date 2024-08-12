@@ -6,9 +6,17 @@ import {
 	CardBody,
 	CardFooter,
 	Heading,
+	HStack,
 	Image,
+	Modal,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalHeader,
+	ModalOverlay,
 	Stack,
 	Text,
+	useDisclosure,
 	useToast,
 } from "@chakra-ui/react";
 import { isPostedWithin, timeAgo } from "@/utils/generalUtils";
@@ -21,6 +29,7 @@ export function UserPostCard({ post }: { post: Post }) {
 	const uploadedTime = timeAgo(post.putOutTime);
 	const postId = post.postId;
 	const toast = useToast();
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	// to delete the post, shown as button on the card
 	const deleteOnClick = async (postId: string) => {
@@ -68,16 +77,41 @@ export function UserPostCard({ post }: { post: Post }) {
 								View
 							</Button>
 						</Link>
-						<Button
-							variant="solid"
-							colorScheme="red"
-							onClick={() => deleteOnClick(postId)}
-						>
+						<Button variant="solid" colorScheme="red" onClick={onOpen}>
 							Delete
 						</Button>
 					</CardFooter>
 				</Stack>
 			</Card>
+			<Modal isOpen={isOpen} onClose={onClose} size="md" isCentered>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Are you sure you want to delete the post?</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<HStack
+							spacing={4}
+							p={4}
+							borderWidth={1}
+							borderRadius="md"
+							borderColor="gray.200"
+							bg="gray.50"
+							alignItems="flex-end"
+							justifyContent="center"
+						>
+							<Button onClick={onClose}> Cancel</Button>
+							<Button
+								variant="solid"
+								colorScheme="red"
+								onClick={() => deleteOnClick(postId)}
+							>
+								{" "}
+								Delete
+							</Button>
+						</HStack>
+					</ModalBody>
+				</ModalContent>
+			</Modal>
 		</Box>
 	);
 }
