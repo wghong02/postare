@@ -15,6 +15,9 @@ public class UserAuth {
     @Column(name = "encodedpassword", updatable = false, nullable = false)
     private String encodedPassword;
 
+    @Column(name = "role", updatable = false, nullable = false)
+    private String role;
+
     // Getters and Setters
     public String getUsername() {
         return username;
@@ -30,5 +33,13 @@ public class UserAuth {
 
     public void setEncodedPassword(String encodedPassword) {
         this.encodedPassword = encodedPassword;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

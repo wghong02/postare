@@ -336,6 +336,7 @@ export function PostOwnerInfoCard({ user }: { user: UserInfo }) {
 						width="50px"
 						src={user.profilePicture}
 						alt="User Profile Picture"
+						objectFit="cover"
 					/>
 				</Box>
 				<Box>

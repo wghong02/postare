@@ -2,9 +2,11 @@ package org.example.postplaceSpring.service;
 
 import org.example.postplaceSpring.entity.UserAuth;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class CustomUserDetails implements UserDetails {
     // the user info required for auth
@@ -24,7 +26,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        // work with security config to configure the access of the users
+        return Collections.singletonList(new SimpleGrantedAuthority(userAuth.getRole()));
     }
 
     @Override
@@ -35,26 +38,6 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return userAuth.getUsername();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 
     @Override

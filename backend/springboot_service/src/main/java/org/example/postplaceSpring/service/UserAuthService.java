@@ -77,6 +77,7 @@ public class UserAuthService implements UserDetailsService {
         UserAuth newUser = new UserAuth();
         newUser.setUsername(registrationRequest.getUsername());
         newUser.setEncodedPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+        newUser.setRole("ROLE_USER");
 
         // Save the new user
         userAuthRepository.save(newUser);

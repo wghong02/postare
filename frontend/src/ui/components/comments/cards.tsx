@@ -133,6 +133,7 @@ export function CommentCard({
 						width="30px"
 						src={poster.profilePicture}
 						alt="User Profile Picture"
+						objectFit="cover"
 					/>
 					<VStack spacing="0" align="initial">
 						<HStack>
