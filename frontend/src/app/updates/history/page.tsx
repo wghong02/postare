@@ -12,6 +12,13 @@ const UpdateHistoryPage = () => {
 				</Heading>
 				<Flex mb={4} wrap="wrap" gap={4}>
 					<Link
+						href="#v1.1.1"
+						color="teal.500"
+						_hover={{ textDecoration: "underline" }}
+					>
+						Version 1.1.1
+					</Link>
+					<Link
 						href="#v1.1"
 						color="teal.500"
 						_hover={{ textDecoration: "underline" }}
@@ -27,6 +34,13 @@ const UpdateHistoryPage = () => {
 						Version 1.0
 					</Link>
 				</Flex>
+			</Box>
+
+			<Box mb={8}>
+				<Heading as="h1" id="v1.1" size="lg" mb={2}>
+					Version 1.1.1, Aug 12, 2024
+				</Heading>
+				<Text>Added user roles, improved UI and bug fixes.</Text>
 			</Box>
 
 			<Box mb={8}>

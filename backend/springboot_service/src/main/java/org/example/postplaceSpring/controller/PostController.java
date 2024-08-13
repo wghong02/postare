@@ -65,14 +65,14 @@
         }
 
         @DeleteMapping("/user/posts/delete/{postId}")
-        public ResponseEntity<Void> deletePost(@PathVariable UUID postId,
-                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+        public ResponseEntity<Void> deletePost( @PathVariable UUID postId,
+        @RequestParam("isMod") String isMod, @AuthenticationPrincipal CustomUserDetails userDetails) {
             logger.info("Received Delete request for /user/posts/delete/{postId}");
             if (userDetails == null) {
                 throw new IllegalStateException("User details not found in authentication context");
             }
             long userId = userDetails.getUserId();
-            postService.deletePostByPostId(postId, userId);
+            postService.deletePostByPostId(postId, userId, isMod);
             return ResponseEntity.noContent().build();
         }
 

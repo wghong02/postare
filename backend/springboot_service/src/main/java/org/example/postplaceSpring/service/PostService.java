@@ -75,10 +75,11 @@ public class PostService {
     }
 
 
-    public void deletePostByPostId(UUID postId, long userId) {
+    public void deletePostByPostId(UUID postId, long userId, String isMod) {
         String url = goServiceUrl + "/user/posts/delete/" + postId;
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-ID", String.valueOf(userId));
+        headers.set("isMod", isMod);
         HttpEntity<String> request = new HttpEntity<>(headers);
         try {
             restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);

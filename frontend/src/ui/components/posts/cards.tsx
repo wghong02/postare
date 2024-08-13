@@ -34,7 +34,7 @@ export function UserPostCard({ post }: { post: Post }) {
 	// to delete the post, shown as button on the card
 	const deleteOnClick = async (postId: string) => {
 		try {
-			await deletePost(postId);
+			await deletePost({ postId: postId, isMod: false });
 			toast({
 				description: "Delete Successful.",
 				status: "success",

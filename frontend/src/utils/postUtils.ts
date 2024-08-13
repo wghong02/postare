@@ -127,10 +127,16 @@ export const uploadPost = (data: FormData) => {
 	});
 };
 
-export const deletePost = (postId: string) => {
+export const deletePost = ({
+	postId,
+	isMod,
+}: {
+	postId: String;
+	isMod: boolean;
+}) => {
 	// delete post using its id
 	const authToken = localStorage.getItem("authToken");
-	const url = `${domain}/user/posts/delete/${postId}`;
+	const url = `${domain}/user/posts/delete/${postId}?isMod=${isMod}`;
 
 	return fetch(url, {
 		method: "DELETE",
@@ -214,7 +220,6 @@ export const getPostCountByUserId = async ({
 		handleResponseStatus(response, "Failed to fetch data");
 
 		const responseData: CountData = await response.json();
-
 
 		return responseData.count;
 	} catch (error) {

@@ -49,14 +49,16 @@ func UploadPost(userID int64, title, description, postDetails string, buf bytes.
 	return nil
 }
 
-func DeletePost(postID uuid.UUID, userID int64) (error) {
+func DeletePost(postID uuid.UUID, userID int64, isMod bool) (error) {
 	// verify that the post is owned by the user
-	postedByUser, err := sqlMethods.CheckIfPostOwnedByUser(postID, userID)
-	if err != nil {
-		return err
-	}	
-	if !postedByUser {
-		return customErrors.ErrPostNotOwnedByUser
+	if (!isMod){
+		postedByUser, err := sqlMethods.CheckIfPostOwnedByUser(postID, userID)
+		if err != nil {
+			return err
+		}	
+		if !postedByUser {
+			return customErrors.ErrPostNotOwnedByUser
+		}
 	}
 	// call backend to delete the post, return if there is error
 	imageUrl, err := sqlMethods.DeletePostFromSQL(postID)

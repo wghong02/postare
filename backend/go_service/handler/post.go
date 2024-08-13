@@ -70,6 +70,21 @@ func uploadPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received one delete post request")
+
+	// Read isMod from request header or context passed from Spring Boot
+	isModStr := r.Header.Get("isMod")
+	if isModStr == "" {
+		http.Error(w, "isMod is required", http.StatusBadRequest)
+		return
+	}
+
+	// Parse userID to int64
+	isMod, err := strconv.ParseBool(isModStr)
+	if err != nil {
+		http.Error(w, "Invalid isMod", http.StatusBadRequest)
+		return
+	}
+
 	// Read userID from request header or context passed from Spring Boot
 	userIDStr := r.Header.Get("X-User-ID")
 	if userIDStr == "" {
@@ -93,7 +108,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call service level to delete post
-	err = service.DeletePost(postID, userID)
+	err = service.DeletePost(postID, userID, isMod)
 	if err != nil {
 		// Check if the error is due to the post not being found
 		if errors.Is(err, customErrors.ErrPostNotFound) {
